@@ -26,8 +26,9 @@ class Home extends CI_Controller {
 		$location_id=$_GET['locationId'];
 		$result=$this->post_model->get_all_post($location_id);
 		
-		$posts=array();
+		$jsonData['posts']=array();
 		
+		//$index=0;
 		foreach($result as $r)
 		{
 			/*
@@ -39,11 +40,11 @@ class Home extends CI_Controller {
 			$post['postId']=$r['post_id'];
 			//$post['user_id']=$r['user_id'];
 			$post['category']=$r['category'];
-			$post['time']=$r['time'];
+			$post['timeOfPost']=$r['time'];
 			$post['informalLocation']=$r['informal_location'];
 			$post['problemDescription']=$r['text'];
 			$post['image']=base64_encode($r['image']);
-			//$post['actual_location_id']=$r['actual_location_id'];
+			$post['formalLocation']=$r['actual_location_id'];
 			//$post['status']=$r['status'];
 			//$post['rating_change']=$r['rating_change'];
 			$post['userName']=$r['user_name'];
@@ -52,9 +53,15 @@ class Home extends CI_Controller {
 			$temp = $this->post_model->get_vote_count($post['postId']);
 			$post['upCount']=$temp['upvotes'];
 			$post['downCount']=$temp['downvotes'];
-			array_push($posts,$post);
+			array_push($jsonData['posts'],$post);
+			//$index++;
 		}
 		
-		echo json_encode($posts);
+		echo json_encode($jsonData);
+	}
+	
+	public function insertPost()
+	{
+		
 	}
 }
