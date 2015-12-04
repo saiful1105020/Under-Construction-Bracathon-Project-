@@ -9,7 +9,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:paddingLeft="8dp"
+        android:paddingBottom="1dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -28,7 +29,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/lblPostroblemLocation"
+            android:id="@+id/lblPostProblemLocation"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Rajarbagh"
             android:textSize="17dp"/>
@@ -54,7 +55,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:paddingLeft="8dp"
+        android:paddingBottom="8dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -84,44 +86,92 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:gravity="right"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/imgPostUp"
+            android:clickable="true"
+            android:src="@drawable/up_unpressed"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/lblPostUsername"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Onix"/>
+            android:text="  "
+            android:textSize="25dp"
+            android:gravity="top"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text=" ("/>
+            android:id="@+id/lblPostTotalVote"
+            android:text="+5"
+            android:textSize="25dp"
+            android:gravity="top"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/lblPostUserRating"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="753"/>
+            android:text="  "
+            android:textSize="25dp"
+            android:gravity="top"/>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/imgPostDown"
+            android:clickable="true"
+            android:src="@drawable/down_unpressed"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text=")"
-            android:layout_marginRight="40dp"/>
+            android:gravity="right"
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lblPostUsername"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Onix"/>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text=" ("/>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lblPostUserRating"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="753"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text=")"
+                    android:layout_marginRight="1dp"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lblPostTime"
+                android:text="Jun 12"
+                android:layout_marginRight="1dp"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

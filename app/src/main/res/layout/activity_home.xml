@@ -1,0 +1,122 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.underconstruction.underconstruction.Home">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="13dp"
+            android:layout_marginRight="5dp"
+            android:paddingBottom="10dp"
+            >
+
+            <!--<Button-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Updates"-->
+            <!--android:id="@+id/updatesButton"-->
+            <!--android:layout_weight="1"-->
+            <!--android:onClick="onUpdatesButtonClick" />-->
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:paddingTop="14dp"
+                android:paddingRight="2dp"
+                android:paddingBottom="2dp"
+
+                android:text="Home"
+                android:textSize="17dp"
+                android:textColor="#000000"
+                android:id="@+id/lblHome"
+                android:clickable="true"
+                android:onClick="onHomeButtonClick"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".8"
+                android:paddingTop="14dp"
+                android:paddingRight="4dp"
+                android:paddingBottom="2dp"
+                android:paddingLeft="5dp"
+                android:text="Report"
+                android:textSize="17dp"
+                android:textColor="#000000"
+                android:id="@+id/lblHomeReport"
+                android:clickable="true"
+                android:onClick="onReportButtonClick"
+                android:textStyle="bold" />
+
+            <!--<Button-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Requests"-->
+            <!--android:id="@+id/requestsButton"-->
+            <!--android:layout_weight="1"-->
+            <!--android:onClick="onRequestsButtonClick"/>-->
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:paddingTop="14dp"
+                android:paddingRight="4dp"
+                android:paddingBottom="2dp"
+                android:text="Help"
+                android:textSize="17dp"
+                android:textColor="#000000"
+                android:id="@+id/lblHomeHelp"
+                android:clickable="true"
+                android:onClick="onHelpButtonClick"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".7"
+                android:paddingTop="14dp"
+                android:paddingRight="4dp"
+                android:paddingBottom="2dp"
+                android:paddingLeft="5dp"
+                android:text="Profile"
+                android:textSize="17dp"
+                android:textColor="#000000"
+                android:id="@+id/lblHomeProfile"
+                android:clickable="true"
+                android:onClick="onProfileButtonClick"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:paddingTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#101100" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/dataFragmentContainer"></LinearLayout>
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>
