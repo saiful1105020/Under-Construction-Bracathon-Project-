@@ -28,8 +28,11 @@ class Admin extends CI_Controller {
 		}
 		  
 		//load models
+		
+		//$data['current_nav']='home';
+		//$this->load->view('templates/header',$data);
+		
 		$this->load->view('templates/header');
-		//echo 'Admin Home';
      }
 	 
 	/**
@@ -38,7 +41,7 @@ class Admin extends CI_Controller {
 	
 	public function index()			
 	{
-		
+		$this->load->view('admin_home');
 	}
 	
 	/**

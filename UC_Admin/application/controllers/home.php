@@ -51,8 +51,6 @@ class Home extends CI_Controller {
 				
 				//Load User Admin Page
 				redirect('/admin', 'refresh');
-				//echo 'Admin Home';
-				
 			}
 			else
 			{

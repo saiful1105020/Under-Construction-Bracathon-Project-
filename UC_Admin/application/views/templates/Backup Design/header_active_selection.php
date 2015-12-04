@@ -27,20 +27,41 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#" style="color: 0xfff;"> Under Construction </a>
+          <a class="navbar-brand" href="#" style="color: 0xfff;"> Under Construction</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
+		<?php
+			if($current_nav === "home")
+			{
+				echo '
+				<ul class="nav navbar-nav">
 		  
-            <li class="active"><a href="<?php echo site_url('admin'); ?>" class="glyphicon glyphicon-home"> HOME <span class="sr-only">(current)</span></a></li>
-			
-          </ul>
+					<li class="active"><a href="'.site_url("admin").'" class="glyphicon glyphicon-home"> HOME <span class="sr-only">(current)</span></a></li>
+					
+				</ul>
+				  
+				<ul class="nav navbar-nav navbar-right" id="">
+					<li><a href="'.site_url('admin/logout').'" class="glyphicon glyphicon-log-out"> Sign-Out </a></li>
+				</ul>';
+			}
+			//test
+			else if($current_nav === "logout")
+			{
+				echo '
+				<ul class="nav navbar-nav">
 		  
-		  <ul class="nav navbar-nav navbar-right" id="">
-				<li class="active"><a href="<?php echo site_url('admin/logout'); ?>" class="glyphicon glyphicon-log-out"> Sign-Out </a></li>
-		  </ul>
+					<li><a href="'.site_url('admin').'" class="glyphicon glyphicon-home"> HOME <span class="sr-only">(current)</span></a></li>
+					
+				</ul>
+				  
+				<ul class="nav navbar-nav navbar-right" id="">
+					<li class="active"><a href="'.site_url('admin/logout').'" class="glyphicon glyphicon-log-out"> Sign-Out </a></li>
+				</ul>';
+			}
+			//end of test
+		?>
 		  
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
