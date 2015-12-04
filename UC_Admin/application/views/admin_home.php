@@ -43,7 +43,7 @@
 							<td width="20%" align="left">
 								<strong>Location:</strong>
 								<select>
-									<option>---</option>
+									<option>ANY</option>
 									<option> Gulshan </option>
 								</select>
 							</td>
@@ -55,7 +55,7 @@
 							<td width="25%" align="center">
 								<strong >Category:</strong>
 								<select>
-									<option>---</option>
+									<option>ANY</option>
 									
 									<option> Option 1 </option>
 									<option> Option 2 </option>
@@ -70,7 +70,7 @@
 							<td width="20%" align="center">
 								<strong>Duration:</strong>
 								<select>
-									<option>---</option>
+									<option>ANY</option>
 									
 									<option> Last Week </option>
 									
@@ -84,7 +84,7 @@
 							<td width="20%" align="center">
 								<strong>Status:</strong>
 								<select>
-									<option>---</option>
+									<option>ANY</option>
 									
 									<option> Pending </option>
 								</select>
