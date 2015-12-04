@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fantasy Cricket</title>
+    <title>Under Construction</title>
 	
 	<link rel="stylesheet" href="<?php echo base_url("assets/css/bootstrap.min.css"); ?>" />
 	<link rel="stylesheet" href="<?php echo base_url("assets/css/bootstrap-theme.min.css"); ?>" />
@@ -56,22 +56,25 @@
 
 		.header1{
 			position: absolute;
-			top: calc(50% - 55px);
-			left: calc(50% - 300px);
+			top: calc(40% - 55px);
+			left: calc(50% - 50px);
 			z-index: 2;
 			font-size: 20px;
 			}
 		.header2{
 			position: absolute;
-			top: calc(50% - 155px);
-			left: calc(50% - 250px);
+			top: calc(80% + 20px);
+			left: calc(50% - 130px);
 			z-index: 2;
+			color: #f18989;
+			font-family: 'Exo', veranda;
+			font-size: 16px;
 		}
 
 		.header{
 			position: absolute;
-			top: calc(50% - 35px);
-			left: calc(50% - 400px);
+			top: calc(30% - 90px);
+			left: calc(50% - 150px);
 			z-index: 2;
 		}
 
@@ -223,44 +226,29 @@ body{
 
 <body>
 
-    <!--<div class="body"></div>
-    <div class="header1">Admin</div>
-	<div class="grad"></div>
-	<div class="header">
-		<div>Fantasy<span>Cricket</span></div>
-	</div>
-		
-	<br>
-	-->
-		<div class="body">
+    <div class="body">
 	<div class = "container">
     <div class="row" >
 
         <div class="col-md-offset-5 col-md-3">
 		
-		<form name="loginForm" method="post" action="<?php echo site_url('home/login');?>" >
+		<form name="loginForm" method="post" action="<?php echo site_url('home/login');?>" >	<!-- CHECK LATER-->
             <div class="form-login" >
-            <div class="header1">Admin</div>
+            
 			<div class="header">	
-			<div>Fantasy<span>Cricket</span></div>
+			<div>Under<span>Construction</span></div>
 			</div>
-			<h4>Welcome back Admin.</h4>
+			
+			<div class="header1">Admin</div>
+			
+			<h4>Welcome back Admin ... </h4>
           
-			<input type="text" id="userName" name="admin_id" class="form-control input-sm chat-input" placeholder="username" required/>
+			<input type="text" id="userName" name="admin_name" class="form-control input-sm chat-input" placeholder="username" required/>
             </br>
             <input type="password" id="userPassword" name="password" class="form-control input-sm chat-input" placeholder="password" required/>
             </br>
             
 			<button type="submit" class="btn btn-default">Sign-In</button>
-			<!--
-			<input type="submit" class="btn btn-primary btn-md" value="Sign-In">
-			-->
-            
-			<!--<span class="group-btn">     
-                <a href="" class="btn btn-primary btn-md">login <i class="fa fa-sign-in"></i></a>
-            </span>
-			-->
-            
             </div>
         </form>
         </div>
@@ -276,7 +264,7 @@ body{
 	<?php
 		if($login_error==true)
 		{
-			echo '<div class="header2" style="color:white; text-align:center; margin:-10%" ><h1><strong> Login Failed! Username and password didn\'t match </strong></h1></div>';
+			echo '<div class="header2" style="text-align:center; margin:-10%" ><strong> Login Failed! Username and password didn\'t match </strong></div>';
 		}
 	?>
 </body>
