@@ -15,7 +15,7 @@
 
   </head> 
 
-  <body style="background-color: #778899">
+  <body style="background-color: #fff">
 
     <nav class="navbar navbar-inverse">
       <div class="container-fluid">
@@ -27,7 +27,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#" style="color: 0xfff;"> Under Construction </a>
+          <a class="navbar-brand" href="#" style="color: #CCFF33;"> Under Construction </a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->

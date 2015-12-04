@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 04, 2015 at 10:44 AM
+-- Generation Time: Dec 04, 2015 at 01:26 PM
 -- Server version: 5.6.24
 -- PHP Version: 5.6.8
 
@@ -63,7 +63,11 @@ CREATE TABLE IF NOT EXISTS `location` (
   `location_id` int(11) NOT NULL,
   `lat` int(11) NOT NULL,
   `lon` int(11) NOT NULL,
-  `location_name` varchar(1023) NOT NULL
+  `street_number` varchar(31) NOT NULL,
+  `route` varchar(127) NOT NULL,
+  `neighbourhood` varchar(127) NOT NULL,
+  `sublocality` varchar(127) NOT NULL,
+  `locality` varchar(127) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
