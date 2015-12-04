@@ -1,114 +1,208 @@
-    <div style="height:140px">
-      <div class="col-xs-3"></div>
-      <!--
-	  <div class="col-xs-3">
-        <h1><span class="label label-danger">Current Tournament </span></h1>
-      </div>
-	  -->
-      <div class="col-xs-3">
-        <h1><span class="label label-success"><?php echo $tournament_name;?> </span></h1>
-      </div>
-      <div class="col-xs-3"></div>
-    </div>
 
-    <!--- You have to edit from here  -->
-    <hr>
-    <div style="height:60px"> 
-      <div class="col-xs-3" style="text-align:center !important;float:left;">
-        <h2><span class="label label-default" > Upcoming Match </span></h2>
-      </div>
-      <div class="col-xs-3" style="text-align:center;">
-        <h2><span class="label label-primary" > <?php echo $home_team; ?> </span><span class="label label-warning">Vs </span><span class="label label-primary"> <?php echo $away_team; ?> </span></h2>
-      </div>
-	  
-      <?php
-	  echo '<form method="POST" action="admin/start_match_action/'.$match_id.'">
-	  <div class="col-xs-3" style="text-align:center !important; float:right; vertical-align:top; padding:left">
-        <br>';
-		if($match_id==null)
-		{
-			echo '<input type="button" style="display: none;" name="btn" value="Submit" id="submitBtn" data-toggle="modal" data-target="#confirm-submit1" class="btn btn-default" />';	
-		}
-		else
-		{
-			echo '<input type="button" name="btn" value="Submit" id="submitBtn" data-toggle="modal" data-target="#confirm-submit1" class="btn btn-default" />';
-		}
-		?>
-		<br>
-      </div>
-	  </form>
-	  
-    </div>
-	
-    <hr>
-    <div style="height:60px"> 
-      <div class="col-xs-3" style="text-align:center !important;float:left;">
-        <h2><span class="label label-default" > Upcoming Phase </span></h2>
-      </div>
-	  <div class="col-xs-3" style="text-align:center;">
-		<h2><span class="label label-primary"> <?php echo $upcoming_phase ;?> </span></h2>
-      </div>
-	  
-	  <?php
-	  echo '<form method="POST" action="admin/start_phase_action/'.$phase_id.'">
-		<div class="col-xs-3" style="text-align:center !important; float:right; vertical-align:top; padding:left">';
-		
-		if($phase_id==null)
-		{
-			echo '<input type="button" style="display: none;" name="btn" value="Submit" id="submitBtn" data-toggle="modal" data-target="#confirm-submit2" class="btn btn-default" />';	
-		}
-		else
-		{
-			echo '<input type="button" name="btn" value="Submit" id="submitBtn" data-toggle="modal" data-target="#confirm-submit2" class="btn btn-default" />';
-		}
-	?>
-		
+<div class="table-responsive">
+
+	<h3>Search Reported Posts</h3>
+     
+	<div class="table-responsive" >
+		<table class="table ">
 			
-		</div>
-	  </form>
-    </div>
-
-	<hr>
-
+			<tbody>
+			<!--
+				<tr height="25%">
+					<td> </td>
+					<td> </td>
+					<td> </td>
+					<td> </td>
+				</tr>
+				
+				<tr height="25%">
+					<td> </td>
+					<td> </td>
+					<td> </td>
+					<td> </td>
+				</tr>
+				
+				<tr height="25%">
+					<td> </td>
+					<td> </td>
+					<td> </td>
+					<td> </td>
+				</tr>
+				
+				<tr height="25%">
+					<td> </td>
+					<td> </td>
+					<td> </td>
+					<td> </td>
+				</tr>
+			-->	
+				<tr >
+					<form action="#" method="POST">
+						
+						<div>
+							<td width="20%" align="left">
+								<strong>Location:</strong>
+								<select>
+									<option>ANY</option>
+									<option> Gulshan </option>
+								</select>
+							</td>
+							
+						</div>
+						
+						<div>
+							
+							<td width="25%" align="center">
+								<strong >Category:</strong>
+								<select>
+									<option>ANY</option>
+									
+									<option> Option 1 </option>
+									<option> Option 2 </option>
+									<option> Option 3 </option>
+									<option> Option 4 </option>
+								</select>
+							</td>
+							
+						</div>
+						
+						<div>
+							<td width="20%" align="center">
+								<strong>Duration:</strong>
+								<select>
+									<option>ANY</option>
+									
+									<option> Last Week </option>
+									
+								</select>
+							</td>
+							
+						</div>
+						
+						
+						<div>
+							<td width="20%" align="center">
+								<strong>Status:</strong>
+								<select>
+									<option>ANY</option>
+									
+									<option> Pending </option>
+								</select>
+							</td>
+							
+						</div>
+						
+						<div>
+							<td align="left">
+								<input type="submit" class="btn btn-success" style="width:80px" value = "GO">
+							</td>
+						</div>
+					</form>
+				</tr>
+				
+				<!--
+				<tr height="25%">
+					<td> </td>
+					<td> </td>
+					<td> </td>
+					<td> </td>
+					<td> </td>
+				</tr>
+				-->
+			</tbody>
+		</table>
+		<hr>
+		<hr>
+	</div>
 	
-<div class="modal fade" id="confirm-submit1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                Initialize Match Data?
-            </div>
-            <div class="modal-body">
-                This action involves some crucial operations on the system and required to enable transfer for the mentioned match. Please proceed if you are sure
-                
-            </div>
-            <div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <a href="<?php echo site_url('admin/start_match_action').'/'.$match_id; ?>" id="submit" class="btn btn-success success">Submit</a>
-            </div>
-        </div>
-    </div>
+	<div class="table-responsive" style="background-color:yellow;">
+		<table class="table ">
+			<thead>
+				<tr>
+					<td><font size="3"><strong>Serial No</strong></font></td>
+					<td size="3"><strong>Image</strong></td>
+					<td size="3"><strong>Description</strong></td>
+					<td size="3"><strong>User Name(<font color="red">Rating</font>)</strong></td>
+					<td size="3"><strong>Location</strong></td>
+					<td size="3"><strong>Status</strong></td>
+					<td size="3"><strong>...</strong></td>
+				</tr>
+			</thead>
+			
+			<tbody>
+				<tr>
+					<form action="#" method="POST">
+						<td>1</td>
+						<td><img src="http://www.keenthemes.com/preview/metronic/theme/assets/global/plugins/jcrop/demos/demo_files/image1.jpg" height="200px" width="250px"></td>
+						<td>
+							<strong>Category</strong> : Garbage on the road
+							<br><br>
+							<strong>Location Got From User</strong> : Near Palashi Square, Azimpur, Dhaka
+							<br><br>
+							<strong>Description</strong>: There are many problems with the road ......... 
+							<br><br>
+							<strong>Votes</strong>: &nbsp;&nbsp;&nbsp;&nbsp;&uarr; <font color="blue">25</font> &nbsp;&nbsp;&nbsp;&nbsp; &darr; <font color="red">2</font>
+							<br><br>
+							<strong>Time</strong>: 29 September, 2015 (05:03 PM)
+							<br>
+							<a href="#"><u>view comments</u> </a></td>
+						</td>
+						
+						<td> Onix(<font color="red">1923</font>) </td>
+						<td> <strong>Road</strong>: Not Found <br> <strong>Neighbourhood</strong>: Azimpur <br> <strong>Locality</strong>: Dhaka <br> <br>
+							<a href="#"><u>view in map</u> </a></td>
+						<td> 
+							<select>
+								<option>PENDING</option>
+								<option>VERIFIED</option>
+								<option>REJECTED</option>
+								<option>SOLVED</option>
+							</select>
+						</td>
+						<td>
+							<input type="submit" class="btn btn-info" style="width:80px" value = "UPDATE" >
+						</td>
+					</form>
+				</tr>
+				
+				<tr>
+					<form action="#" method="POST">
+						<td>2</td>
+						<td><img src="http://www.gettyimages.ca/gi-resources/images/Homepage/Hero/UK/CMS_Creative_164657191_Kingfisher.jpg" height="200px" width="250px"></td>
+						<td>
+							<strong>Category</strong> : Garbage on the road
+							<br><br>
+							
+							<strong>Location Got From User</strong> : Near Palashi Square, Azimpur, Dhaka
+							<br><br>
+							<strong>Description</strong>: There are many problems with the road ......... 
+							<br><br>
+							<strong>Votes</strong>: &nbsp;&nbsp;&nbsp;&nbsp;&uarr; <font color="blue">25</font> &nbsp;&nbsp;&nbsp;&nbsp; &darr; <font color="red">2</font>
+							<br><br>
+							<strong>Time</strong>: 29 September, 2015 (05:03 PM)
+							<br>
+							<a href="#"><u>view comments</u> </a></td>
+						</td>
+						
+						<td> Onix(<font color="red">1923</font>) </td>
+						<td> <strong>Road</strong>: Not Found <br> <strong>Neighbourhood</strong>: Azimpur <br> <strong>Locality</strong>: Dhaka <br> <br>
+							<a href="#"><u>view in map</u> </a></td>
+						<td> 
+							<select>
+								<option>PENDING</option>
+								<option>VERIFIED</option>
+								<option>REJECTED</option>
+								<option>SOLVED</option>
+							</select>
+						</td>
+						<td>
+							<input type="submit" class="btn btn-info" style="width:80px" value = "UPDATE" >
+						</td>
+					</form>
+				</tr>
+				
+			</tbody>
+		</table>
+		
+	</div>
 </div>
-	
-<div class="modal fade" id="confirm-submit2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                Initialize Phase Data?
-            </div>
-            <div class="modal-body">
-                This action involves some crucial operations on the system and required to enable transfer for the mentioned phase. Please proceed if you are sure
-                
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <a href="<?php echo site_url('admin/start_phase_action').'/'.$phase_id; ?>" id="submit" class="btn btn-success success">Submit</a>
-            </div>
-        </div>
-    </div>
-</div>
-  </body>
-
-</html>
-<!--
-<br><input type="submit" value="Initialize Phase Data" class="btn btn-info">  </input><br>
-	-->		

@@ -9,7 +9,15 @@ class Admin_model extends CI_Model
 		
 	public function get_loginInfo($data)	//DONE
 	{
-		$query = $this->db->get_where('admin', array('admin_id' => $data['admin_id'],'password' => $data['password']));
+		$sql='SELECT * FROM admin where `admin_name` = ? and `password` = ?';
+		$query = $this->db->query($sql,array($data['admin_name'],$data['password']));
+		return $query;
+	}
+	
+	public function get_all_locations()
+	{
+		$sql='SELECT DISTINCT neighbourhood FROM `location`';
+		$query = $this->db->query($sql)->result_array();
 		return $query;
 	}
 }

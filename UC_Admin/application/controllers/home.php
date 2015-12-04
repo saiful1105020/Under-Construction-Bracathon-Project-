@@ -21,13 +21,13 @@ class Home extends CI_Controller {
 	 
 	public function index()
 	{
-		if(isset($_SESSION["admin_id"]))
+		
+		if(isset($_SESSION["admin_name"]))
 		{
 			redirect('/admin', 'refresh');
 		}
 		else
 		{
-			
 			$data = array(
                'login_error' => false
 			);
@@ -37,18 +37,17 @@ class Home extends CI_Controller {
 	
 	public function login()		
 	{
-		if(isset($_POST['admin_id']) && isset($_POST['password']))
+		if(isset($_POST['admin_name']) && isset($_POST['password']))
 		{
-			/*
-			$data = array('admin_id'=>trim($_POST['admin_id']),'password'=>md5($_POST["password"]));
+			$data = array('admin_name'=>trim($_POST['admin_name']),'password'=>md5($_POST["password"]));
 			
 			$query= $this->admin_model->get_loginInfo($data);
+			
 			
 			if($query->num_rows()==1)
 			{
 				$loginInfo=$query->row_array();
-				
-				$_SESSION["admin_id"]=$loginInfo['admin_id'];		// Change user_id to admin_id
+				$_SESSION["admin_name"]=$loginInfo['admin_name'];
 				
 				//Load User Admin Page
 				redirect('/admin', 'refresh');
@@ -59,18 +58,15 @@ class Home extends CI_Controller {
 				   'login_error' => true
 				);
 				$this->load->view('admin-login',$data);
-				//redirect('home','refresh');
 			}
-			*/
+			
 		}
 		else
 		{
-			/*
 			$data = array(
 				   'login_error' => false
 				);
-				$this->load->view('admin-login',$data);
-			*/
+			$this->load->view('admin-login',$data);
 		}
 		
 	}
