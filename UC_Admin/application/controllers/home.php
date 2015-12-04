@@ -22,13 +22,12 @@ class Home extends CI_Controller {
 	public function index()
 	{
 		
-		if(isset($_SESSION["admin_id"]))
+		if(isset($_SESSION["admin_name"]))
 		{
 			redirect('/admin', 'refresh');
 		}
 		else
 		{
-			
 			$data = array(
                'login_error' => false
 			);
@@ -44,18 +43,16 @@ class Home extends CI_Controller {
 			
 			$query= $this->admin_model->get_loginInfo($data);
 			
-			//print_r($query);
 			
 			if($query->num_rows()==1)
 			{
-				/*
 				$loginInfo=$query->row_array();
-				
-				$_SESSION["admin_id"]=$loginInfo['admin_id'];		// Change user_id to admin_id
+				$_SESSION["admin_name"]=$loginInfo['admin_name'];
 				
 				//Load User Admin Page
 				redirect('/admin', 'refresh');
-				*/
+				//echo 'Admin Home';
+				
 			}
 			else
 			{
@@ -68,12 +65,10 @@ class Home extends CI_Controller {
 		}
 		else
 		{
-			/*
 			$data = array(
 				   'login_error' => false
 				);
-				$this->load->view('admin-login',$data);
-			*/
+			$this->load->view('admin-login',$data);
 		}
 		
 	}

@@ -22,21 +22,14 @@ class Admin extends CI_Controller {
           $this->load->helper('html');
 		  $this->load->library('form_validation');
 		  
-		if(isset($_SESSION["user_id"]))
+		if(!isset($_SESSION["admin_name"]))
 		{
-			die("Please Log out from your user account. ");
-		}
-		else
-		{
-			if(!isset($_SESSION["admin_id"]))
-			{
-				redirect('/home', 'refresh');
-			}
+			redirect('/home', 'refresh');
 		}
 		  
 		//load models
-		
 		$this->load->view('templates/header');
+		//echo 'Admin Home';
      }
 	 
 	/**
