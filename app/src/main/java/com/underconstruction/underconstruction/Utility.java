@@ -101,4 +101,12 @@ public class Utility {
 
     }
 
+    public static class HazardTags{
+        private static String[] hazardTags={"Occupied Footpath","Open Dustbin","Open Manhole","Cluttered Electric Wires","Water Logging","Risky Intersection","No Street Light","Crime Prone Area","Damaged Road","Wrongway Traffic"};
+
+        public static String[] getHazardTags(){
+            return hazardTags;
+        }
+    }
+
 }

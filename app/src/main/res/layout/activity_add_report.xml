@@ -1,0 +1,254 @@
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+
+android:paddingBottom="@dimen/activity_vertical_margin"
+tools:context=".AddReport"
+android:orientation="vertical"
+android:gravity="center_vertical|center_horizontal">
+<RadioGroup
+    android:id="@+id/rgWrapper"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal">
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/addReportImageImageView"
+        android:maxHeight="200dp"
+        android:maxWidth="200dp"
+        android:scaleType="fitXY" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take A Photo"
+        android:id="@+id/addReportAddPhotoButton"
+        android:onClick="onClick"
+        android:layout_gravity="bottom"
+        android:layout_weight=".5" />
+</LinearLayout>
+
+<TextView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="Location"
+    android:id="@+id/addReportLocationTextView"
+    android:gravity="center_horizontal" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:text="Choose a catagory that suits the problem"
+    android:id="@+id/textView" />
+<TableLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="right">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
+
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Broken Road"
+            android:drawableLeft="@drawable/brokenroad"
+            android:id="@+id/rbBrokenRoad"
+            android:layout_column="0"
+            android:checked="true"
+            android:drawablePadding="5dp"
+            android:layout_weight=".5" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="5dp"
+            android:text="Crime Prone Area"
+            android:id="@+id/rbCrime"
+            android:drawableLeft="@drawable/crime"
+            android:layout_column="1"
+            android:checked="false"
+            android:layout_weight=".5" />
+
+    </TableRow>
+
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Open Dustbin"
+            android:id="@+id/rbDustbin"
+            android:drawableLeft="@drawable/dustbin"
+            android:layout_column="0"
+            android:drawablePadding="5dp"
+            android:checked="false"
+            android:layout_weight=".5" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Narrow Footpath"
+            android:drawablePadding="5dp"
+            android:id="@+id/rbFootpath"
+            android:layout_column="1"
+            android:drawableLeft="@drawable/footpath"
+            android:checked="false"
+            android:layout_weight=".5" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Exposed Manhole"
+            android:id="@+id/rbManhole"
+            android:drawablePadding="5dp"
+            android:drawableLeft="@drawable/manhole"
+            android:layout_column="0"
+            android:checked="false"
+            android:layout_weight=".5" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Risky Intersection"
+            android:id="@+id/rbRoadIntersection"
+            android:drawableLeft="@drawable/roadintersection"
+            android:layout_column="1"
+            android:drawablePadding="5dp"
+            android:checked="false"
+            android:layout_weight=".5" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Streetlight"
+            android:drawablePadding="5dp"
+            android:id="@+id/rbStreetlight"
+            android:drawableLeft="@drawable/streetlight"
+            android:layout_column="0"
+            android:checked="false"
+            android:layout_weight=".5" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Water Clogged Area"
+            android:id="@+id/rbWaterclog"
+            android:drawableLeft="@drawable/waterclog"
+            android:layout_column="1"
+            android:drawablePadding="5dp"
+            android:checked="false"
+            android:layout_weight=".5" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dangerous Wire"
+            android:drawableLeft="@drawable/wire"
+            android:id="@+id/rbWire"
+            android:drawablePadding="5dp"
+            android:layout_column="0"
+            android:checked="false"
+            android:layout_weight=".5" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wrong Way Traffic"
+            android:drawableLeft="@drawable/wrongway"
+            android:drawablePadding="5dp"
+            android:id="@+id/rbTraffic"
+            android:layout_column="1"
+            android:checked="false"
+            android:layout_weight=".5" />
+    </TableRow>
+</TableLayout>
+
+<EditText
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/addInformalLocationEditText"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center_horizontal"
+    android:hint="Location Info, eg. &apos;Near Super-Shop&apos; (Optional)"
+    android:textSize="12dp" />
+
+<EditText
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/addInformalDescEditText"
+    android:textSize="12dp"
+    android:hint="Additional Problem Description (Optional)"
+    android:layout_gravity="center"
+    android:gravity="center_horizontal" />
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload Report"
+        android:id="@+id/addReportNewReportButton"
+        android:onClick="onClick"
+        android:layout_weight=".5"
+        android:clickable="false"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:text="Upload Later"
+        android:id="@+id/addReportSaveReportButton"
+        android:onClick="onClick"
+        android:layout_weight=".5"
+        android:clickable="false"/>
+
+</LinearLayout>
+
+</LinearLayout>

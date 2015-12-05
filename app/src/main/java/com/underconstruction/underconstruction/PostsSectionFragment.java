@@ -151,7 +151,7 @@ public class PostsSectionFragment extends Fragment {
 
                 JSONArray upVotersJSONArray=curObj.getJSONArray("upVoters");
 
-                for(int i=0;i<upCount;i++){
+                for(int i=0;i<upVotersJSONArray.length();i++){
 
                     Voter newVoter = new Voter(upVotersJSONArray.getJSONObject(i).getInt("userId"));
                     curPost.addVoterFromDB(newVoter, 1);
@@ -159,7 +159,7 @@ public class PostsSectionFragment extends Fragment {
 
                 JSONArray downVotersJSONArray=curObj.getJSONArray("downVoters");
 
-                for(int i=0;i<downCount;i++){
+                for(int i=0;i<downVotersJSONArray.length();i++){
 
                     Voter newVoter = new Voter(downVotersJSONArray.getJSONObject(i).getInt("userId"));
                     curPost.addVoterFromDB(newVoter, -1);
@@ -280,7 +280,7 @@ public class PostsSectionFragment extends Fragment {
 
         if(voteCount>0)  {
             totalVote.setText("+" + voteCount);
-            totalVote.setTextColor(Color.GREEN);
+            totalVote.setTextColor(Color.parseColor("#1E738F"));
         }
         else if(voteCount<0) {
             totalVote.setText("" + voteCount);
@@ -298,17 +298,17 @@ public class PostsSectionFragment extends Fragment {
         if (curPost.hasTheUserVoted(curVoter, voteType)) {
 
             Log.d("Inside likeButton Color", "Yes");
-            if(voteType>0) {                                                   //upvoted before, so change colour
+            if(voteType>0) {                                                   //upvoted before, so change upView colour
                 Log.d("Inside voteup Color", "Yes");
-                voteUpView.setColorFilter(Color.parseColor("#c0ffac"));
+                voteUpView.setColorFilter(Color.parseColor("#16586E"));
                 voteDownView.setColorFilter(Color.parseColor("#c0bfac"));
 //                voteDownView.setColorFilter(Color.parseColor("#000000"));
             }
             else {
-                Log.d("Inside votedown Color", "Yes");                            //did not upvote, so set default coour
+                Log.d("Inside votedown Color", "Yes");                            //downvoted before, so change downView colour
                 voteUpView.setColorFilter(Color.parseColor("#c0bfac"));
 //                voteDownView.setColorFilter(Color.parseColor("#ffbfac"));
-                voteDownView.setColorFilter(Color.parseColor("#ffbfac"));
+                voteDownView.setColorFilter(Color.parseColor("#D90D10"));
             }
 
         } else{                                                              //user hasn't voted before
@@ -330,7 +330,7 @@ public class PostsSectionFragment extends Fragment {
                     curPost.removeVoter(curVoter, -1);                   // remove previous vote
                     voteDownView.setColorFilter(Color.parseColor("#c0bfac"));   // set voteDownView to default colour
                     curPost.addVoter(curVoter, 1);                                  // add new upvote
-                    voteUpView.setColorFilter(Color.parseColor("#c0ffac"));     // colour up voteUpView
+                    voteUpView.setColorFilter(Color.parseColor("#16586E"));     // colour up voteUpView
                     showTotalVote(curPost, totalVote);
                     new SubmitVoteTask().execute(Utility.CurrentUser.getName(), "" + curPost.getPostId(), "1");
                 }
@@ -341,7 +341,7 @@ public class PostsSectionFragment extends Fragment {
 
                 else {                                                      // user has not ever voted this post
                     curPost.addVoter(curVoter, 1);                                  // add new upvote
-                    voteUpView.setColorFilter(Color.parseColor("#c0ffac"));     // colour up voteUpView
+                    voteUpView.setColorFilter(Color.parseColor("#16586E"));     // colour up voteUpView
                     showTotalVote(curPost, totalVote);
                     new SubmitVoteTask().execute(Utility.CurrentUser.getName(), "" + curPost.getPostId(), "1");
                 }
@@ -350,7 +350,7 @@ public class PostsSectionFragment extends Fragment {
             else {                                                       //trying to downvote
                 if (curPost.hasTheUserVoted(curVoter, 1)) {             // if user has upvoted before
                     curPost.removeVoter(curVoter, 1);                   // remove previous vote
-                    voteDownView.setColorFilter(Color.parseColor("#ffbfac"));   // colour up voteDownView
+                    voteDownView.setColorFilter(Color.parseColor("#D90D10"));   // colour up voteDownView
                     curPost.addVoter(curVoter, -1);                                  // add new downvote
                     voteUpView.setColorFilter(Color.parseColor("#c0bfac"));     // set voteUpView to default colour
                     showTotalVote(curPost, totalVote);
@@ -364,7 +364,7 @@ public class PostsSectionFragment extends Fragment {
 
                 else {                                                      // user has not ever voted this post
                     curPost.addVoter(curVoter, -1);                                  // add new downvote
-                    voteUpView.setColorFilter(Color.parseColor("#ffbfac"));     // colour up voteDownView
+                    voteUpView.setColorFilter(Color.parseColor("#D90D10"));     // colour up voteDownView
                     showTotalVote(curPost, totalVote);
                     new SubmitVoteTask().execute(Utility.CurrentUser.getName(), "" + curPost.getPostId(), "-1");
                 }
