@@ -6,51 +6,70 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:orientation="vertical" tools:context=".PostFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="8dp"
         android:paddingBottom="1dp">
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/lblPostProblemType"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Broken Road"
-            android:textSize="17dp"
-            />
+            android:id="@+id/mainLocationHolder"
+            android:paddingBottom="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lblPostProblemType"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Broken Road"
+                android:textSize="17dp"
+                />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="  at  "/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="  at  "/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/lblPostProblemLocation"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Rajarbagh"
-            android:textSize="17dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lblPostProblemLocation"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Rajarbagh"
+                android:textSize="17dp"
+                android:paddingRight="5dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="  ("/>
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="  ("/>-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/lblPostProblemInformalLocation"
-            android:text="Near Agora"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/lblPostProblemInformalLocation"
+                android:text="Near Agora under the sky on the road thousands of kilometers from the center of teh earth and i shall go on to write more and more till i find success"
+                android:textSize="12dp"
+                android:paddingBottom="2dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=")"/>
+        </LinearLayout>
 
-    </LinearLayout>
+        <!--<LinearLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_toRightOf="@+id/mainLocationHolder"-->
+            <!--android:layout_alignBaseline="@+id/mainLocationHolder">-->
+            <!--&lt;!&ndash;<TextView&ndash;&gt;-->
+                <!--&lt;!&ndash;&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;&ndash;&gt;-->
+                <!--&lt;!&ndash;&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;&ndash;&gt;-->
+
+                <!--&lt;!&ndash;&lt;!&ndash;android:text=")"/>&ndash;&gt;&ndash;&gt;-->
+
+            <!-- -->
+        <!--</LinearLayout>-->
+
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,7 +82,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/lblPostProblemDescription"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Eto baaje road dekhi nai ami jibone"/>
+            android:text="Eto baaje road dekhi nai ami jibone"
+            android:textStyle="italic"/>
 
     </LinearLayout>
 
@@ -71,6 +91,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:paddingBottom="5dp"
         >
 
         <ImageView
@@ -94,7 +115,8 @@
             android:layout_height="30dp"
             android:id="@+id/imgPostUp"
             android:clickable="true"
-            android:src="@drawable/up_unpressed"/>
+            android:src="@drawable/up_unpressed"
+            android:tint="#c0bfac" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -123,7 +145,8 @@
             android:layout_height="30dp"
             android:id="@+id/imgPostDown"
             android:clickable="true"
-            android:src="@drawable/down_unpressed"/>
+            android:src="@drawable/down_unpressed"
+            android:tint="#c0bfac" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -140,27 +163,31 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/lblPostUsername"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Onix"/>
+                    android:text="Onix"
+                    android:textStyle="bold"
+                    android:paddingRight="3dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text=" ("/>
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
+                    <!--android:text=" ("/>-->
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/lblPostUserRating"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="753"/>
+                    android:text="753"
+                    android:textSize="11dp"
+                    android:textColor="#16586E"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text=")"
-                    android:layout_marginRight="1dp"/>
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
+                    <!--android:text=")"-->
+                    <!--android:layout_marginRight="1dp"/>-->
 
             </LinearLayout>
 
@@ -168,7 +195,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/lblPostTime"
-                android:text="Jun 12"
+                android:text="Jun 12, 2015"
+                android:textSize="12dp"
                 android:layout_marginRight="1dp"/>
 
         </LinearLayout>

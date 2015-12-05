@@ -1,9 +1,12 @@
 package com.underconstruction.underconstruction;
 
+import android.util.Base64;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.ResultSet;
+import java.util.HashSet;
 
 public class Post {
 
@@ -22,6 +25,8 @@ public class Post {
     private int upCount;
     private int downCount;
     private String timeOfPost;
+    private HashSet<Voter> upvotersId =new HashSet<Voter>();
+    private HashSet<Voter> downvotersId=new HashSet<Voter>();
 
     public Post(int category, int downCount, String formalLocation, byte[] imageBytes, String informalLocation, int postId, String problemDescription, int userRating, int status, String timeOfPost, int upCount, String userName, byte[] videoBytes, int ratingChange) {
         this.category = category;
@@ -62,7 +67,7 @@ public class Post {
                     jsonObject.getInt("category"),
                     jsonObject.getInt("downCount"),
                     jsonObject.getString("formalLocation"),
-                    null,
+                    Base64.decode(jsonObject.getString("image"),0),
                     jsonObject.getString("informalLocation"),
                     jsonObject.getInt("postId"),
                     jsonObject.getString("problemDescription"),
@@ -181,5 +186,47 @@ public class Post {
 
     public void setUpCount(int upCount) {
         this.upCount = upCount;
+    }
+
+    public boolean hasTheUserVoted(Voter voter, int voteType){
+        if(voteType>0) return upvotersId.contains(voter);
+        else return downvotersId.contains(voter);
+    }
+
+    public void addVoter(Voter voter, int voteType){
+        if(voteType>0) {                                    //upvote
+            if (!upvotersId.contains(voter)) {
+                upvotersId.add(voter);
+                upCount++;
+            }
+        }
+        else {                                              //downvote
+            if (!downvotersId.contains(voter)) {
+                downvotersId.add(voter);
+                downCount++;
+            }
+        }
+    }
+
+    public void removeVoter(Voter voter, int voteType){
+        if(voteType>0) {                                    //upvote
+            if (upvotersId.contains(voter)) {
+                upvotersId.remove(voter);
+                upCount--;
+            }
+        }
+        else {                                              //downvote
+            if (downvotersId.contains(voter)) {
+                downvotersId.remove(voter);
+                downCount--;
+            }
+        }
+    }
+
+    public void addVoterFromDB(Voter voter, int voteType) {
+        if(voteType>0)
+            upvotersId.add(voter);
+        else
+            downvotersId.add(voter);
     }
 }
