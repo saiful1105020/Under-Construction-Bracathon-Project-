@@ -202,11 +202,11 @@ public class PostsSectionFragment extends Fragment {
             //fill the view
 
             TextView problemType = (TextView)itemView.findViewById(R.id.lblPostProblemType);
-            problemType.setText(currentPost.getCategory()+"");
+            problemType.setText(Utility.HazardTags.getHazardTags()[currentPost.getCategory()]);
 
             TextView postTime = (TextView)itemView.findViewById(R.id.lblPostTime);
 //            String timeOfPost = Utility.CurrentUser.parsePostTime(currentPost.getTimeOfPost());
-            postTime.setText(currentPost.getTimeOfPost());
+            postTime.setText(Utility.CurrentUser.parsePostTime(currentPost.getTimeOfPost()));
 
             TextView formalLocation = (TextView)itemView.findViewById(R.id.lblPostProblemLocation);
             formalLocation.setText(currentPost.getFormalLocation());

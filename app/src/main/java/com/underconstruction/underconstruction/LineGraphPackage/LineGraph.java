@@ -20,8 +20,7 @@
        specific language governing permissions and limitations
        under the License.
  */
-
-package com.example.anik.underconstruction.LineGraphPackage;
+package com.underconstruction.underconstruction.LineGraphPackage;
 
 import android.content.Context;
 import android.graphics.*;
@@ -31,6 +30,9 @@ import android.graphics.Path.Direction;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.underconstruction.underconstruction.LineGraphPackage.Line;
+import com.underconstruction.underconstruction.LineGraphPackage.LinePoint;
 
 import java.util.ArrayList;
 

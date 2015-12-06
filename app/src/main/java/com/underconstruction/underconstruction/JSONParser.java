@@ -43,7 +43,7 @@ public class JSONParser {
     public JSONObject  makeHttpRequest(String urlParameter, String method,
                                        List<Pair> params) {
 
-        final String BASE_URL = "http://10.0.0.195" +
+        final String BASE_URL = "http://182.168.1.109" +
                 "/uc_brac_git/uc_server/index.php/home";
         URL url;
 //        List<Pair> paramaters = new ArrayList<Pair>();

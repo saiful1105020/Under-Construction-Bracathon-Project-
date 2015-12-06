@@ -20,14 +20,13 @@
        specific language governing permissions and limitations
        under the License.
  */
-
-package com.example.anik.underconstruction.LineGraphPackage;
+package com.underconstruction.underconstruction.LineGraphPackage;
 
 import java.util.ArrayList;
 
 public class Line {
 
-    private ArrayList<LinePoint> points = new ArrayList<LinePoint>();
+    private ArrayList<com.underconstruction.underconstruction.LineGraphPackage.LinePoint> points = new ArrayList<com.underconstruction.underconstruction.LineGraphPackage.LinePoint>();
     private int color;
     private boolean showPoints = true;
 

@@ -1,0 +1,191 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+android:layout_height="wrap_content" android:paddingLeft="@dimen/activity_horizontal_margin"
+android:paddingRight="@dimen/activity_horizontal_margin"
+android:paddingTop="@dimen/activity_vertical_margin"
+android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".DashboardListItem">
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="27 August 2015, 2:34pm"
+    android:id="@+id/lblDashboardTimestamp"
+    android:layout_alignParentTop="false"
+    android:layout_alignParentLeft="false"
+    android:layout_alignParentStart="false"
+    android:layout_toRightOf="@+id/btnDashboardUpload" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:text="Broken Road at Rajarbagh"
+    android:id="@+id/lblDashboardCatAtLoc"
+    android:layout_below="@+id/lblDashboardTimestamp"
+    android:layout_alignParentLeft="false"
+    android:layout_alignParentStart="false"
+    android:layout_marginTop="5dp"
+    android:layout_toRightOf="@+id/btnDashboardUpload" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:text="(Near Agora Market)"
+    android:id="@+id/lblDashboardInformalLocation"
+    android:layout_below="@+id/lblDashboardCatAtLoc"
+    android:layout_alignParentLeft="false"
+    android:layout_alignParentStart="false"
+    android:layout_toRightOf="@+id/btnDashboardUpload" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:text="Broken road creating a lot of jam!!!"
+    android:id="@+id/lblDashboardComment"
+    android:layout_below="@+id/lblDashboardInformalLocation"
+    android:layout_alignParentLeft="false"
+    android:layout_alignParentStart="false"
+    android:layout_toRightOf="@+id/btnDashboardUpload" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="SOLVED"
+    android:id="@+id/lblDashboardStatus"
+    android:layout_above="@+id/layoutRating"
+    android:layout_alignParentRight="false"
+    android:layout_alignParentEnd="false"
+    android:layout_alignParentStart="true"
+    android:textSize="15dp"
+    android:layout_toLeftOf="@+id/lblDashboardComment"
+    android:gravity="center_horizontal"
+    android:layout_marginBottom="10dp"
+    android:layout_marginRight="10dp" />
+
+<Button
+    style="?android:attr/buttonStyleSmall"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Upload"
+    android:id="@+id/btnDashboardUpload"
+    android:textSize="15dp"
+    android:minHeight="30dp"
+    android:layout_alignParentEnd="false"
+    android:layout_alignParentTop="false"
+    android:layout_marginTop="5dp"
+    android:layout_marginRight="15dp"
+    android:visibility="visible"
+    android:layout_alignParentStart="false"
+    android:layout_above="@+id/layoutRating" />
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:text="Your rating has increased by 10 points!"
+    android:id="@+id/lblDashboardRatingchange"
+    android:layout_below="@+id/lblDashboardComment"
+    android:layout_alignParentLeft="false"
+    android:layout_alignParentStart="false"
+    android:layout_marginTop="5dp"
+    android:textColor="@android:color/holo_green_dark"
+    android:layout_toRightOf="@+id/btnDashboardUpload" />
+
+
+
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="false"
+    android:layout_alignParentEnd="false"
+    android:layout_alignParentBottom="false"
+    android:layout_alignTop="@+id/lblDashboardRatingchange"
+    android:visibility="visible"
+    android:id="@+id/layoutRating"
+    android:layout_alignParentStart="true"
+    android:layout_toLeftOf="@+id/lblDashboardRatingchange"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="3"
+        android:id="@+id/lblDashboardRatingDown"
+        android:layout_alignTop="@+id/imgDown"
+        android:layout_toLeftOf="@+id/imgDown"
+        android:layout_toStartOf="@+id/imgDown"
+        android:layout_marginRight="2dp"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="12dp"
+        android:layout_marginLeft="-5dp" />
+
+    <ImageView
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:id="@+id/imgDown"
+        android:src="@drawable/down_unpressed"
+        android:layout_alignTop="@+id/imgUp"
+        android:layout_toLeftOf="@+id/imgUp"
+        android:layout_toStartOf="@+id/imgUp"
+        android:tint="@android:color/holo_red_dark"
+        android:layout_marginRight="-2dp" />
+
+    <ImageView
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:id="@+id/imgUp"
+        android:src="@drawable/up_unpressed"
+        android:layout_alignTop="@+id/lblDashboardRatingUp"
+        android:layout_toLeftOf="@+id/lblDashboardRatingUp"
+        android:layout_toStartOf="@+id/lblDashboardRatingUp"
+        android:tint="@android:color/holo_green_dark" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="5"
+        android:id="@+id/lblDashboardRatingUp"
+        android:layout_alignTop="@+id/lblDashboardRatingchange"
+        android:layout_alignEnd="@+id/btnDashboardUpload"
+        android:layout_marginRight="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginLeft="2dp"
+        android:textColor="@android:color/holo_green_dark"
+        android:textSize="12dp" />
+
+</LinearLayout>
+
+<ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/imgStatus"
+    android:layout_alignParentTop="false"
+    android:layout_alignParentLeft="false"
+    android:layout_alignParentStart="false"
+    android:src="@drawable/upload"
+    android:layout_above="@+id/btnDashboardUpload"
+    android:layout_alignLeft="@+id/btnDashboardUpload"
+    android:layout_marginLeft="25dp" />
+
+<Button
+    style="?android:attr/buttonStyleSmall"
+    android:layout_width="wrap_content"
+    android:layout_height="40dp"
+    android:text="Delete"
+    android:id="@+id/btnDashboardDelete"
+    android:layout_below="@+id/lblDashboardComment"
+    android:layout_alignParentRight="false"
+    android:layout_alignParentEnd="false"
+    android:layout_alignParentStart="true"
+    android:layout_alignRight="@+id/btnDashboardUpload"
+    android:layout_alignLeft="@+id/btnDashboardUpload"
+    android:visibility="visible" />
+
+</RelativeLayout>
