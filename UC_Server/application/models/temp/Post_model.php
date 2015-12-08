@@ -8,14 +8,7 @@ class Post_model extends CI_Model
 
 	public function get_all_post($location_id)
 	{
-		$sql='select p.*,u.user_name,u.user_rating from post p, user u where p.actual_location_id = ? and p.status = 0 and p.user_id=u.user_id order by p.time desc';
-		$query=$this->db->query($sql,$location_id)->result_array();
-		return $query;
-	}
-	
-	public function get_all_post_backup($location_id)
-	{
-		$sql='select p.*,u.user_name,u.user_rating from post p, user u where p.actual_location_id = ? and p.status = 0 and p.user_id=u.user_id order by p.time desc';
+		$sql='select p.*,u.user_name,u.user_rating from post p, user u where p.actual_location_id = ? and p.status = 0 and p.user_id=u.user_id order by p.time';
 		$query=$this->db->query($sql,$location_id)->result_array();
 		return $query;
 	}
@@ -23,7 +16,7 @@ class Post_model extends CI_Model
 	public function get_last_10_user_post($user_name)
 	{
 		//$sql='select p.time,p.rating_change from post p, user u where u.user_name = ? and p.user_id=u.user_id order by p.time';
-		$sql = 'SELECT p.time,p.rating_change FROM post p, user u WHERE u.user_name = ? and p.user_id = u.user_id ORDER BY p.time DESC LIMIT 10';
+		$sql = 'SELECT p.time,p.rating_change FROM post p, user u WHERE u.user_name = ? and p.user_id = u.user_id ORDER BY p.time DESC';
 		$query=$this->db->query($sql,$user_name);
 		
 		$result=$query->result_array();
@@ -31,52 +24,16 @@ class Post_model extends CI_Model
 		return $result;
 	}
 	
-	public function current_time()
+	public function get_user_name($user_id)
 	{
-		$sql="SELECT current_timestamp() as curTime";
-		$query=$this->db->query($sql);
-		$result=$query->row_array();
-		
-		return $result['curTime'];
+		$sql="SELECT user_name FROM user WHERE user_id = ? ";
+		$query=$this->db->query($sql,$user_id)->row_array();
+		return $query['user_name'];
 	}
-	
-	public function get_loginInfo($user_name,$password)
-	{
-		$sql="SELECT user_id FROM user WHERE user_name = ? and password = ?";
-		$query = $this->db->query($sql,array($user_name,$password));
-		
-		if($query->num_rows()==0)
-		{
-			return -1;
-		}
-		else
-		{
-			$temp = $query->row_array();
-			return $temp['user_id'];
-		}
-	}
-	
-	public function is_duplicate($user_name)
-	{
-		$sql="SELECT user_id FROM user WHERE user_name = ? ";
-		$query = $this->db->query($sql,array($user_name))->row_array();
-		if($query['user_id']==NULL)
-		{
-			return 0;
-		}
-		else return 1;
-	}
-	
-	public function register($data)
-	{
-		$sql = "INSERT INTO `user`( `user_name`, `user_rating`, `password`) VALUES (?,?,?)";
-		$query= $this->db->query($sql,array($data['user_name'],$data['user_rating'],$data['password']));
-	}
-	
 	
 	public function get_user_posts($user_name)
 	{
-		$sql = 'select p.* from post p, user u where u.user_name = ? and p.user_id=u.user_id order by p.time desc';
+		$sql = 'select p.* from post p, user u where u.user_name = ? and p.user_id=u.user_id order by p.time';
 		$query=$this->db->query($sql,$user_name)->result_array();
 		return $query;
 	}
@@ -134,6 +91,46 @@ class Post_model extends CI_Model
 		}
 	}
 	
+	public function get_location($location_id)
+	{
+		$sql='SELECT * FROM location WHERE location_id = ?';
+		$query=$this->db->query($sql,array($location_id))->row_array();
+		return $query;
+	}
+	
+	public function update_post_status($post_id,$status)
+	{
+		//echo $post_id;
+		//echo $status;
+		//change post status
+		$sql='UPDATE `post` SET `status`=? WHERE post_id = ?';
+		$query=$this->db->query($sql,array($status,$post_id));
+	}
+	
+	public function update_rating_change($post_id,$change)
+	{
+		$sql='UPDATE `post` SET `rating_change`=? WHERE post_id = ?';
+		$query=$this->db->query($sql,array($change,$post_id));
+		
+		//update user rating
+		$sql='SELECT user_id FROM post WHERE post_id=?';
+		$query=$this->db->query($sql,$post_id)->row_array();
+		
+		$user_id=$query['user_id'];
+		//get current user rating
+		
+		$sql='SELECT user_rating FROM user WHERE user_id = ? ';
+		$query=$this->db->query($sql,array($user_id))->row_array();
+		$current_rating = $query['user_rating'];
+		
+		$current_rating+=$change;
+		
+		//update rating
+		$sql='UPDATE user SET user_rating = ? WHERE user_id = ? ';
+		$query=$this->db->query($sql,array($current_rating,$user_id));
+		
+	}
+	
 	/**
 		WASIF
 	*/
@@ -154,7 +151,7 @@ class Post_model extends CI_Model
 	//insert location and get location id
 	public function insert_location($data)
 	{
-		$sql='SELECT location_id FROM location WHERE abs(`lat` - ?) <= 0.005 AND abs(`lon` - ?) <=0.005';
+		$sql='SELECT location_id FROM location WHERE abs(`lat` - ?) <= 0.001 AND abs(`lon` - ?) <=0.001';
 		$query=$this->db->query($sql,array($data['lat'],$data['lon']));
 		
 		$loc = array();
@@ -164,7 +161,7 @@ class Post_model extends CI_Model
 			$s='INSERT INTO location (`lat`, `lon`, `street_number`, `route`, `neighbourhood`, `sublocality`, `locality`) VALUES (?,?,?,?,?,?,?)';
 			$q=$this->db->query($s,array($data['lat'],$data['lon'],$data['street_number'],$data['route'],$data['neighbourhood'],$data['sublocality'],$data['locality']));
 			
-			$s='SELECT location_id FROM location WHERE abs(`lat` - ?) <= 0.005 AND abs(`lon` - ?) <=0.005';
+			$s='SELECT location_id FROM location WHERE abs(`lat` - ?) <= 0.001 AND abs(`lon` - ?) <=0.001';
 			$q=$this->db->query($s,array($data['lat'],$data['lon']))->row_array();
 			return $q['location_id'];
 		}
@@ -173,13 +170,6 @@ class Post_model extends CI_Model
 			$result=$query->row_array();
 			return $result['location_id'];
 		}
-	}
-	
-	public function get_location($location_id)
-	{
-		$sql='SELECT * FROM location WHERE location_id = ?';
-		$query=$this->db->query($sql,array($location_id))->row_array();
-		return $query;
 	}
 }
 ?>
