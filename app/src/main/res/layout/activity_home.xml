@@ -1,38 +1,55 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.underconstruction.underconstruction.Home">
+    android:orientation="vertical"
+    tools:context="com.underconstruction.underconstruction.Home"
+    >
+
 
     <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginLeft="13dp"
+        android:layout_marginRight="5dp"
+        android:paddingBottom="10dp"
+        android:gravity="center">
+
+
+
+
+        <!--<Button-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Updates"-->
+        <!--android:id="@+id/updatesButton"-->
+        <!--android:layout_weight="1"-->
+        <!--android:onClick="onUpdatesButtonClick" />-->
 
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="13dp"
-            android:layout_marginRight="5dp"
-            android:paddingBottom="10dp"
-            >
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:id="@+id/linearLayoutHomeIcon">
 
-            <!--<Button-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Updates"-->
-            <!--android:id="@+id/updatesButton"-->
-            <!--android:layout_weight="1"-->
-            <!--android:onClick="onUpdatesButtonClick" />-->
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="17dp"
+                android:padding="0dp"
+                android:src="@drawable/home"
+                />
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.8"
-                android:paddingTop="14dp"
+                android:paddingTop="2dp"
+
                 android:paddingRight="2dp"
                 android:paddingBottom="2dp"
 
@@ -44,35 +61,63 @@
                 android:onClick="onHomeButtonClick"
                 android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".8"
-                android:paddingTop="14dp"
-                android:paddingRight="4dp"
-                android:paddingBottom="2dp"
-                android:paddingLeft="5dp"
-                android:text="Report"
-                android:textSize="17dp"
-                android:textColor="#000000"
-                android:id="@+id/lblHomeReport"
-                android:clickable="true"
-                android:onClick="onReportButtonClick"
-                android:textStyle="bold" />
+        </LinearLayout>
 
-            <!--<Button-->
-            <!--android:layout_width="0dp"-->
+        <!--<LinearLayout-->
+            <!--android:layout_width="wrap_content"-->
             <!--android:layout_height="wrap_content"-->
-            <!--android:text="Requests"-->
-            <!--android:id="@+id/requestsButton"-->
-            <!--android:layout_weight="1"-->
-            <!--android:onClick="onRequestsButtonClick"/>-->
+            <!--android:orientation="vertical"-->
+            <!--android:gravity="center"-->
+            <!--android:id="@+id/linearLayoutHelpIcon">-->
+            <!-- -->
+            <!-- -->
+
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight=".8"-->
+                <!--android:paddingTop="2dp"-->
+                <!--android:paddingRight="4dp"-->
+                <!--android:paddingBottom="2dp"-->
+                <!--android:paddingLeft="5dp"-->
+                <!--android:text="Report"-->
+                <!--android:textSize="17dp"-->
+                <!--android:textColor="#000000"-->
+                <!--android:id="@+id/lblHomeReport"-->
+                <!--android:clickable="true"-->
+                <!--android:onClick="onReportButtonClick"-->
+                <!--android:textStyle="bold" />-->
+            <!-- -->
+        <!--</LinearLayout>-->
+
+        <!--<Button-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Requests"-->
+        <!--android:id="@+id/requestsButton"-->
+        <!--android:layout_weight="1"-->
+        <!--android:onClick="onRequestsButtonClick"/>-->
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:id="@+id/linearLayoutHelpIcon">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="17dp"
+                android:padding="0dp"
+                android:src="@drawable/help"
+                />
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.7"
-                android:paddingTop="14dp"
+                android:paddingTop="2dp"
                 android:paddingRight="4dp"
                 android:paddingBottom="2dp"
                 android:text="Help"
@@ -83,11 +128,30 @@
                 android:onClick="onHelpButtonClick"
                 android:textStyle="bold" />
 
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:id="@+id/linearLayoutProfileIcon">
+
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="17dp"
+                android:padding="0dp"
+                android:src="@drawable/profile"
+                />
+
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight=".7"
-                android:paddingTop="14dp"
+                android:paddingTop="2dp"
                 android:paddingRight="4dp"
                 android:paddingBottom="2dp"
                 android:paddingLeft="5dp"
@@ -98,25 +162,42 @@
                 android:clickable="true"
                 android:onClick="onProfileButtonClick"
                 android:textStyle="bold" />
-
-
+            </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:paddingTop="15dp"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="#101100" />
 
+    <TextView
+        android:paddingTop="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#101100" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:id="@+id/dataFragmentContainer"></LinearLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/report"
+        android:onClick="onReportButtonClick"
+        android:text="Report a Problem"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="right">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Image Mode"
+            android:id="@+id/checkBox"/>
     </LinearLayout>
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/dataFragmentContainer"></LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>
+
