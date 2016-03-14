@@ -84,18 +84,21 @@ class Post_model extends CI_Model
 		}
 	}
 	*/
-	/*
-	public function is_duplicate($user_name)
+	
+	public function is_duplicate($email)
 	{
-		$sql="SELECT user_id FROM user WHERE user_name = ? ";
-		$query = $this->db->query($sql,array($user_name))->row_array();
+		$sql="SELECT user_id FROM user WHERE email = ? ";
+		$query = $this->db->query($sql,array($email))->row_array();
 		if($query['user_id']==NULL)
 		{
 			return 0;
 		}
-		else return 1;
+		else
+		{
+			return 1;
+		}
 	}
-	*/
+	
 	/*
 	public function register($data)
 	{
