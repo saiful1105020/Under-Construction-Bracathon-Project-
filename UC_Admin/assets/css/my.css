@@ -1,7 +1,6 @@
 /*
 Theme Name: Simple Parallax Website
 Description: Simple Parallax Scrolling Effect
-Author: Samuel Dalusung
 */
 
 /*= GENERAL STYLING
@@ -65,48 +64,46 @@ a.rpanel:hover{ color: #fff; }
 	margin-top: 30px;
 }
 
-#nav { width: 410px; float: right;  }
+#nav { width: 0px; float: right; margin-top: 20px; }
 #logo a { color: #fff; text-decoration: none; float: left; font-size: 30px; margin-top: 20px; color: #fff; font-family:"Wellfleet"; font-weight: bold; }
+#nav ul{
+	padding-left: 520px;
+	padding-top: 150px;
+	list-style: none;
+	display: block;
+	margin: 0 auto;
+	list-style: none;	
+}
+
+#nav li{
+	margin-top: 9px;	
+	float: left;
+	padding-left: 21px;
+}
+
+#nav li a { color: #fff; opacity:0.6; font-size: 16px; text-decoration: none; font-family: 'Wellfleet'; }
+#nav li a.active { color: #fff; opacity:1; border-bottom: 2px solid #fff; }
+#nav li a:hover { color: #fff; opacity:1;  }
+
+#na { width: 410px; float: right; margin-top: 5px; }
 #na ul{
 	padding-left: 200px;
+	padding-top: 0px;
 	list-style: none;
 	display: block;
 	margin: 0 auto;
 	list-style: none;	
 }
-#na { width: 0px; float: right;  }
-#nav ul{
-	padding-top: 90px;
-	padding-left: 550px;
-	list-style: none;
-	display: block;
-	margin: 0 auto;
-	list-style: none;	
-}
-#nav li{
-	margin-top: 19px;	
-	float: left;
-	padding-left: 21px;
-}
 
-#na li a { color: #fff; opacity:0.6; font-size: 16px; text-decoration: none; font-family: 'Wellfleet'; }
-#na li a.active { color: #fff; opacity:1; border-bottom: 2px solid #fff; }
-#na li a:hover { color: #fff; opacity:1;  }
-
-#to{
-	margin-top: 2px;
-}
-#bot{
-	float: left;
-	padding-left: 21px;
-	margin-top: 30px;
-	width: 0px;
-}
 #na li{
-	margin-top: 2px;	
+	margin-top: 5px;	
 	float: left;
 	padding-left: 15px;
 }
+
+#na li a { color: #000000; opacity:0.6; font-size: 16px; text-decoration: none; font-family: 'Wellfleet'; }
+#na li a.active { color: #fff; opacity:1; border-bottom: 2px solid #fff; }
+#na li a:hover { color: #fff; opacity:1;  }
 
 /*= QUOTES AND SOME ELEMENTS
 --------------------------------------------------------*/
@@ -167,7 +164,7 @@ ul.built { list-style: none; margin: 0 auto; width: 730px; }
 
 #slide2{
 	background-color: #fff;
-	background:url('../img/test8.jpg') 50% 0 no-repeat fixed;
+	background:url('../img/t3.jpg') 50% 0 no-repeat fixed;
 	color: #333333;
 	height: 300px;
 	margin: 0 auto;
@@ -185,7 +182,7 @@ ul.built { list-style: none; margin: 0 auto; width: 730px; }
 
 #slide4{
 	background-color: #fff;
-	background:url(../img/test9.jpg) 50% 0 no-repeat fixed;
+	background:url(../img/t2.jpg) 50% 0 no-repeat fixed;
 	color: #333333;
 	height: 300px;
 	padding: 200px 0;
@@ -193,7 +190,7 @@ ul.built { list-style: none; margin: 0 auto; width: 730px; }
 
 #slide5{
 	background: url(../img/slide5.jpg) 50% 0 no-repeat fixed;
-	height: 200px;
+	height: 600px;
 	margin: 0 auto;
 	padding: 250px 0;
 	color: #fff;
@@ -201,11 +198,12 @@ ul.built { list-style: none; margin: 0 auto; width: 730px; }
 }
 
 #rcorners1 {
-    border-radius: 25px;
+    border-radius: 15px 50px;
     background: #8AC007;
     padding: 20px; 
-    width: 40px;
-    height: 20px;    
+    width: 65px;
+    height: 20px; 
+    text-align: right;   
 }
 
 /*= FOOTER 

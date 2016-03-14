@@ -52,7 +52,7 @@ class Admin extends CI_Controller {
 			$data['is_set']=false;
 			$data['n_loc']=$this->admin_model->get_all_locations();
 			
-			$this->load->view('admin_home',$data);
+			$this->load->view('adminhome',$data);
 		}
 		else
 		{
@@ -89,7 +89,7 @@ class Admin extends CI_Controller {
 				
 				array_push($data['posts'],$post);
 			}
-			$this->load->view('admin_home',$data);
+			$this->load->view('adminhome',$data);
 			//print_r($data);
 		}
 	}

@@ -33,11 +33,11 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="<?php echo site_url('admin'); ?>" class="glyphicon glyphicon-home">Home</a></li>
+            <li><a href="<?php echo site_url('admin'); ?>" class="glyphicon glyphicon-home"> Home</a></li>
             <li><a href="<?php echo site_url('start/settings');?>">Settings</a></li>
             <li><a href="<?php echo site_url('start/profile');?>">Profile</a></li>
             <li><a href="<?php echo site_url('start/about');?>">About Us</a></li>
-            <li><a href="<?php echo site_url('admin/logout'); ?>" class="glyphicon glyphicon-log-out">Log Out</a></li>
+            <li><a href="<?php echo site_url('admin/logout'); ?>" class="glyphicon glyphicon-log-out"> Log Out</a></li>
           </ul>
           
         </div>
