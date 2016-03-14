@@ -33,7 +33,7 @@ class Admin extends CI_Controller {
 		//$data['current_nav']='home';
 		//$this->load->view('templates/header',$data);
 		
-		$this->load->view('templates/header');
+		$this->load->view('templates/header2');
      }
 	 
 	/**
