@@ -155,28 +155,46 @@ class Home extends CI_Controller {
 		else $loc['sublocality']='';
 		if(isset($_POST['locality'])) $loc['locality']=$_POST['locality'];
 		else $loc['locality']='';
-		//echo json_encode($loc);
 		
 		$location_id = $this->post_model->insert_location($loc);
 		
 		$loc['id']=$location_id;
-		//echo json_encode($loc);
 		
 		$post=array();
 		
+		///////////////////////////////////////////////////////////////////////////////////
+		//								OLD CODE										///
+		///////////////////////////////////////////////////////////////////////////////////
+		
 		/**
-			User user_id instead of user_name
+			User user_id instead of user_name  -- DONE?
 		*/
 		//get user_id
+		/*
 		if(isset($_POST['userName'])) $user_name = $_POST['userName'];
 		else $user_name='';
 		
 		$post['user_id']=$this->post_model->get_user_id($user_name);
+		*/
+		
+		///////////////////////////////////////////////////////////////////////////////////
+		//								END OF OLD CODE									///
+		///////////////////////////////////////////////////////////////////////////////////
+		
+		
+		///////////////////////////////////////////////////////////////////////////////////
+		//								NEW CODE										///
+		///////////////////////////////////////////////////////////////////////////////////
+		
+		$user_id = $_POST['userId'];
+		
+		///////////////////////////////////////////////////////////////////////////////////
+		//								END OF NEW CODE									///
+		///////////////////////////////////////////////////////////////////////////////////
 		
 		if(isset($_POST['category'])) $post['category']=$_POST['category'];
 		else $post['category']='';
 		
-		//check
 		if(isset($_POST['image']))$post['image']=base64_decode($_POST['image']);
 		else $post['image']='';
 		
@@ -195,10 +213,11 @@ class Home extends CI_Controller {
 		
 		$this->post_model->insert_post($post);
 		
+		/*
 		//Just for debug
 		$debug['post_inserted']="OK";
 		echo json_encode($debug);
-		
+		*/
 	}
 	
 	/**
