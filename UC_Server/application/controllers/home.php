@@ -21,6 +21,7 @@ class Home extends CI_Controller {
 		
 	}
 	
+	/*
 	public function login()	
 	{
 		
@@ -34,7 +35,9 @@ class Home extends CI_Controller {
 		
 		echo json_encode($jsonData);
 	}
+	*/
 	
+	/*
 	public function checkDuplicateUserName()
 	{
 		$user_name = trim($_POST['userName']);
@@ -43,7 +46,9 @@ class Home extends CI_Controller {
 		$jsonData['duplicate']=$this->post_model->is_duplicate($user_name);
 		echo json_encode($jsonData);
 	}
+	*/
 	
+	/*
 	public function register()
 	{
 		$data['user_name'] = trim($_POST['userName']);
@@ -52,6 +57,7 @@ class Home extends CI_Controller {
 		
 		$this->post_model->register($data);
 	}
+	*/
 	
 	public function test()
 	{
@@ -60,22 +66,23 @@ class Home extends CI_Controller {
 	
 	public function getAllPosts()
 	{
+		/**
+			Need to fix.
+			input should be <lat,lon> ; 
+			location_id must be determined from Server side; rest seems OK
+		*/
 		$location_id=$_GET['locationId'];
 		$result=$this->post_model->get_all_post($location_id);
 		
 		$jsonData['posts']=array();
 		
-		//$index=0;
 		foreach($result as $r)
 		{
-			/*
-			echo '<dt><strong>Technician Image:</strong></dt><dd>'
-			 . '<img src="data:image/jpeg;base64,' . base64_encode($r['image']) . '" width="290" height="290">'
-			 . '</dd>';
-			 */
 			
 			$post['postId']=$r['post_id'];
-			//$post['user_id']=$r['user_id'];
+			
+			///$post['user_id']=$r['user_id'];
+			
 			$post['category']=$r['category'];
 			$post['timeOfPost']=$r['time'];
 			$post['informalLocation']=$r['informal_location'];
@@ -85,21 +92,27 @@ class Home extends CI_Controller {
 			$temp=$this->post_model->get_location($r['actual_location_id']);
 			$post['formalLocation']=$temp['neighbourhood'];
 			
-			//$post['status']=$r['status'];
-			//$post['rating_change']=$r['rating_change'];
+			///$post['status']=$r['status'];
+			///$post['rating_change']=$r['rating_change'];
+			
 			$post['userName']=$r['user_name'];
 			$post['userRating']=$r['user_rating'];
 			
+			/**
+				Find upvote and downvote counts
+			*/
 			$temp = $this->post_model->get_vote_count($post['postId']);
 			$post['upCount']=$temp['upvotes'];
 			$post['downCount']=$temp['downvotes'];
 			
+			/**
+				Find user ids' who already have voted for the post
+			*/
 			$tmp = $this->post_model->get_voters($post['postId']);
 			$post['upVoters']=$tmp['up_voters'];
 			$post['downVoters']=$tmp['down_voters'];
 			
 			array_push($jsonData['posts'],$post);
-			//$index++;
 		}
 		
 		echo json_encode($jsonData);
@@ -107,6 +120,10 @@ class Home extends CI_Controller {
 	
 	public function submitVote()
 	{
+		/**
+			User user_id instead of user_name
+		*/
+		
 		$user_name = $_POST['userName'];
 		$user_id = $this->post_model->get_user_id($user_name);
 		
@@ -147,6 +164,9 @@ class Home extends CI_Controller {
 		
 		$post=array();
 		
+		/**
+			User user_id instead of user_name
+		*/
 		//get user_id
 		if(isset($_POST['userName'])) $user_name = $_POST['userName'];
 		else $user_name='';
@@ -181,11 +201,14 @@ class Home extends CI_Controller {
 		
 	}
 	
-	public function getDashboardGraphData($user_name)
+	/**
+		use user_id instead of user_name
+	*/
+	public function getDashboardGraphData($user_id)
 	{
 		//$user_name=$_GET['userName'];
 		
-		$result=$this->post_model->get_last_10_user_post($user_name);
+		$result=$this->post_model->get_last_10_user_post($user_id);
 		
 		$jsonData=array();
 		
@@ -205,28 +228,38 @@ class Home extends CI_Controller {
 		return $jsonData;
 	}
 	
+	/**
+		use user_id instead of user_name
+	*/
 	public function getUserPosts()
 	{
+		/*	old code(worked)
 		$user_name=$_GET['userName'];
 		$result=$this->post_model->get_user_posts($user_name);
+		*/
+		
+		//	new code
+		$user_id = $_GET['userId'];
+		//
+		
+		//TEST CODES
+			//$jsonData['userId']=$user_id;
+		//
+		
+		// new code
+		$result=$this->post_model->get_user_posts($user_id);
+		//
 		
 		$jsonData['posts']=array();
 		
-		//$index=0;
 		foreach($result as $r)
 		{
-			/*
-			echo '<dt><strong>Technician Image:</strong></dt><dd>'
-			 . '<img src="data:image/jpeg;base64,' . base64_encode($r['image']) . '" width="290" height="290">'
-			 . '</dd>';
-			 */
-			
-			//$post['user_id']=$r['user_id'];
+			///$post['user_id']=$r['user_id'];
 			$post['category']=$r['category'];
 			$post['timeStamp']=$r['time'];
 			$post['locationDescription']=$r['informal_location'];
 			$post['problemDescription']=$r['text'];
-			//$post['image']=base64_encode($r['image']);
+			///$post['image']=base64_encode($r['image']);
 			$temp=$this->post_model->get_location($r['actual_location_id']);
 			$post['exactLocation']=$temp['neighbourhood'];
 			$post['state']=$r['status'];
@@ -236,12 +269,11 @@ class Home extends CI_Controller {
 			$post['upVote']=$temp['upvotes'];
 			$post['downVote']=$temp['downvotes'];
 			array_push($jsonData['posts'],$post);
-			//$index++;
 		}
 		
-		$jsonData['userRating']=$this->post_model->get_current_rating($user_name);
+		$jsonData['userRating']=$this->post_model->get_current_rating($user_id);
 		
-		$jsonData['rating']=$this->getDashboardGraphData($user_name);
+		$jsonData['rating']=$this->getDashboardGraphData($user_id);
 		
 		echo json_encode($jsonData);
 	}
