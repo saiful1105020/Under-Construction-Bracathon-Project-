@@ -48,16 +48,18 @@ class Home extends CI_Controller {
 	}
 	*/
 	
-	/*
+	
 	public function register()
 	{
 		$data['user_name'] = trim($_POST['userName']);
+		$data['email'] = trim($_POST['email']);
 		$data['password'] = $_POST['password'];
 		$data['user_rating']=500;
 		
-		$this->post_model->register($data);
+		//$email='onix1@gmail.com';
+		$this->post_model->is_duplicate($data['email']);
 	}
-	*/
+	
 	
 	public function test()
 	{
@@ -213,11 +215,11 @@ class Home extends CI_Controller {
 		
 		$this->post_model->insert_post($post);
 		
-		/*
+		
 		//Just for debug
 		$debug['post_inserted']="OK";
 		echo json_encode($debug);
-		*/
+		
 	}
 	
 	/**
