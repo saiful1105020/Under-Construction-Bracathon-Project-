@@ -1,8 +1,11 @@
 package com.underconstruction.underconstruction;
 
+/**
+ * userId hardcoded in new Report object instantiation
+ */
+
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -12,11 +15,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,12 +28,10 @@ import android.widget.TextView;
 import com.underconstruction.underconstruction.LineGraphPackage.Line;
 import com.underconstruction.underconstruction.LineGraphPackage.LineGraph;
 import com.underconstruction.underconstruction.LineGraphPackage.LinePoint;
-import com.underconstruction.underconstruction.YourPosts;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class DashboardFragment extends Fragment {
     private ResultListAdaptor rla;
     private List<YourPosts> lst = new ArrayList<YourPosts>();
     private List<YourPosts> lst_online;
-    private String[] problemCatagory = {"Occupied Footpath", "Open Dustbin", "Exposed Manhole", "Dangerous Electric wire", "Waterlogging", "Risky Road Intersection", "No Street Light", "Crime Prone Area", "Broken Road", "Wrong Way Trafiic"};
+    private String[] problemCategory = {"Occupied Footpath", "Open Dustbin", "Exposed Manhole", "Dangerous Electric wire", "Waterlogging", "Risky Road Intersection", "No Street Light", "Crime Prone Area", "Broken Road", "Wrong Way Trafiic"};
     private OnFragmentInteractionListener mListener;
     private String userName = "Onix";
 
@@ -220,12 +219,12 @@ public class DashboardFragment extends Fragment {
         Log.d("List", "Construction passed");
         ArrayList<Report> ar = new ArrayList<Report>(getUserRecords(userName));
         Log.d("List", getUserRecords("Onix").toString());
-        for (int i = 0; i<ar.size(); i++)
-        {
-            lst.add(new YourPosts(ar.get(i)));
-        }
+//        for (int i = 0; i<ar.size(); i++)
+//        {
+//            lst.add(new YourPosts(ar.get(i)));
+//        }
         Log.d("List", "report converted to list");
-        lst.add(new YourPosts("24 Nov, 2015", "Azimpur", "7", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
+        lst.add(new YourPosts("2015-12-05 09:25:30", "Azimpur", "7", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
         //(new ArrayList<YourPosts>());
     }
 
@@ -284,7 +283,7 @@ public class DashboardFragment extends Fragment {
 
                 }
             });
-            btnUpdate.setOnClickListener(new View.OnClickListener(){
+            btnUpdate.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -293,8 +292,9 @@ public class DashboardFragment extends Fragment {
             });
             YourPosts post_item = lst.get(position);
 
-            txtTimeStamp.setText(post_item.getTimeStamp());
-            txtCatAtLoc.setText(problemCatagory[Integer.valueOf(post_item.getCategory())] + " at " + post_item.getExactLocation());
+            Log.d("Timestamp", post_item.getTimeStamp());
+            txtTimeStamp.setText(Utility.CurrentUser.parsePostTime(post_item.getTimeStamp()));
+            txtCatAtLoc.setText(problemCategory[Integer.valueOf(post_item.getCategory())] + " at " + post_item.getExactLocation());
             if (!post_item.getLocationDescription().isEmpty() && !post_item.getLocationDescription().equals("null"))
                 txtLocation_desc.setText("(" + post_item.getLocationDescription() + ")");
             else
@@ -424,7 +424,8 @@ public class DashboardFragment extends Fragment {
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
 
-            params.add(new Pair("userName", "Onix"));
+            params.add(new Pair("userId", 1));
+//            params.add(new Pair("userName", Utility.CurrentUser.getId()));
 
             // getting JSON string from URL
             jsonPosts = jParser.makeHttpRequest("/getuserposts", "GET", params);
@@ -482,7 +483,7 @@ public class DashboardFragment extends Fragment {
             String tREPORT_COLUMN_LATITUDE=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_LATITUDE));
             String tREPORT_COLUMN_LONGITUDE=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_LONGITUDE));
             //Log.d("userentries:",allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_NAME))+" "+allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_TIME)));
-            Report objectToBeSent=new Report(tREPORT_COLUMN_ID,tREPORT_COLUMN_NAME,tREPORT_COLUMN_CATEGORY,tREPORT_COLUMN_IMAGE,tREPORT_COLUMN_TIME,tREPORT_COLUMN_INFORMALLOCATION,tREPORT_COLUMN_PROBDESCR,tREPORT_COLUMN_STREETNO,tREPORT_COLUMN_ROUTE,tREPORT_COLUMN_NEIGHBORHOOD,tREPORT_COLUMN_SUBLOCALITY,tREPORT_COLUMN_LOCALITY,tREPORT_COLUMN_LATITUDE,tREPORT_COLUMN_LONGITUDE);
+            Report objectToBeSent=new Report(tREPORT_COLUMN_ID,1,tREPORT_COLUMN_NAME,tREPORT_COLUMN_CATEGORY,tREPORT_COLUMN_IMAGE,tREPORT_COLUMN_TIME,tREPORT_COLUMN_INFORMALLOCATION,tREPORT_COLUMN_PROBDESCR,tREPORT_COLUMN_STREETNO,tREPORT_COLUMN_ROUTE,tREPORT_COLUMN_NEIGHBORHOOD,tREPORT_COLUMN_SUBLOCALITY,tREPORT_COLUMN_LOCALITY,tREPORT_COLUMN_LATITUDE,tREPORT_COLUMN_LONGITUDE);
             reportsToBeSent.add(objectToBeSent);
             Log.d("userentries:",objectToBeSent.toString());
 

@@ -17,6 +17,16 @@ public class Report implements Serializable{
     }
 
     private int id;
+    private int userId;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     private String userName;
 
     @Override
@@ -55,8 +65,9 @@ public class Report implements Serializable{
     private String latitude;
     private String longitude;
 
-    public Report(int id,String userName, String category, byte[] image, String time, String informalLocation, String problemDescription, String streetNo, String route, String neighborhood, String sublocality, String locality, String latitude, String longitude) {
+    public Report(int id,int userId, String userName, String category, byte[] image, String time, String informalLocation, String problemDescription, String streetNo, String route, String neighborhood, String sublocality, String locality, String latitude, String longitude) {
         this.id=id;
+        this.userId = userId;
         this.userName = userName;
         this.category = category;
         this.image = image;

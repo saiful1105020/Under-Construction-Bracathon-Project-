@@ -17,8 +17,10 @@ public class Utility {
 
     public static class CurrentUser{
 
-        private static int id=1, displayPage = 0;
-        private static String apiKey,username="Onix";
+        private static String userId = "1";
+        private static int id=Integer.valueOf(userId), displayPage = 0;
+        private static String ip, apiKey,username="@string/user_name";
+        public static boolean ipOK = false;
         private static boolean valid=false;
 
         public static void setUser(int i,String uName,String apikey){
@@ -27,6 +29,30 @@ public class Utility {
             apiKey=apikey;
             valid=true;
 
+        }
+
+        public static String getUsername() {
+            return username;
+        }
+
+        public static void setUsername(String username) {
+            CurrentUser.username = username;
+        }
+
+        public static String getUserId() {
+            return userId;
+        }
+
+        public static void setUserId(String userId) {
+            CurrentUser.userId = userId;
+        }
+
+        public static String getIp() {
+            return ip;
+        }
+
+        public static void setIp(String ip) {
+            CurrentUser.ip = ip;
         }
 
         public static void invalidate(){

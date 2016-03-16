@@ -2,6 +2,8 @@ package com.underconstruction.underconstruction;
 
 import android.util.Log;
 import android.util.Pair;
+import android.view.View;
+import android.widget.EditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,8 +45,10 @@ public class JSONParser {
     public JSONObject  makeHttpRequest(String urlParameter, String method,
                                        List<Pair> params) {
 
-        final String BASE_URL = "http://182.168.1.109" +
+        final String BASE_URL = "http://" + Utility.CurrentUser.getIp() +
                 "/uc_brac_git/uc_server/index.php/home";
+
+        Log.d("base url", BASE_URL);
         URL url;
 //        List<Pair> paramaters = new ArrayList<Pair>();
         // Making HTTP request
@@ -164,6 +168,11 @@ public class JSONParser {
         }
 
         // return JSON String
+
+        if(jObj != null) {
+            Utility.CurrentUser.ipOK = true;
+        }
+
         return jObj;
 
     }

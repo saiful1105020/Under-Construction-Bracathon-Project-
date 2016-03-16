@@ -192,12 +192,37 @@
             android:id="@+id/checkBox"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/ipLayout">
+
+        <EditText
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/ipText"
+            android:textSize="17dp"
+            android:hint="IP address?"
+            android:text="172.20.61.26" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="go"
+            android:onClick="onGoButtonClick" />
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:id="@+id/dataFragmentContainer"></LinearLayout>
+
+
+
 
 </LinearLayout>
 

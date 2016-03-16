@@ -1,5 +1,9 @@
 package com.underconstruction.underconstruction;
 
+/**
+ * userId hardcoded in new Report object instantiation
+ */
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -139,7 +143,7 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-        //Toast.makeText(this,"google map client",Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"google map client",Toast.LENGTH_LONG).show();
         mGoogleApiClient.connect();
     }
 
@@ -250,7 +254,7 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
             String tREPORT_COLUMN_LATITUDE=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_LATITUDE));
             String tREPORT_COLUMN_LONGITUDE=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_LONGITUDE));
             //Log.d("userentries:",allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_NAME))+" "+allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_TIME)));
-            Report objectToBeSent=new Report(tREPORT_COLUMN_ID,tREPORT_COLUMN_NAME,tREPORT_COLUMN_CATEGORY,tREPORT_COLUMN_IMAGE,tREPORT_COLUMN_TIME,tREPORT_COLUMN_INFORMALLOCATION,tREPORT_COLUMN_PROBDESCR,tREPORT_COLUMN_STREETNO,tREPORT_COLUMN_ROUTE,tREPORT_COLUMN_NEIGHBORHOOD,tREPORT_COLUMN_SUBLOCALITY,tREPORT_COLUMN_LOCALITY,tREPORT_COLUMN_LATITUDE,tREPORT_COLUMN_LONGITUDE);
+            Report objectToBeSent=new Report(tREPORT_COLUMN_ID, 1, tREPORT_COLUMN_NAME,tREPORT_COLUMN_CATEGORY,tREPORT_COLUMN_IMAGE,tREPORT_COLUMN_TIME,tREPORT_COLUMN_INFORMALLOCATION,tREPORT_COLUMN_PROBDESCR,tREPORT_COLUMN_STREETNO,tREPORT_COLUMN_ROUTE,tREPORT_COLUMN_NEIGHBORHOOD,tREPORT_COLUMN_SUBLOCALITY,tREPORT_COLUMN_LOCALITY,tREPORT_COLUMN_LATITUDE,tREPORT_COLUMN_LONGITUDE);
             reportsToBeSent.add(objectToBeSent);
             Log.d("userentries:",objectToBeSent.toString());
 
@@ -516,6 +520,7 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
             JSONParser jParser = new JSONParser();
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
+            params.add(new Pair("userId",reportToBeSent.getUserId()));
             params.add(new Pair("userName",reportToBeSent.getUserName()));
             params.add(new Pair("category",reportToBeSent.getCategory()));
             String encodedString = Base64.encodeToString(reportToBeSent.getImage(), 0);
@@ -606,15 +611,14 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
             locationAtrributes.add(locationPairs[i]);
         }
 
-        locationAtrributes.add("latitude:"+mLastLocation.getLatitude()+"");
+        locationAtrributes.add("latitude:" + mLastLocation.getLatitude() + "");
         locationAtrributes.add("longitude:" + mLastLocation.getLongitude());
-        locationAtrributes.add("category:"+rbSelected);
+        locationAtrributes.add("category:" + rbSelected);
         locationAtrributes.add("time:" + getCurrentTimestamp());
         String informalLocation=((EditText)findViewById(R.id.addInformalLocationEditText)).getText().toString();
         locationAtrributes.add("informalLocation:" + informalLocation);
         String informalDescription=((EditText)findViewById(R.id.addInformalDescEditText)).getText().toString();
         locationAtrributes.add("problemDescription:" + informalDescription);
-        locationAtrributes.add("userName:" + "Onix");
 
         imageByteArray=convertBitmapIntoByteArray(imageBitmap);
         //Log.d("byteArray", new String(imageByteArray));
@@ -622,7 +626,7 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
 
 
 
-        //Log.d("Formatted arraylist", locationAtrributes.toString());
+        Log.d("Formatted arraylist", locationAtrributes.toString());
         TextView locationTV=(TextView)findViewById(R.id.addReportLocationTextView);
         String resultToShow=new String(resultOutput);
 
@@ -689,6 +693,8 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
             }
             String encodedString = Base64.encodeToString(imageByteArray, 0);
             params.add(new Pair("image",encodedString));
+//            params.add(new Pair("userName:", Utility.CurrentUser.getUsername()));
+            params.add(new Pair("userId",Utility.CurrentUser.getUserId()));
             Log.d("image size", imageByteArray.length + "");
 
             // getting JSON string from URL
