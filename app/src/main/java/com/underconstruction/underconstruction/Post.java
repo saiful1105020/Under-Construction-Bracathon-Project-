@@ -188,9 +188,12 @@ public class Post {
         this.upCount = upCount;
     }
 
-    public boolean hasTheUserVoted(Voter voter, int voteType){
-        if(voteType>0) return upvotersId.contains(voter);
-        else return downvotersId.contains(voter);
+    public boolean hasTheUserUpvoted(Voter voter){
+        return upvotersId.contains(voter);
+    }
+
+    public boolean hasTheUserDownvoted(Voter voter){
+        return downvotersId.contains(voter);
     }
 
     public void addVoter(Voter voter, int voteType){

@@ -8,24 +8,32 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Home extends AppCompatActivity implements PostsSectionFragment.OnFragmentInteractionListener{
 
     public String postFragmentTag = "POST_FRAGMENT";
     public String dashboardFragmentTag = "DASHBOARD_FRAGMENT";
-
+    public static View homeview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
 //        addPostFragment();
         addPostFragment();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,6 +84,20 @@ public class Home extends AppCompatActivity implements PostsSectionFragment.OnFr
         }
     }
 
+    public void onGoButtonClick(View v) {
+        homeview = findViewById(R.id.ipText);
+        Utility.CurrentUser.setIp(((EditText) findViewById(R.id.ipText)).getText().toString());
+
+        Log.d("ip address", Utility.CurrentUser.getIp());
+
+        if(Utility.CurrentUser.getIp().isEmpty()) {
+            Toast.makeText(Home.this, "Please provide the IP address.", Toast.LENGTH_SHORT).show();
+        }
+
+        removeAddedFragment(null);
+        addPostFragment();
+    }
+
     public void onProfileButtonClick(View v){
         if(v.getId()==R.id.lblHomeProfile){
 //            ((TextView)findViewById(R.id.lblHomeProfile)).setTextColor(Color.parseColor("#A5DF00"));
@@ -95,6 +117,12 @@ public class Home extends AppCompatActivity implements PostsSectionFragment.OnFr
         if(v.getId()==R.id.lblHomeHelp){
             return;
         }
+    }
+
+    public static void removeIPEditText() {
+        LinearLayout ip = (LinearLayout)homeview.findViewById(R.id.ipLayout);
+        ip.setVisibility(View.INVISIBLE);
+        ip.setClickable(false);
     }
 
 

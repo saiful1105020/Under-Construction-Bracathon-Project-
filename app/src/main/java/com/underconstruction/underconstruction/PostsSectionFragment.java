@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +42,10 @@ public class PostsSectionFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    
+    private static final String GREY = "#c0bfac";
+    private static final String BLUE = "#16586E";
+    private static final String RED = "#D90D10";
 
     private ArrayList<Post> postArrayList = new ArrayList<Post>();
     private ListView customPostListView;
@@ -47,6 +54,8 @@ public class PostsSectionFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private View v;
 
     private OnFragmentInteractionListener mListener;
 
@@ -85,12 +94,16 @@ public class PostsSectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_posts_section, container, false);
+        v = inflater.inflate(R.layout.fragment_posts_section, container, false);
+        return v;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+//        populatePostList(new JSONObject());
+//        populatePostListView();
 
         new FetchHomePostsTask().execute();
 //        testHomePage();
@@ -137,6 +150,12 @@ public class PostsSectionFragment extends Fragment {
 
     private void populatePostList(JSONObject jsonPosts) {
 
+//        Post post1 = new Post(1, 0, "Kamalapur, Dhaka", convertDrawableIntoByteArray(R.drawable.dustbin_image), "Behind the Railstation", 1, "Very smelly dustbin out in the open. Very unhealthy", 1510, "2:20pm Dec 16", 5, "Onix", null);
+//        postArrayList.add(post1);
+//        Post post2 = new Post(2, -2, "Mohakhali, Dhaka", convertDrawableIntoByteArray(R.drawable.manhole_image), "Under flyover", 2, "Risky!", 1200, "12:10pm Dec 16", 6, "Saif", null);
+////        postArrayList.add(post2);
+//        Post post3 = new Post(3, 3, "Baridhara, Dhaka", convertDrawableIntoByteArray(R.drawable.wire_image), "Beside rail crossing", 3, "God knows when the place catches fire...", 550, "10:45am Dec 16", 0, "Wasif", null);
+//        postArrayList.add(post3);
         try {
             JSONArray postsJSONArray = jsonPosts.getJSONArray("posts");
             postArrayList.clear();
@@ -145,9 +164,10 @@ public class PostsSectionFragment extends Fragment {
 
             while(curIndex<N) {
                 JSONObject curObj = postsJSONArray.getJSONObject(curIndex++);
+                Log.d("jsonReturned", curObj.toString());
                 Post curPost = Post.createPost(curObj);
-                int upCount = curPost.getUpCount();
-                int downCount = curPost.getDownCount();
+//                int upCount = curPost.getUpCount();
+//                int downCount = curPost.getDownCount();
 
                 JSONArray upVotersJSONArray=curObj.getJSONArray("upVoters");
 
@@ -189,64 +209,65 @@ public class PostsSectionFragment extends Fragment {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-            View itemView=convertView;
-            if(itemView==null){
-                itemView=getActivity().getLayoutInflater().inflate(R.layout.home_post_item,parent,false);
+            View itemView = convertView;
+            if (itemView == null) {
+                itemView = getActivity().getLayoutInflater().inflate(R.layout.home_post_item, parent, false);
             }
 
             Voter curVoter = new Voter(Utility.CurrentUser.getId());
 
 
             //find the update to work with
-            Post currentPost= postArrayList.get(position);
+            Post currentPost = postArrayList.get(position);
             //fill the view
 
-            TextView problemType = (TextView)itemView.findViewById(R.id.lblPostProblemType);
+            TextView problemType = (TextView) itemView.findViewById(R.id.lblPostProblemType);
             problemType.setText(Utility.HazardTags.getHazardTags()[currentPost.getCategory()]);
 
-            TextView postTime = (TextView)itemView.findViewById(R.id.lblPostTime);
+            TextView postTime = (TextView) itemView.findViewById(R.id.lblPostTime);
 //            String timeOfPost = Utility.CurrentUser.parsePostTime(currentPost.getTimeOfPost());
             postTime.setText(Utility.CurrentUser.parsePostTime(currentPost.getTimeOfPost()));
+//            postTime.setText(currentPost.getTimeOfPost());
 
-            TextView formalLocation = (TextView)itemView.findViewById(R.id.lblPostProblemLocation);
+            TextView formalLocation = (TextView) itemView.findViewById(R.id.lblPostProblemLocation);
             formalLocation.setText(currentPost.getFormalLocation());
 
-            TextView informalLocation = (TextView)itemView.findViewById(R.id.lblPostProblemInformalLocation);
+            TextView informalLocation = (TextView) itemView.findViewById(R.id.lblPostProblemInformalLocation);
             informalLocation.setText(currentPost.getInformalLocation());
 
-            TextView problemDescription = (TextView)itemView.findViewById(R.id.lblPostProblemDescription);
+            TextView problemDescription = (TextView) itemView.findViewById(R.id.lblPostProblemDescription);
             problemDescription.setText(currentPost.getProblemDescription());
 
-            TextView posterName = (TextView)itemView.findViewById(R.id.lblPostUsername);
+            TextView posterName = (TextView) itemView.findViewById(R.id.lblPostUsername);
             posterName.setText(currentPost.getUserName());
 
-            TextView posterRating = (TextView)itemView.findViewById(R.id.lblPostUserRating);
-            posterRating.setText(currentPost.getUserRating()+"");
+            TextView posterRating = (TextView) itemView.findViewById(R.id.lblPostUserRating);
+            posterRating.setText(currentPost.getUserRating() + "");
 
-            final TextView totalVote = (TextView)itemView.findViewById(R.id.lblPostTotalVote);
+            final TextView totalVote = (TextView) itemView.findViewById(R.id.lblPostTotalVote);
 
             showTotalVote(currentPost, totalVote);
 
             final ImageView voteUpView = (ImageView) itemView.findViewById(R.id.imgPostUp);
             final ImageView voteDownView = (ImageView) itemView.findViewById(R.id.imgPostDown);
 
-            checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, 1, voteUpView, voteDownView);
-            checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, -1, voteUpView, voteDownView);
+            checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, voteUpView, voteDownView);
+            checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, voteUpView, voteDownView);
 
             voteUpView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (v.getId() == R.id.imgPostUp) {
-                        handleVoteView(position, voteUpView, voteDownView, totalVote, 1);
+                        handleUpvoteView(position, voteUpView, voteDownView, totalVote);
                     }
                 }
             });
 
-            voteDownView.setOnClickListener(new View.OnClickListener(){
+            voteDownView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (v.getId() == R.id.imgPostDown) {
-                        handleVoteView(position, voteUpView, voteDownView, totalVote, -1);
+                        handleDownvoteView(position, voteUpView, voteDownView, totalVote);
                     }
                 }
             });
@@ -259,6 +280,19 @@ public class PostsSectionFragment extends Fragment {
             return itemView;
         }
     }
+
+
+    private byte[] convertDrawableIntoByteArray(int id){
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), id);
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+        byte[] bArray = bos.toByteArray();
+        return bArray;
+
+    }
+
 
     public void testHomePage() {
         postArrayList.clear();
@@ -291,86 +325,134 @@ public class PostsSectionFragment extends Fragment {
     }
 
 
-    private void checkIfAlreadyVotedAndChangeColorAccordingly(Voter curVoter, Post curPost, int voteType, ImageView voteUpView, ImageView voteDownView) {
+    private void checkIfAlreadyVotedAndChangeColorAccordingly(Voter curVoter, Post curPost, ImageView voteUpView, ImageView voteDownView) {
 
         // Log.d("UpdateId-LikerId-LikeCount", curUpdate.getId() + "-" + curVoter.getLikerId() + "-" + curUpdate.getLikeCount());
 //            Log.d("");
-        if (curPost.hasTheUserVoted(curVoter, voteType)) {
+        if (curPost.hasTheUserUpvoted(curVoter)) {
 
             Log.d("Inside likeButton Color", "Yes");
-            if(voteType>0) {                                                   //upvoted before, so change upView colour
-                Log.d("Inside voteup Color", "Yes");
-                voteUpView.setColorFilter(Color.parseColor("#16586E"));
-                voteDownView.setColorFilter(Color.parseColor("#c0bfac"));
+            Log.d("Inside voteup Color", "Yes. User has voted up!");
+//                voteUpView.setColorFilter(Color.parseColor(BLUE));
+            voteUpView.setColorFilter(Color.parseColor(BLUE));
+            voteDownView.setColorFilter(Color.parseColor(GREY));
 //                voteDownView.setColorFilter(Color.parseColor("#000000"));
-            }
-            else {
-                Log.d("Inside votedown Color", "Yes");                            //downvoted before, so change downView colour
-                voteUpView.setColorFilter(Color.parseColor("#c0bfac"));
-//                voteDownView.setColorFilter(Color.parseColor("#ffbfac"));
-                voteDownView.setColorFilter(Color.parseColor("#D90D10"));
-            }
+        }
 
-        } else{                                                              //user hasn't voted before
+        else if(curPost.hasTheUserDownvoted(curVoter)) {
+            Log.d("Inside votedown Color", "Yes");                            //downvoted before, so change downView colour
+            voteUpView.setColorFilter(Color.parseColor(GREY));
+//                voteDownView.setColorFilter(Color.parseColor("#ffbfac"));
+            voteDownView.setColorFilter(Color.parseColor(RED));
+        }
+
+        else {                                                              //user hasn't voted before
             Log.d("Inside default Color", "No votes from before");
-            voteUpView.setColorFilter(Color.parseColor("#c0bfac"));
-            voteDownView.setColorFilter(Color.parseColor("#c0bfac"));
+            voteUpView.setColorFilter(Color.parseColor(GREY));
+            voteDownView.setColorFilter(Color.parseColor(GREY));
         }
     }
 
-    private void handleVoteView(int index, ImageView voteUpView, ImageView voteDownView, TextView totalVote, int voteType) {
-
+    private void handleUpvoteView(int index, ImageView voteUpView, ImageView voteDownView, TextView totalVote) {
         Voter curVoter = new Voter(Utility.CurrentUser.getId());
         Post curPost = postArrayList.get(index);
 
-        if(!curPost.hasTheUserVoted(curVoter, voteType)) {              // if user has not voted before...
-
-            if(voteType>0) {                                            // trying to upvote
-                if (curPost.hasTheUserVoted(curVoter, -1)) {             // if user has downvoted before
-                    curPost.removeVoter(curVoter, -1);                   // remove previous vote
-                    voteDownView.setColorFilter(Color.parseColor("#c0bfac"));   // set voteDownView to default colour
-                    curPost.addVoter(curVoter, 1);                                  // add new upvote
-                    voteUpView.setColorFilter(Color.parseColor("#16586E"));     // colour up voteUpView
-                    showTotalVote(curPost, totalVote);
-                    new SubmitVoteTask().execute(Utility.CurrentUser.getName(), "" + curPost.getPostId(), "1");
-                }
-
-                else if(curPost.hasTheUserVoted(curVoter, 1)) {             // user has upvoted before, yet trying to upvote
-                    //do nothing
-                }
-
-                else {                                                      // user has not ever voted this post
-                    curPost.addVoter(curVoter, 1);                                  // add new upvote
-                    voteUpView.setColorFilter(Color.parseColor("#16586E"));     // colour up voteUpView
-                    showTotalVote(curPost, totalVote);
-                    new SubmitVoteTask().execute(Utility.CurrentUser.getName(), "" + curPost.getPostId(), "1");
-                }
-            }
-
-            else {                                                       //trying to downvote
-                if (curPost.hasTheUserVoted(curVoter, 1)) {             // if user has upvoted before
-                    curPost.removeVoter(curVoter, 1);                   // remove previous vote
-                    voteDownView.setColorFilter(Color.parseColor("#D90D10"));   // colour up voteDownView
-                    curPost.addVoter(curVoter, -1);                                  // add new downvote
-                    voteUpView.setColorFilter(Color.parseColor("#c0bfac"));     // set voteUpView to default colour
-                    showTotalVote(curPost, totalVote);
-                    Log.d("totalVote", totalVote.getText().toString());
-                    new SubmitVoteTask().execute(Utility.CurrentUser.getName(), "" + curPost.getPostId(), "-1");
-                }
-
-                else if(curPost.hasTheUserVoted(curVoter, -1)) {             // user has downvoted before, yet trying to downvote
-                    //do nothing
-                }
-
-                else {                                                      // user has not ever voted this post
-                    curPost.addVoter(curVoter, -1);                                  // add new downvote
-                    voteUpView.setColorFilter(Color.parseColor("#D90D10"));     // colour up voteDownView
-                    showTotalVote(curPost, totalVote);
-                    new SubmitVoteTask().execute(Utility.CurrentUser.getName(), "" + curPost.getPostId(), "-1");
-                }
-            }
+        if(curPost.hasTheUserUpvoted(curVoter)) {           //if user has upvoted before... trying to upvote again
+            //do nothing
+        }
+        else if(curPost.hasTheUserDownvoted(curVoter)) {          // if user has downvoted before...
+            curPost.removeVoter(curVoter, -1);                   // remove previous vote
+            voteDownView.setColorFilter(Color.parseColor(GREY));   // set voteDownView to default colour
+            curPost.addVoter(curVoter, 1);                                  // add new upvote
+            voteUpView.setColorFilter(Color.parseColor(BLUE));     // colour up voteUpView
+            showTotalVote(curPost, totalVote);
+            new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "1");
+        }
+        else {                                                              // if user has not voted before...
+            curPost.addVoter(curVoter, 1);                                  // add new upvote
+            voteUpView.setColorFilter(Color.parseColor(BLUE));              // colour up voteUpView
+            showTotalVote(curPost, totalVote);
+            new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "1");
         }
     }
+
+    private void handleDownvoteView(int index, ImageView voteUpView, ImageView voteDownView, TextView totalVote) {
+        Voter curVoter = new Voter(Utility.CurrentUser.getId());
+        Post curPost = postArrayList.get(index);
+
+        if(curPost.hasTheUserDownvoted(curVoter)) {           //if user has downvoted before... trying to downvote again
+            //do nothing
+        }
+        else if(curPost.hasTheUserUpvoted(curVoter)) {          // if user has upvoted before...
+            curPost.removeVoter(curVoter, 1);                   // remove previous vote
+            voteDownView.setColorFilter(Color.parseColor(RED));   // colour up voteDownView
+            curPost.addVoter(curVoter, -1);                                  // add new downvote
+            voteUpView.setColorFilter(Color.parseColor(GREY));     // set voteUpView to default colour
+            showTotalVote(curPost, totalVote);
+            Log.d("totalVote", totalVote.getText().toString());
+            new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "-1");
+        }
+        else {                                                              // if user has not voted before...
+            curPost.addVoter(curVoter, -1);                                  // add new downvote
+            voteUpView.setColorFilter(Color.parseColor(RED));                // colour up voteDownView
+            showTotalVote(curPost, totalVote);
+            new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "-1");
+        }
+    }
+
+//    private void handleVoteView(int index, ImageView voteUpView, ImageView voteDownView, TextView totalVote, int voteType) {
+//
+//        Voter curVoter = new Voter(Utility.CurrentUser.getId());
+//        Post curPost = postArrayList.get(index);
+//
+//        if(curPost.hasTheUserUpvoted(curVoter)) {              // if user has upvoted before...
+//
+//            if(voteType>0) {                                            // trying to upvote again
+//                if (curPost.hasTheUserDownvoted(curVoter)) {             // if user has downvoted before
+//                    curPost.removeVoter(curVoter, -1);                   // remove previous vote
+//                    voteDownView.setColorFilter(Color.parseColor(GREY));   // set voteDownView to default colour
+//                    curPost.addVoter(curVoter, 1);                                  // add new upvote
+//                    voteUpView.setColorFilter(Color.parseColor(BLUE));     // colour up voteUpView
+//                    showTotalVote(curPost, totalVote);
+//                    new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "1");
+//                }
+//
+//                else if(curPost.hasTheUserUpvoted(curVoter)) {             // user has upvoted before, yet trying to upvote
+//                    //do nothing
+//                }
+//
+//                else {                                                      // user has not ever voted this post
+//                    curPost.addVoter(curVoter, 1);                                  // add new upvote
+//                    voteUpView.setColorFilter(Color.parseColor(BLUE));     // colour up voteUpView
+//                    showTotalVote(curPost, totalVote);
+//                    new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "1");
+//                }
+//            }
+//
+//            else {                                                       //trying to downvote
+//                if (curPost.hasTheUserUpvoted(curVoter)) {             // if user has upvoted before
+//                    curPost.removeVoter(curVoter, 1);                   // remove previous vote
+//                    voteDownView.setColorFilter(Color.parseColor(RED));   // colour up voteDownView
+//                    curPost.addVoter(curVoter, -1);                                  // add new downvote
+//                    voteUpView.setColorFilter(Color.parseColor(GREY));     // set voteUpView to default colour
+//                    showTotalVote(curPost, totalVote);
+//                    Log.d("totalVote", totalVote.getText().toString());
+//                    new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "-1");
+//                }
+//
+//                else if(curPost.hasTheUserDownvoted(curVoter)) {             // user has downvoted before, yet trying to downvote
+//                    //do nothing
+//                }
+//
+//                else {                                                      // user has not ever voted this post
+//                    curPost.addVoter(curVoter, -1);                                  // add new downvote
+//                    voteUpView.setColorFilter(Color.parseColor(RED));     // colour up voteDownView
+//                    showTotalVote(curPost, totalVote);
+//                    new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "-1");
+//                }
+//            }
+//        }
+//    }
 
     class SubmitVoteTask extends AsyncTask<String, Void, String> {
 
@@ -388,7 +470,7 @@ public class PostsSectionFragment extends Fragment {
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
 
-            params.add(new Pair("userName", args[0]));
+            params.add(new Pair("userId", args[0]));
             params.add(new Pair("postId", args[1]));
             params.add(new Pair("voteType", args[2]));
 
@@ -431,7 +513,7 @@ public class PostsSectionFragment extends Fragment {
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
 
-            params.add(new Pair("locationId", 12));
+            params.add(new Pair("locationId", 12));         //need to send lat and long
 
             // getting JSON string from URL
             jsonPosts = jParser.makeHttpRequest("/getallposts", "GET", params);
@@ -451,6 +533,7 @@ public class PostsSectionFragment extends Fragment {
                 Log.d("Connection Error", "Probably couldn't connect to the internet");
                 return;
             }
+//            Home.removeIPEditText();
 
             //jsonUpdatesField=jsonPosts;
             populatePostList(jsonPosts);
@@ -458,6 +541,7 @@ public class PostsSectionFragment extends Fragment {
 
 
         }
+//        private static ip ()
     }
 
 }
