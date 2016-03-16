@@ -56,8 +56,7 @@ class Admin_model extends CI_Model
 		*/
 		else if($search_key['location']==="ANY" && $search_key['category']==="ANY" && $search_key['status']==="ANY")
 		{
-			$sql='SELECT * FROM post where CURRENT_TIMESTAMP < time + INTERVAL ? DAY ORDER BY time DESC 
-				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
+			$sql='SELECT * FROM post where CURRENT_TIMESTAMP < time + INTERVAL ? DAY ORDER BY time DESC';
 			$query = $this->db->query($sql,array($search_key['duration']))->result_array();
 			return $query;
 		}

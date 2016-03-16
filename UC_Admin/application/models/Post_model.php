@@ -13,6 +13,17 @@ class Post_model extends CI_Model
 		return $query;
 	}
 	
+	/**
+		Return : most recent date of verification of a user's post.
+		If not found : Return 01/01/2000 (just a dummy date to maintain the data type
+	*/
+	public function get_last_ver_date($user_id)
+	{
+		$sql='SELECT `time` FROM `post` WHERE `user_id`=? and `status` in (1,3) ORDER BY time DESC LIMIT 1';
+		$query=$this->db->query($sql,$user_id)->row_array();
+		return $query['time'];
+	}
+	
 	public function get_last_10_user_post($user_name)
 	{
 		//$sql='select p.time,p.rating_change from post p, user u where u.user_name = ? and p.user_id=u.user_id order by p.time';
@@ -107,7 +118,7 @@ class Post_model extends CI_Model
 		$query=$this->db->query($sql,array($status,$post_id));
 	}
 	
-	public function update_rating_change($post_id,$change)
+	public function update_rating_change($post_id,$change,$action)
 	{
 		$sql='UPDATE `post` SET `rating_change`=? WHERE post_id = ?';
 		$query=$this->db->query($sql,array($change,$post_id));
@@ -123,7 +134,15 @@ class Post_model extends CI_Model
 		$query=$this->db->query($sql,array($user_id))->row_array();
 		$current_rating = $query['user_rating'];
 		
-		$current_rating+=$change;
+		if($action!=3)
+		{
+			$current_rating+=$change;
+		}
+		else
+		{
+			$current_rating+=5;
+		}
+		
 		
 		//update rating
 		$sql='UPDATE user SET user_rating = ? WHERE user_id = ? ';
@@ -170,6 +189,60 @@ class Post_model extends CI_Model
 			$result=$query->row_array();
 			return $result['location_id'];
 		}
+	}
+	
+	public function get_poster_id($post_id)
+	{
+		$sql = 'SELECT `user_id` FROM `post` WHERE post_id = ?';
+		$query = $this->db->query($sql,array($post_id))->row_array();
+		return $query['user_id'];
+	}
+	public function get_post_time($post_id)
+	{
+		$sql = 'SELECT `time` FROM `post` WHERE post_id = ?';
+		$query = $this->db->query($sql,array($post_id))->row_array();
+		return $query['time'];
+	}
+	/*
+	public function inc_count($user_id)
+	{
+		$sql = 'UPDATE USER SET con_reject = con_reject+1 WHERE user_id=?';
+		$query =  $this->db->query($sql,array($user_id));
+	}
+	public function update_count($user_id,$post_date,$current_date)
+	{
+		$sql = 'SELECT `status` FROM `post` WHERE user_id = ? and `time` BETWEEN ? and ? ORDER BY `time` DESC ';
+		$query = $this->db->query($sql,array($user_id,$post_date,$current_date))->result_array();
+		
+		$status = array();
+		foreach($query as $q)
+		{
+			array_push($status,$q['status']);
+		}
+		
+		$count=0;
+		foreach($status as $s)
+		{
+			if($s==1 || $s==3) break;
+			else if($s==2) $count++;
+		}
+		
+		$sql = 'UPDATE USER SET con_reject = ? WHERE user_id=?';
+		$query =  $this->db->query($sql,array($count,$user_id));
+	}
+	*/
+	
+	public function get_user_rating($user_id)
+	{
+		$sql = 'SELECT user_rating FROM user WHERE user_id = ?';
+		$query = $this->db->query($sql,array($user_id))->row_array();
+		return $query['user_rating'];
+	}
+	
+	public function suspend_user($user_id)
+	{
+		$sql = 'UPDATE user SET is_suspended=1 WHERE user_id=?';
+		$query = $this->db->query($sql,array($user_id));
 	}
 }
 ?>

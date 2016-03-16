@@ -37,18 +37,10 @@ class Home extends CI_Controller {
 	}
 	*/
 	
-	/*
-	public function checkDuplicateUserName()
-	{
-		$user_name = trim($_POST['userName']);
-		
-		$jsonData=array();
-		$jsonData['duplicate']=$this->post_model->is_duplicate($user_name);
-		echo json_encode($jsonData);
-	}
-	*/
 	
-	
+	//
+	//working ...
+	//
 	public function register()
 	{
 		$data['user_name'] = trim($_POST['userName']);
@@ -82,9 +74,6 @@ class Home extends CI_Controller {
 		{
 			
 			$post['postId']=$r['post_id'];
-			
-			///$post['user_id']=$r['user_id'];
-			
 			$post['category']=$r['category'];
 			$post['timeOfPost']=$r['time'];
 			$post['informalLocation']=$r['informal_location'];
@@ -122,12 +111,7 @@ class Home extends CI_Controller {
 	
 	public function submitVote()
 	{
-		/**
-			User user_id instead of user_name
-		*/
-		
-		$user_name = $_POST['userName'];
-		$user_id = $this->post_model->get_user_id($user_name);
+		$user_id = $_POST['userId'];
 		
 		$post_id = $_POST['postId'];
 		$vote_type = $_POST['voteType'];
@@ -164,36 +148,8 @@ class Home extends CI_Controller {
 		
 		$post=array();
 		
-		///////////////////////////////////////////////////////////////////////////////////
-		//								OLD CODE										///
-		///////////////////////////////////////////////////////////////////////////////////
-		
-		/**
-			User user_id instead of user_name  -- DONE?
-		*/
-		//get user_id
-		/*
-		if(isset($_POST['userName'])) $user_name = $_POST['userName'];
-		else $user_name='';
-		
-		$post['user_id']=$this->post_model->get_user_id($user_name);
-		*/
-		
-		///////////////////////////////////////////////////////////////////////////////////
-		//								END OF OLD CODE									///
-		///////////////////////////////////////////////////////////////////////////////////
-		
-		
-		///////////////////////////////////////////////////////////////////////////////////
-		//								NEW CODE										///
-		///////////////////////////////////////////////////////////////////////////////////
-		
-		$user_id = $_POST['userId'];
-		
-		///////////////////////////////////////////////////////////////////////////////////
-		//								END OF NEW CODE									///
-		///////////////////////////////////////////////////////////////////////////////////
-		
+		$post['user_id'] = $_POST['userId'];
+
 		if(isset($_POST['category'])) $post['category']=$_POST['category'];
 		else $post['category']='';
 		
@@ -216,19 +172,14 @@ class Home extends CI_Controller {
 		$this->post_model->insert_post($post);
 		
 		
-		//Just for debug
+		//Just for debug, no need to comment out. Let it stay as it is
 		$debug['post_inserted']="OK";
 		echo json_encode($debug);
 		
 	}
-	
-	/**
-		use user_id instead of user_name
-	*/
+
 	public function getDashboardGraphData($user_id)
 	{
-		//$user_name=$_GET['userName'];
-		
 		$result=$this->post_model->get_last_10_user_post($user_id);
 		
 		$jsonData=array();
@@ -249,33 +200,15 @@ class Home extends CI_Controller {
 		return $jsonData;
 	}
 	
-	/**
-		use user_id instead of user_name
-	*/
 	public function getUserPosts()
 	{
-		/*	old code(worked)
-		$user_name=$_GET['userName'];
-		$result=$this->post_model->get_user_posts($user_name);
-		*/
-		
-		//	new code
 		$user_id = $_GET['userId'];
-		//
-		
-		//TEST CODES
-			//$jsonData['userId']=$user_id;
-		//
-		
-		// new code
 		$result=$this->post_model->get_user_posts($user_id);
-		//
 		
 		$jsonData['posts']=array();
 		
 		foreach($result as $r)
 		{
-			///$post['user_id']=$r['user_id'];
 			$post['category']=$r['category'];
 			$post['timeStamp']=$r['time'];
 			$post['locationDescription']=$r['informal_location'];
