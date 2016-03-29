@@ -137,13 +137,13 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
     }
 
 
-    protected synchronized void buildGoogleApiClient() {
+    public synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-        Toast.makeText(this,"google map client",Toast.LENGTH_LONG).show();
+        //Toast.makeText(this,"google map client",Toast.LENGTH_LONG).show();
         mGoogleApiClient.connect();
     }
 
@@ -195,12 +195,21 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
         if(v.getId()==R.id.addReportNewReportButton){
             Toast.makeText(this,"RB selected "+rbSelected,Toast.LENGTH_LONG).show();
             whichButtonIsPressed=calledFromInsertReport;
-            buildGoogleApiClient();
+            new FetchLocation().execute();
+//            Intent intent = new Intent(AddReport.this, Home.class);
+
+            Intent intent = new Intent(AddReport.this, TabbedHome.class);
+            startActivity(intent);
+//            buildGoogleApiClient();
             //handleNewReport()
         }
         else if(v.getId()==R.id.addReportSaveReportButton){
             whichButtonIsPressed=calledFromSaveReport;
-            buildGoogleApiClient();
+            new FetchLocation().execute();
+//            Intent intent = new Intent(AddReport.this, Home.class);
+            Intent intent = new Intent(AddReport.this, TabbedHome.class);
+            startActivity(intent);
+//            buildGoogleApiClient();
             //saveTheReportInDatabase();
 
         }
@@ -213,8 +222,9 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
         //mydatabase.execSQL("INSERT INTO TutorialsPoint VALUES('admin','admin');");
 
         DBHelper help=new DBHelper(this);
-        Log.d("before insertion : ",help.getAllRecords().toString());
+        Log.d("before insertion : ", help.getAllRecords().toString());
         Toast.makeText(this, "before: " + help.getAllRecords().toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"in internal database before saving" + locationAtrributes.toString(),Toast.LENGTH_LONG).show();
         help.insertRecord(locationAtrributes, arr);
         Log.d("after insertion : ", help.getAllRecords().toString());
         Toast.makeText(this, "before: " + help.getAllRecords().toString(), Toast.LENGTH_LONG).show();
@@ -633,11 +643,12 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
         resultToShow=resultToShow.replaceAll("~",",");
 
         locationTV.setText(resultToShow);
+        Log.d("resultToShow", resultToShow);
+
         if(whichButtonIsPressed==calledFromInsertReport){
             new AddReportTask().execute();
         }
         else{
-
             saveTheReportInDatabase(imageByteArray);
         }
 
@@ -701,13 +712,6 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
             jsonAddReport = jParser.makeHttpRequest("/insertPost", "POST", params);
 //            jsonLocations = jParser.makeHttpRequest("/locations", "GET", null);
 
-            try {
-//                Boolean error = jsonLogin.getBoolean("error");
-//                errorMessage = jsonLogin.getString("message");
-//                if(error)loginError=true;
-            }catch(Exception e){
-                e.printStackTrace();
-            }
 
             // Check your log cat for JSON reponse
 //            Log.e("All info: ", jsonLogin.toString());
@@ -725,7 +729,37 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
                 Log.d("report_database"," null");
             else Log.d("report_database",jsonAddReport.toString());
 
+
+
         }
     }
-//    }
+
+    class FetchLocation extends AsyncTask<Report, Void, String> {
+
+        private JSONObject jsonAddReport;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(Report... args) {
+
+            buildGoogleApiClient();
+            return "";
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         **/
+        protected void onPostExecute (String a){
+
+
+            if(jsonAddReport==null)
+                Log.d("report_database"," null");
+            else Log.d("report_database",jsonAddReport.toString());
+
+        }
+    }
 }

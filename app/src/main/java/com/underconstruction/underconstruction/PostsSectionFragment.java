@@ -4,11 +4,12 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Location;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -19,6 +20,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +43,7 @@ import java.util.List;
  * Use the {@link PostsSectionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PostsSectionFragment extends Fragment {
+public class PostsSectionFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -58,6 +64,9 @@ public class PostsSectionFragment extends Fragment {
     private View v;
 
     private OnFragmentInteractionListener mListener;
+
+    GoogleApiClient mGoogleApiClient;
+    Location mLastLocation;
 
     /**
      * Use this factory method to create a new instance of
@@ -104,8 +113,7 @@ public class PostsSectionFragment extends Fragment {
 
 //        populatePostList(new JSONObject());
 //        populatePostListView();
-
-        new FetchHomePostsTask().execute();
+        getLatLong();
 //        testHomePage();
     }
 
@@ -131,6 +139,11 @@ public class PostsSectionFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 
     /**
@@ -513,8 +526,9 @@ public class PostsSectionFragment extends Fragment {
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
 
-            params.add(new Pair("locationId", 12));         //need to send lat and long
-
+//            params.add(new Pair("locationId", 12));         //need to send lat and long
+            params.add(new Pair("lat", mLastLocation.getLatitude()));
+            params.add(new Pair("lon", mLastLocation.getLongitude()));
             // getting JSON string from URL
             jsonPosts = jParser.makeHttpRequest("/getallposts", "GET", params);
 
@@ -542,6 +556,40 @@ public class PostsSectionFragment extends Fragment {
 
         }
 //        private static ip ()
+    }
+
+    public synchronized void getLatLong() {
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        //Toast.makeText(this,"google map client",Toast.LENGTH_LONG).show();
+        mGoogleApiClient.connect();
+    }
+
+    public void onConnected(Bundle connectionHint) {
+        //Log.d("google map client", "returned");
+
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if(mLastLocation==null){
+            Toast.makeText(getActivity(), "Google client has returned null", Toast.LENGTH_LONG).show();
+        }
+        else if (mLastLocation != null) {
+            // Toast.makeText(this,"Google client has returned",Toast.LENGTH_LONG).show();
+            // mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+            //mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+            Toast.makeText(getActivity(),"Google client has returned not null",Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(),mLastLocation.getLatitude()+" "+mLastLocation.getLongitude(),Toast.LENGTH_LONG).show();
+            new FetchHomePostsTask().execute();
+        }
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
     }
 
 }

@@ -4,7 +4,7 @@ package com.underconstruction.underconstruction;
  * userId hardcoded in new Report object instantiation
  */
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -16,6 +16,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -23,6 +24,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.underconstruction.underconstruction.LineGraphPackage.Line;
@@ -45,6 +47,9 @@ public class DashboardFragment extends Fragment {
     private String[] problemCategory = {"Occupied Footpath", "Open Dustbin", "Exposed Manhole", "Dangerous Electric wire", "Waterlogging", "Risky Road Intersection", "No Street Light", "Crime Prone Area", "Broken Road", "Wrong Way Trafiic"};
     private OnFragmentInteractionListener mListener;
     private String userName = "Onix";
+    ScrollView parentScroll, childScroll;
+    ListView myPosts;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,51 +57,6 @@ public class DashboardFragment extends Fragment {
 //        setContentView(R.layout.activity_dashboard);
 
         Line l = new Line();
-//        LinePoint p = new LinePoint();
-//        p.setX(1);
-//        p.setY(5);
-//        p.setLabel_string("23 December, 2014");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(2);
-//        p.setY(8);
-//        p.setLabel_string("1 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(3);
-//        p.setY(4);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(4);
-//        p.setY(20);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(5);
-//        p.setY(7);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(6);
-//        p.setY(45);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(7);
-//        p.setY(25);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(8);
-//        p.setY(15);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(9);
-//        p.setY(48);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
 
         l.setColor(Color.parseColor("#FFBB33"));
 
@@ -120,11 +80,41 @@ public class DashboardFragment extends Fragment {
 //        lv.setItemsCanFocus(false);
 
 //        rla.notifyDataSetChanged();
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_dashboard, container, false);
+//        parentScroll=(ScrollView)view.findViewById(R.id.parent_scroll);
+//        childScroll=(ScrollView)view.findViewById(R.id.child_scroll);
+//        myPosts=(ListView)view.findViewById(R.id.lvwDashboard);
+//
+//        parentScroll.setOnTouchListener(new View.OnTouchListener() {
+//            public boolean onTouch(View v, MotionEvent event) {
+//                Log.d("touch", "parent touch");
+//                myPosts.getParent().requestDisallowInterceptTouchEvent(false);
+//                return false;
+//            }
+//        });
+
+//        childScroll.setOnTouchListener(new View.OnTouchListener() {
+//            public boolean onTouch(View v, MotionEvent event) {
+//                Log.d("touch", "child touch");
+//                v.getParent().requestDisallowInterceptTouchEvent(false);
+//                return false;
+//            }
+//        });
+
+//        myPosts.setOnTouchListener(new View.onTouchListener() {
+//            public boolean onTouch(View v, MotionEvent event) {
+//                Log.d("touch", "list touch");
+//                v.getParent().requestDisallowInterceptTouchEvent(false);
+//                return false;
+//            }
+//        });
+
         return view;
     }
 
@@ -276,6 +266,7 @@ public class DashboardFragment extends Fragment {
             Button btnDelete = (Button)convertView.findViewById(R.id.btnDashboardDelete);
             LinearLayout ratingLayout = (LinearLayout)convertView.findViewById(R.id.layoutRating);
             ImageView imgStatus = (ImageView) convertView.findViewById(R.id.imgStatus);
+
             btnDelete.setOnClickListener(new View.OnClickListener(){
 
                 @Override

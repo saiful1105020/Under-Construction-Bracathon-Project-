@@ -45,7 +45,10 @@ public class JSONParser {
     public JSONObject  makeHttpRequest(String urlParameter, String method,
                                        List<Pair> params) {
 
-        final String BASE_URL = "http://" + Utility.CurrentUser.getIp() +
+//        final String BASE_URL = "http://" + Utility.CurrentUser.getIp() +
+//                "/uc_brac_git/uc_server/index.php/home";
+
+        final String BASE_URL = "http://" + "172.20.61.56" +
                 "/uc_brac_git/uc_server/index.php/home";
 
         Log.d("base url", BASE_URL);
@@ -143,28 +146,28 @@ public class JSONParser {
 //                e1.printStackTrace();
 //            }
 
-            BufferedWriter writer = null;
-            try
-            {
-                writer = new BufferedWriter( new FileWriter( "a.txt"));
-                writer.write( jsonString);
-
-            }
-            catch ( IOException g)
-            {
-                g.printStackTrace();
-            }
-            finally
-            {
-                try
-                {
-                    if ( writer != null)
-                        writer.close();
-                }
-                catch ( IOException f) {
-                    f.printStackTrace();
-                }
-            }
+//            BufferedWriter writer = null;
+//            try
+//            {
+//                writer = new BufferedWriter( new FileWriter( "a.txt"));
+//                writer.write( jsonString);
+//
+//            }
+//            catch ( IOException g)
+//            {
+//                g.printStackTrace();
+//            }
+//            finally
+//            {
+//                try
+//                {
+//                    if ( writer != null)
+//                        writer.close();
+//                }
+//                catch ( IOException f) {
+//                    f.printStackTrace();
+//                }
+//            }
         }
 
         // return JSON String

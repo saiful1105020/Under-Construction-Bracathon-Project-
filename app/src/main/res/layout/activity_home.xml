@@ -204,7 +204,7 @@
             android:id="@+id/ipText"
             android:textSize="17dp"
             android:hint="IP address?"
-            android:text="172.20.61.26" />
+            android:text="172.20.62.84" />
 
         <Button
             android:layout_width="wrap_content"
