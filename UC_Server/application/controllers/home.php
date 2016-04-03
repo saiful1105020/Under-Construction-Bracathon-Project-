@@ -3,39 +3,45 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Home extends CI_Controller {
 	 
-	 public function __construct()		//DONE
-     {
+	public function __construct()		//DONE
+	{
           parent::__construct();
 		  
-		  $this->load->library('session');
-          $this->load->helper('form');
-          $this->load->helper('url');
-          $this->load->helper('html');
-		  $this->load->library('form_validation');
+		//$this->load->library('session');
+		$this->load->helper('form');
+		$this->load->helper('url');
+		$this->load->helper('html');
+		$this->load->library('form_validation');
 		  
-		  $this->load->model('post_model');
-     }
+		$this->load->model('post_model');
+	}
 	 
 	public function index()
 	{
 		
 	}
 	
-	/*
+	
+	public function is_verified()
+	{
+		
+	}
+	
 	public function login()	
 	{
 		
-		$user_name = $_GET['userName'];
+		$email = $_GET['email'];
 		$password = md5($_GET['password']);
 		
 		$jsonData = array();
 		
-		$jsonData['user_name']=$user_name;
-		$jsonData['user_id']=$this->post_model->get_loginInfo($user_name,$password);
-		
+		$data=$this->post_model->get_loginInfo($email,$password);
+		$jsonData['userName'] = $data['userName'];
+		$jsonData['userId'] = $data['userId'];
+		$jsonData['isVerified'] = $data['isVerified'];
 		echo json_encode($jsonData);
 	}
-	*/
+	
 	
 	
 	//
@@ -43,13 +49,54 @@ class Home extends CI_Controller {
 	//
 	public function register()
 	{
-		$data['user_name'] = trim($_POST['userName']);
-		$data['email'] = trim($_POST['email']);
-		$data['password'] = $_POST['password'];
-		$data['user_rating']=500;
+		$data['user_name'] = trim($_GET['userName']);
+		$data['email'] = trim($_GET['email']);
+		$data['password'] = md5($_GET['password']);
 		
-		//$email='onix1@gmail.com';
-		$this->post_model->is_duplicate($data['email']);
+		$json_data = array();
+		
+		$json_data['status'] = $this->post_model->is_duplicate($data['email']);
+		
+		
+		$data['user_rating']=500;
+		$data['is_verified']=0;
+		$data['is_suspended']=0;
+		
+		//GENERATE A VERIFICATION CODE AND SAVE IT TO DATABASE
+		//$random_hash = md5(uniqid(rand(), true));
+		$random_hash = substr(md5(uniqid(rand(), true)), 6, 6);
+		
+		$data['ver_code'] = $random_hash;
+		
+		
+		
+		//SAVE TO SERVER
+		$json_data['userId'] = $this->post_model->register($data);
+		echo json_encode($json_data);
+		
+		
+		//send_mail();
+		
+	}
+	
+	
+	
+	public function verify_registration()
+	{
+		$user_id = $_GET['userId'];
+		$ver_code_input = $_GET['verCode'];
+		$ver_code = $this->post_model->get_verification_code($user_id);
+		$json_data = array();
+		if($ver_code_input === $ver_code)
+		{
+			$json_data['status'] = 1;
+			$this->post_model->verify($user_id);
+		}
+		else $json_data['status']=0;
+		echo json_encode($json_data);
+		
+		//IF EQUALS, VERIFIED. INSERT INTO USER DATABASE; RETURN 1
+		//ELSE , RETURN 0
 	}
 	
 	
@@ -58,14 +105,34 @@ class Home extends CI_Controller {
 		$this->post_model->get_all_post(12);
 	}
 	
+	public function send_mail()
+	{
+		//$json_data=array();
+		//$text = phpinfo();
+		// the message
+		$msg = "This is a test";
+		//echo json_encode($text);
+
+		// use wordwrap() if lines are longer than 70 characters
+		//$msg = wordwrap($msg,70);
+
+		// send email
+		mail("saiful_buet2011@yahoo.com","PHP Test",$msg,"From: saiful.11722@gmail.com");
+		
+		//echo json_encode($text);
+	}
+	
 	public function getAllPosts()
 	{
 		/**
-			Need to fix.
-			input should be <lat,lon> ; 
-			location_id must be determined from Server side; rest seems OK
+			TEST
 		*/
-		$location_id=$_GET['locationId'];
+		
+		$lat = $_GET['lat'];
+		$lon = $_GET['lon'];
+		
+		$location_id=$this->post_model->get_location_id($lat,$lon);
+		
 		$result=$this->post_model->get_all_post($location_id);
 		
 		$jsonData['posts']=array();
@@ -200,6 +267,39 @@ class Home extends CI_Controller {
 		return $jsonData;
 	}
 	
+	public function getSuggestions()
+	{
+		if(isset($_POST['lat']))$lat=$_POST['lat'];
+		else $lat='';
+		
+		if(isset($_POST['lon']))$lon=$_POST['lon'];
+		else $lon='';
+	
+		if(isset($_POST['time']))$time=$_POST['time'];
+		else $time='';
+		
+		if(isset($_POST['cat']))$cat=$_POST['cat'];
+		else $cat='';
+		
+		$jsonData['posts'] = $this->post_model->get_suggestions($lat,$lon,$time,$cat);
+		
+		/*
+		foreach($result as $r)
+		{
+			$post['userName']=$r['userName'];
+			$post['cat']=$r['cat'];
+			$post['image'] = $r['img'];
+			array_push($jsonData['posts'],$post);
+		}
+		*/
+		
+		
+		
+		//$posts;
+		
+		echo json_encode($jsonData);
+	}
+	
 	public function getUserPosts()
 	{
 		$user_id = $_GET['userId'];
@@ -224,6 +324,17 @@ class Home extends CI_Controller {
 			$post['downVote']=$temp['downvotes'];
 			array_push($jsonData['posts'],$post);
 		}
+		
+		//$jsonData['userRating']=$this->post_model->get_current_rating($user_id);
+		
+		//$jsonData['rating']=$this->getDashboardGraphData($user_id);
+		
+		echo json_encode($jsonData);
+	}
+	
+	public function getUserRating()
+	{
+		$user_id = $_GET['userId'];
 		
 		$jsonData['userRating']=$this->post_model->get_current_rating($user_id);
 		
