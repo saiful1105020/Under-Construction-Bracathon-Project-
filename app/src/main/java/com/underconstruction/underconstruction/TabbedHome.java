@@ -1,5 +1,6 @@
 package com.underconstruction.underconstruction;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ import java.util.List;
 import com.underconstruction.underconstruction.PostsSectionFragment;
 import com.underconstruction.underconstruction.DashboardFragment;
 
-public class TabbedHome extends AppCompatActivity implements PostsSectionFragment.OnFragmentInteractionListener {
+public class TabbedHome extends AppCompatActivity implements PostsSectionFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener {
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -28,6 +30,9 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed_home);
+
+//        View view = new View(this);
+//        view.setScroll
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -65,9 +70,9 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new PostsSectionFragment(), "HOME");
+        adapter.addFragment(new HomeFragment(), "HOME");
+        adapter.addFragment(new PostsSectionFragment(), "FEED");
         adapter.addFragment(new DashboardFragment(), "PROFILE");
-//        adapter.addFragment(new ThreeFragment(), "THREE");
         viewPager.setAdapter(adapter);
     }
 
@@ -103,5 +108,10 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+    }
+
+    public void onReportButtonClick(View v){
+        Intent intent =new Intent(this, AddReport.class);
+        startActivity(intent);
     }
 }

@@ -46,19 +46,15 @@ public class DashboardFragment extends Fragment {
     private List<YourPosts> lst_online;
     private String[] problemCategory = {"Occupied Footpath", "Open Dustbin", "Exposed Manhole", "Dangerous Electric wire", "Waterlogging", "Risky Road Intersection", "No Street Light", "Crime Prone Area", "Broken Road", "Wrong Way Trafiic"};
     private OnFragmentInteractionListener mListener;
-    private String userName = "Onix";
+//    private String userName = "Onix";
     ScrollView parentScroll, childScroll;
     ListView myPosts;
-
+    JSONObject jsonPosts;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_dashboard);
-
-        Line l = new Line();
-
-        l.setColor(Color.parseColor("#FFBB33"));
 
 //        LineGraph li = (LineGraph)findViewById(R.id.graph);
 
@@ -87,33 +83,6 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_dashboard, container, false);
-//        parentScroll=(ScrollView)view.findViewById(R.id.parent_scroll);
-//        childScroll=(ScrollView)view.findViewById(R.id.child_scroll);
-//        myPosts=(ListView)view.findViewById(R.id.lvwDashboard);
-//
-//        parentScroll.setOnTouchListener(new View.OnTouchListener() {
-//            public boolean onTouch(View v, MotionEvent event) {
-//                Log.d("touch", "parent touch");
-//                myPosts.getParent().requestDisallowInterceptTouchEvent(false);
-//                return false;
-//            }
-//        });
-
-//        childScroll.setOnTouchListener(new View.OnTouchListener() {
-//            public boolean onTouch(View v, MotionEvent event) {
-//                Log.d("touch", "child touch");
-//                v.getParent().requestDisallowInterceptTouchEvent(false);
-//                return false;
-//            }
-//        });
-
-//        myPosts.setOnTouchListener(new View.onTouchListener() {
-//            public boolean onTouch(View v, MotionEvent event) {
-//                Log.d("touch", "list touch");
-//                v.getParent().requestDisallowInterceptTouchEvent(false);
-//                return false;
-//            }
-//        });
 
         return view;
     }
@@ -122,8 +91,7 @@ public class DashboardFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         new FetchDashboardTask().execute();
-        TextView lblGreeting = (TextView)getView().findViewById(R.id.lblDashboardHello);
-        lblGreeting.setText("Hello " + userName + "!");
+
 
     }
 
@@ -132,60 +100,9 @@ public class DashboardFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
-    private void populateRatingGraph(JSONObject jsonPosts) {
-        JSONArray ratingJSONArray = null;
-        try {
-            ratingJSONArray = jsonPosts.getJSONArray("rating");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        int curIndex=0, N=ratingJSONArray.length();
 
-        Line l = new Line();
-        int max=0, min=100000, rating=0;
 
-        while(curIndex<N) {
-            try{
-                JSONObject curObj = ratingJSONArray.getJSONObject(curIndex);
-                int ratingChange = curObj.getInt("ratingChange");
-                if (ratingChange >max) max = ratingChange;
-                if (ratingChange <min) min = ratingChange;
-                //rating += ratingChange;
-                //if(rating>max) max=rating;
-                //if(rating<min) min=rating;
-                LinePoint p = new LinePoint();
-                p.setX(curIndex);
-                p.setY(ratingChange);
-                p.setLabel_string(curObj.getString("time"));
-                l.addPoint(p);
-                curIndex++;
-            }catch(JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        l.setColor(Color.parseColor("#FFBB33"));
-
-        LineGraph li = (LineGraph)getView().findViewById(R.id.graph);
-
-        li.addLine(l);
-
-        li.setRangeY(min-2, max+2);
-        li.setLineToFill(0);
-    }
-
-    private void populateUserRating(JSONObject jsonPosts) {
-        try {
-            //JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("userRating");
-            int userR = jsonPosts.getInt("userRating");
-            TextView lblUsrt = (TextView)getView().findViewById(R.id.lblDashboardCurrentRating);
-            lblUsrt.setText("Your current rating is " + userR);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
     private void populatePostList(JSONObject jsonPosts) {
 
         try {
@@ -207,7 +124,7 @@ public class DashboardFragment extends Fragment {
         }
         lst_online = new ArrayList<YourPosts>(lst);
         Log.d("List", "Construction passed");
-        ArrayList<Report> ar = new ArrayList<Report>(getUserRecords(userName));
+        ArrayList<Report> ar = new ArrayList<Report>(getUserRecords(Utility.CurrentUser.getName()));             //CHANGE
         Log.d("List", getUserRecords("Onix").toString());
 //        for (int i = 0; i<ar.size(); i++)
 //        {
@@ -397,7 +314,7 @@ public class DashboardFragment extends Fragment {
 
     class FetchDashboardTask extends AsyncTask<String, Void, String> {
 
-        private JSONObject jsonPosts;
+
 
         @Override
         protected void onPreExecute()
@@ -443,9 +360,7 @@ public class DashboardFragment extends Fragment {
             pd.setInverseBackgroundForced(false);
             pd.show();
             //jsonUpdatesField=jsonPosts;
-            populateRatingGraph(jsonPosts);
             populatePostList(jsonPosts);
-            populateUserRating(jsonPosts);
 
 
             populatePostListView();

@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link PostsSectionFragment.OnFragmentInteractionListener} interface
+ * {@link PostsSectionFragment.FteractionListener} interface
  * to handle interaction events.
  * Use the {@link PostsSectionFragment#newInstance} factory method to
  * create an instance of this fragment.
