@@ -13,17 +13,6 @@ class Post_model extends CI_Model
 		return $query;
 	}
 	
-	/**
-		Return : most recent date of verification of a user's post.
-		If not found : Return 01/01/2000 (just a dummy date to maintain the data type
-	*/
-	public function get_last_ver_date($user_id)
-	{
-		$sql='SELECT `time` FROM `post` WHERE `user_id`=? and `status` in (1,3) ORDER BY time DESC LIMIT 1';
-		$query=$this->db->query($sql,$user_id)->row_array();
-		return $query['time'];
-	}
-	
 	public function get_last_10_user_post($user_name)
 	{
 		//$sql='select p.time,p.rating_change from post p, user u where u.user_name = ? and p.user_id=u.user_id order by p.time';
@@ -118,7 +107,7 @@ class Post_model extends CI_Model
 		$query=$this->db->query($sql,array($status,$post_id));
 	}
 	
-	public function update_rating_change($post_id,$change,$action)
+	public function update_rating_change($post_id,$change)
 	{
 		$sql='UPDATE `post` SET `rating_change`=? WHERE post_id = ?';
 		$query=$this->db->query($sql,array($change,$post_id));
@@ -134,15 +123,7 @@ class Post_model extends CI_Model
 		$query=$this->db->query($sql,array($user_id))->row_array();
 		$current_rating = $query['user_rating'];
 		
-		if($action!=3)
-		{
-			$current_rating+=$change;
-		}
-		else
-		{
-			$current_rating+=5;
-		}
-		
+		$current_rating+=$change;
 		
 		//update rating
 		$sql='UPDATE user SET user_rating = ? WHERE user_id = ? ';
@@ -190,59 +171,49 @@ class Post_model extends CI_Model
 			return $result['location_id'];
 		}
 	}
-	
-	public function get_poster_id($post_id)
-	{
-		$sql = 'SELECT `user_id` FROM `post` WHERE post_id = ?';
-		$query = $this->db->query($sql,array($post_id))->row_array();
-		return $query['user_id'];
-	}
-	public function get_post_time($post_id)
-	{
-		$sql = 'SELECT `time` FROM `post` WHERE post_id = ?';
-		$query = $this->db->query($sql,array($post_id))->row_array();
-		return $query['time'];
-	}
-	/*
-	public function inc_count($user_id)
-	{
-		$sql = 'UPDATE USER SET con_reject = con_reject+1 WHERE user_id=?';
-		$query =  $this->db->query($sql,array($user_id));
-	}
-	public function update_count($user_id,$post_date,$current_date)
-	{
-		$sql = 'SELECT `status` FROM `post` WHERE user_id = ? and `time` BETWEEN ? and ? ORDER BY `time` DESC ';
-		$query = $this->db->query($sql,array($user_id,$post_date,$current_date))->result_array();
-		
-		$status = array();
-		foreach($query as $q)
-		{
-			array_push($status,$q['status']);
-		}
-		
-		$count=0;
-		foreach($status as $s)
-		{
-			if($s==1 || $s==3) break;
-			else if($s==2) $count++;
-		}
-		
-		$sql = 'UPDATE USER SET con_reject = ? WHERE user_id=?';
-		$query =  $this->db->query($sql,array($count,$user_id));
-	}
+
+	/**
+	neamul
 	*/
-	
-	public function get_user_rating($user_id)
+	public function get_problem_count()
 	{
-		$sql = 'SELECT user_rating FROM user WHERE user_id = ?';
-		$query = $this->db->query($sql,array($user_id))->row_array();
-		return $query['user_rating'];
+		$cat=array(0,1,2,3,4,5,6,7,8,9);
+		for($i=0; $i<sizeof($cat); $i++)
+		{
+			$q = 'Select count(*) as pCount from post where category = ?';
+			$c['category'] = $cat[$i];
+			$query = $this->db->query($q,$c )->row_array();
+			//print_r($query); 
+			$problem[$cat[$i]] = $query['pCount'];
+		}
+		//print_r($problem);
+		return $problem;
 	}
-	
-	public function suspend_user($user_id)
+
+	public function get_all_neighborhoods()
 	{
-		$sql = 'UPDATE user SET is_suspended=1 WHERE user_id=?';
-		$query = $this->db->query($sql,array($user_id));
+		$sql = 'SELECT distinct neighbourhood from location';
+		return $this->db->query($sql)->result_array();
+	}
+
+	public function get_location_ids($n)
+	{
+		$sql = 'SELECT location_id from location where neighbourhood = ?';
+		$temp = $this->db->query($sql,array($n))->result_array();
+		$list = array();
+		foreach ($temp as $t) {
+				array_push($list, $t['location_id']);
+			}	
+
+		return $list;
+
+	}
+
+	public function get_problem_count_location($idList)
+	{
+		$sql = 'SELECT count(*) as cnt from post where actual_location_id in ?';
+		$result = $this->db->query($sql,array($idList))->row_array();
+		return $result['cnt'];
 	}
 }
 ?>

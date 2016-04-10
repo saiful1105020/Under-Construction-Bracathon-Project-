@@ -86,17 +86,17 @@
                     echo '<tr>
                         <form action="take_action/'.$p['post_id'].'" method="POST">
                             <td><b>'.$counter.'</b></td>';
-                            echo '<td><img src="data:image/jpeg;base64,' . base64_encode($p['image']) . '" width="260" height="140" class="img-responsive" alt="Responsive image"></td>';
+                            echo '<td><img src="data:image/jpeg;base64,' . base64_encode($p['image']) . '" width="260" height="80" class="img-responsive" alt="Responsive image"></td>';
                         //<td><img src="my.png" class="img-responsive" alt="Responsive image" class="img-thumbnail" class="img-thumbnail" alt="Cinque Terre" width="260" height="180"></td>
                             if($p['category']==0) $category=" Occupied Footpath ";
                             else if($p['category']==1) $category=" Open Dustbin ";
                             else if($p['category']==2) $category=" Open Manhole ";
-                            else if($p['category']==3) $category=" Electric Wires ";
+                            else if($p['category']==3) $category=" Cluttered Electric Wires ";
                             else if($p['category']==4) $category=" Waterlogging ";
                             else if($p['category']==5) $category=" Risky Intersection ";
                             else if($p['category']==6) $category=" No Street Light ";
                             else if($p['category']==7) $category=" Crime Prone Area ";
-                            else if($p['category']==8) $category=" Broken Road ";
+                            else if($p['category']==8) $category=" Damaged Road ";
                             else if($p['category']==9) $category=" Wrong Way Traffic ";
                             else $category=" Category Not Found ";
                         echo '<td>
