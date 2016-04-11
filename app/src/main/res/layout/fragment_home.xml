@@ -133,12 +133,12 @@
 
         <ImageButton
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             android:id="@+id/reportButton"
             android:src="@drawable/takephoto"
             android:onClick="onReportButtonClick"
             android:background="@null"
-            android:scaleType="fitXY"
+            android:scaleType="centerInside"
             android:layout_margin="20dp"/>
 
     </LinearLayout>
