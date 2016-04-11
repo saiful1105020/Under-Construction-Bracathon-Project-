@@ -31,11 +31,13 @@
         <activity
             android:name=".Home"
             android:label="@string/title_activity_home" >
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--&lt;!&ndash;<category android:name="android.intent.category.LAUNCHER" />&ndash;&gt;-->
-            <!--</intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- &lt;!&ndash;<category android:name="android.intent.category.LAUNCHER" />&ndash;&gt; -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".AddReport"
@@ -48,7 +50,6 @@
             <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             <!-- </intent-filter> -->
         </activity>
-
         <activity
             android:name=".TabbedHome"
             android:label="@string/title_activity_tabbed_home" >
@@ -65,7 +66,10 @@
             android:exported="false" >
         </service>
 
-
+        <activity
+            android:name=".ReportProblem"
+            android:label="@string/title_activity_report_problem" >
+        </activity>
     </application>
 
 </manifest>

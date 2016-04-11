@@ -1,8 +1,12 @@
 package com.underconstruction.underconstruction;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,10 +17,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.underconstruction.underconstruction.PostsSectionFragment;
 import com.underconstruction.underconstruction.DashboardFragment;
 
@@ -26,6 +33,13 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+
+    ImageView mImageView;
+    String mCurrentPhotoPath;
+    Bitmap imageBitmap;
+    Button btnAddReport,btnSaveReport;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,16 +48,20 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
 //        View view = new View(this);
 //        view.setScroll
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+
+        mImageView=(ImageView)findViewById(R.id.addReportImageImageView);
+        btnAddReport=(Button)(findViewById(R.id.addReportNewReportButton));
+        btnSaveReport=(Button)(findViewById(R.id.addReportSaveReportButton));
     }
 
     @Override
@@ -111,7 +129,33 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
     }
 
     public void onReportButtonClick(View v){
-        Intent intent =new Intent(this, AddReport.class);
-        startActivity(intent);
+//        Intent intent =new Intent(this, ReportProblem.class);
+//        startActivity(intent);
+        dispatchTakePictureIntent();
+
     }
+
+    public void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            imageBitmap = (Bitmap) extras.get("data");
+            mImageView.setImageBitmap(imageBitmap);
+            //FormatAndPopulateLocationTextView();
+            //setPic();
+            Intent intent =new Intent(this, ReportProblem.class);
+            startActivity(intent);
+            btnSaveReport.setClickable(true);
+            btnAddReport.setClickable(true);
+        }
+    }
+
 }

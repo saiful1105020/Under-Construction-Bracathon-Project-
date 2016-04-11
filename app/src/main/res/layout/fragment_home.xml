@@ -51,7 +51,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/lblHello"
         android:id="@+id/lblGraph"
-        android:paddingLeft="10dp">
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -86,6 +88,8 @@
                 <com.underconstruction.underconstruction.LineGraphPackage.LineGraph
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
+                    android:padding="5dp"
+                    android:paddingRight="5dp"
                     android:id="@+id/graph"
                     android:layout_below="@+id/textView2"
                     android:layout_toRightOf="@+id/textView3" />
@@ -107,20 +111,36 @@
 
     </LinearLayout>
 
+    <TextView
+        android:padding="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#DDEEDD" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_weight="1">
 
-        <Button
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Report A Problem"
+            android:textStyle="bold"/>
+
+        <ImageButton
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:drawableBottom="@drawable/report"
-            android:onClick="onReportButtonClick"
-            android:text="Report Problem"
-            android:textSize="20dp"
-            android:textStyle="bold"
             android:id="@+id/reportButton"
-            android:layout_marginTop="40dp" />
+            android:src="@drawable/takephoto"
+            android:onClick="onReportButtonClick"
+            android:background="@null"
+            android:scaleType="fitXY"
+            android:layout_margin="20dp"/>
+
     </LinearLayout>
 
 
