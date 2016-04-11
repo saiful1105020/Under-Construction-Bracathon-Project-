@@ -31,11 +31,13 @@
         <activity
             android:name=".Home"
             android:label="@string/title_activity_home" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            </intent-filter>
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- &lt;!&ndash;<category android:name="android.intent.category.LAUNCHER" />&ndash;&gt; -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".AddReport"
@@ -48,13 +50,6 @@
             <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             <!-- </intent-filter> -->
         </activity>
-
-        <service
-            android:name=".FetchAddressIntentService"
-            android:enabled="true"
-            android:exported="false" >
-        </service>
-
         <activity
             android:name=".TabbedHome"
             android:label="@string/title_activity_tabbed_home" >
@@ -63,6 +58,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <service
+            android:name=".FetchAddressIntentService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
+
+        <activity
+            android:name=".ReportProblem"
+            android:label="@string/title_activity_report_problem" >
         </activity>
     </application>
 

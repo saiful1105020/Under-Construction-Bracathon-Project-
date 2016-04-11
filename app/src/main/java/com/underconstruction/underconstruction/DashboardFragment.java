@@ -4,19 +4,22 @@ package com.underconstruction.underconstruction;
  * userId hardcoded in new Report object instantiation
  */
 
-import android.support.v4.app.Fragment;
 import android.app.ProgressDialog;
-import android.database.Cursor;
+import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -26,10 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
-import com.underconstruction.underconstruction.LineGraphPackage.Line;
-import com.underconstruction.underconstruction.LineGraphPackage.LineGraph;
-import com.underconstruction.underconstruction.LineGraphPackage.LinePoint;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,25 +40,28 @@ import java.util.List;
 
 public class DashboardFragment extends Fragment {
     public static ProgressDialog pd;
+    public String mAddressOutput;
+    private AddressResultReceiver mResultReceiver;
+    private ArrayList<String>locationAtrributes;
+    private String resultOutput;
+    byte[] imageByteArray;
     private static ListView lv;
     private ResultListAdaptor rla;
     private List<YourPosts> lst = new ArrayList<YourPosts>();
     private List<YourPosts> lst_online;
     private String[] problemCategory = {"Occupied Footpath", "Open Dustbin", "Exposed Manhole", "Dangerous Electric wire", "Waterlogging", "Risky Road Intersection", "No Street Light", "Crime Prone Area", "Broken Road", "Wrong Way Trafiic"};
     private OnFragmentInteractionListener mListener;
-    private String userName = "Onix";
+//    private String userName = "Onix";
     ScrollView parentScroll, childScroll;
     ListView myPosts;
-
+    JSONObject jsonPosts;
+    DBHelper internalDb;
+    Report theReportToBeSentToMainDB;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_dashboard);
-
-        Line l = new Line();
-
-        l.setColor(Color.parseColor("#FFBB33"));
 
 //        LineGraph li = (LineGraph)findViewById(R.id.graph);
 
@@ -87,33 +90,6 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_dashboard, container, false);
-//        parentScroll=(ScrollView)view.findViewById(R.id.parent_scroll);
-//        childScroll=(ScrollView)view.findViewById(R.id.child_scroll);
-//        myPosts=(ListView)view.findViewById(R.id.lvwDashboard);
-//
-//        parentScroll.setOnTouchListener(new View.OnTouchListener() {
-//            public boolean onTouch(View v, MotionEvent event) {
-//                Log.d("touch", "parent touch");
-//                myPosts.getParent().requestDisallowInterceptTouchEvent(false);
-//                return false;
-//            }
-//        });
-
-//        childScroll.setOnTouchListener(new View.OnTouchListener() {
-//            public boolean onTouch(View v, MotionEvent event) {
-//                Log.d("touch", "child touch");
-//                v.getParent().requestDisallowInterceptTouchEvent(false);
-//                return false;
-//            }
-//        });
-
-//        myPosts.setOnTouchListener(new View.onTouchListener() {
-//            public boolean onTouch(View v, MotionEvent event) {
-//                Log.d("touch", "list touch");
-//                v.getParent().requestDisallowInterceptTouchEvent(false);
-//                return false;
-//            }
-//        });
 
         return view;
     }
@@ -121,71 +97,119 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        locationAtrributes = new ArrayList<String >();
+        mResultReceiver = new AddressResultReceiver(new Handler());
+        bringDataFromInternalDb();
         new FetchDashboardTask().execute();
-        TextView lblGreeting = (TextView)getView().findViewById(R.id.lblDashboardHello);
-        lblGreeting.setText("Hello " + userName + "!");
+
 
     }
+
+    private void bringDataFromInternalDb() {
+        internalDb = new DBHelper(getContext());
+        ArrayList<Report> allTheReportsOfIntDb = internalDb.getDataForUser(Utility.CurrentUser.getUserId());
+        uploadTheReportToMainDatabase(allTheReportsOfIntDb.get(0));
+        Log.d("bring back our report", allTheReportsOfIntDb.toString());
+
+    }
+
+
+    private void deleteAReportFromIntDb(Report deleteIt){
+        String idOfTheRecord = deleteIt.getRecordID();
+        //converting to int as the record id is in integer in sqlite database;
+        internalDb.deleteRecord(idOfTheRecord);
+
+    }
+
+    private void uploadTheReportToMainDatabase(Report sendIt){
+        theReportToBeSentToMainDB = sendIt;
+        Log.d("the selected report",theReportToBeSentToMainDB.toString());
+        startIntentServiceForReverseGeoTagging(sendIt);
+    }
+
+    protected void startIntentServiceForReverseGeoTagging(Report sendIt) {
+        double lat = Double.parseDouble(sendIt.getLatitude());
+        double lon = Double.parseDouble(sendIt.getLongitude());
+        Location mLastLocation = new Location("");
+        mLastLocation.setLatitude(lat);
+        mLastLocation.setLongitude(lon);
+        Intent intent = new Intent(getContext(), FetchAddressIntentService.class);
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
+        Toast.makeText(getActivity(), "Just before calling intent service", Toast.LENGTH_LONG).show();
+        //Log.d("inside service",mLastLocation.getLatitude()+" "+mLastLocation.getLongitude());
+        getActivity().startService(intent);
+
+
+    }
+
+    class AddressResultReceiver extends ResultReceiver {
+
+
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            // Display the address string
+            // or an error message sent from the intent service.
+            resultOutput= resultData.getString(Constants.RESULT_DATA_KEY);
+            Log.d("returned to destination","true");
+            // Log.d("address location", resultOutput);
+            //displayAddressOutput();
+
+            // Show a toast message if an address was found.
+            Log.d("result code",resultCode+"");
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                //showToast(getString(R.string.address_found));
+                //Toast.makeText(AddReport.class,resultOutput,Toast.LENGTH_LONG).show();
+                //Toast.makeText(this,resultOutput,Toast.LENGTH_LONG).show();
+                Log.d("address location", resultOutput);
+                formatAndSendDataToMainDB();
+            }
+
+        }
+    }
+
+
+    private void formatAndSendDataToMainDB() {
+        Log.d("result_output",resultOutput);
+        String[] locationPairs=resultOutput.split("~" +
+                "");
+
+        for(int i=0;i<locationPairs.length;i++){
+            locationAtrributes.add(locationPairs[i]);
+        }
+
+        locationAtrributes.add("latitude:"+theReportToBeSentToMainDB.getLatitude());
+        locationAtrributes.add("longitude:" + theReportToBeSentToMainDB.getLongitude());
+        locationAtrributes.add("category:"+ theReportToBeSentToMainDB.getCategory());
+        locationAtrributes.add("time:" + theReportToBeSentToMainDB.getTime());
+        String informalLocation= theReportToBeSentToMainDB.getInformalLocation();
+        locationAtrributes.add("informalLocation:" + informalLocation);
+        String informalDescription=theReportToBeSentToMainDB.getProblemDescription();
+        locationAtrributes.add("problemDescription:" + informalDescription);
+        //locationAtrributes.add("userName:" + "Onix");
+
+        imageByteArray=theReportToBeSentToMainDB.getImage();
+        //Log.d("byteArray", new String(imageByteArray));
+        //locationAtrributes.add("image:"+new String(imageByteArray));
+
+        new AddReportTask().execute();
+
+    }
+
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
 
-    private void populateRatingGraph(JSONObject jsonPosts) {
-        JSONArray ratingJSONArray = null;
-        try {
-            ratingJSONArray = jsonPosts.getJSONArray("rating");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        int curIndex=0, N=ratingJSONArray.length();
 
-        Line l = new Line();
-        int max=0, min=100000, rating=0;
 
-        while(curIndex<N) {
-            try{
-                JSONObject curObj = ratingJSONArray.getJSONObject(curIndex);
-                int ratingChange = curObj.getInt("ratingChange");
-                if (ratingChange >max) max = ratingChange;
-                if (ratingChange <min) min = ratingChange;
-                //rating += ratingChange;
-                //if(rating>max) max=rating;
-                //if(rating<min) min=rating;
-                LinePoint p = new LinePoint();
-                p.setX(curIndex);
-                p.setY(ratingChange);
-                p.setLabel_string(curObj.getString("time"));
-                l.addPoint(p);
-                curIndex++;
-            }catch(JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        l.setColor(Color.parseColor("#FFBB33"));
-
-        LineGraph li = (LineGraph)getView().findViewById(R.id.graph);
-
-        li.addLine(l);
-
-        li.setRangeY(min-2, max+2);
-        li.setLineToFill(0);
-    }
-
-    private void populateUserRating(JSONObject jsonPosts) {
-        try {
-            //JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("userRating");
-            int userR = jsonPosts.getInt("userRating");
-            TextView lblUsrt = (TextView)getView().findViewById(R.id.lblDashboardCurrentRating);
-            lblUsrt.setText("Your current rating is " + userR);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
     private void populatePostList(JSONObject jsonPosts) {
 
         try {
@@ -207,14 +231,15 @@ public class DashboardFragment extends Fragment {
         }
         lst_online = new ArrayList<YourPosts>(lst);
         Log.d("List", "Construction passed");
-        ArrayList<Report> ar = new ArrayList<Report>(getUserRecords(userName));
-        Log.d("List", getUserRecords("Onix").toString());
+        //ArrayList<Report> ar = new ArrayList<Report>(getUserRecords(Utility.CurrentUser.getName()));             //CHANGE
+        //ArrayList<Report> ar = internalDb.getDataForUser(Utility.CurrentUser.getUserId());
+        //Log.d("List", ar.toString());
 //        for (int i = 0; i<ar.size(); i++)
 //        {
 //            lst.add(new YourPosts(ar.get(i)));
 //        }
-        Log.d("List", "report converted to list");
-        lst.add(new YourPosts("2015-12-05 09:25:30", "Azimpur", "7", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
+        //Log.d("List", "report converted to list");
+        //lst.add(new YourPosts("2015-12-05 09:25:30", "Azimpur", "7", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
         //(new ArrayList<YourPosts>());
     }
 
@@ -397,7 +422,7 @@ public class DashboardFragment extends Fragment {
 
     class FetchDashboardTask extends AsyncTask<String, Void, String> {
 
-        private JSONObject jsonPosts;
+
 
         @Override
         protected void onPreExecute()
@@ -443,14 +468,87 @@ public class DashboardFragment extends Fragment {
             pd.setInverseBackgroundForced(false);
             pd.show();
             //jsonUpdatesField=jsonPosts;
-            populateRatingGraph(jsonPosts);
             populatePostList(jsonPosts);
-            populateUserRating(jsonPosts);
 
 
             populatePostListView();
         }
     }
+
+
+
+    class AddReportTask extends AsyncTask<String, Void, String> {
+
+        private JSONObject jsonAddReport;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(String... args) {
+
+            JSONParser jParser = new JSONParser();
+            // Building Parameters
+            List<Pair> params = new ArrayList<Pair>();
+
+
+            for(int i=0;i<locationAtrributes.size();i++){
+
+                String tagAndValueString=locationAtrributes.get(i);
+
+                String tag= tagAndValueString.split(":")[0];
+                Log.d("timest: ",tagAndValueString);
+                String value;
+                if(!tag.equals("time"))
+                    if(tagAndValueString.split(":").length==1){
+                        value="";
+                    }
+                    else value=tagAndValueString.split(":")[1];
+                else{
+                    value=tagAndValueString.substring(tagAndValueString.indexOf(":")+1);
+                }
+
+                if(tag.equals("street_number"))
+                    tag="streetNo";
+                else if(tag.equals("sublocality_level_1"))
+                    tag="sublocality";
+                params.add(new Pair(tag, value));
+
+                Log.d("string_test", tag + " " + value);
+            }
+            String encodedString = Base64.encodeToString(imageByteArray, 0);
+            params.add(new Pair("image",encodedString));
+//            params.add(new Pair("userName:", Utility.CurrentUser.getUsername()));
+            params.add(new Pair("userId",Utility.CurrentUser.getUserId()));
+            Log.d("image size", imageByteArray.length + "");
+
+            // getting JSON string from URL
+            jsonAddReport = jParser.makeHttpRequest("/insertPost", "POST", params);
+//            jsonLocations = jParser.makeHttpRequest("/locations", "GET", null);
+
+
+            // Check your log cat for JSON reponse
+//            Log.e("All info: ", jsonLogin.toString());
+            return null;
+
+        }
+
+
+        protected void onPostExecute (String a){
+
+
+            if(jsonAddReport==null)
+                Log.d("report_database"," null");
+            else Log.d("report_database",jsonAddReport.toString());
+
+
+
+        }
+    }
+
+    /*
     public ArrayList<Report> getUserRecords(String name){
 
         DBHelper help=new DBHelper(getActivity());
@@ -482,4 +580,5 @@ public class DashboardFragment extends Fragment {
         }
         return reportsToBeSent;
     }
+    */
 }

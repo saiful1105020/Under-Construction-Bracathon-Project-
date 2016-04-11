@@ -48,8 +48,18 @@ public class JSONParser {
 //        final String BASE_URL = "http://" + Utility.CurrentUser.getIp() +
 //                "/uc_brac_git/uc_server/index.php/home";
 
-        final String BASE_URL = "http://" + "172.20.61.56" +
-                "/uc_brac_git/uc_server/index.php/home";
+
+     /*final String BASE_URL = "http://" + "172.20.62.23" +
+              "/uc_brac_git/uc_server/index.php/home";
+              */
+
+        final String BASE_URL = "http://" + "172.20.62.18" +                //Alternate Database
+                "/hackThon/UC_Server/index.php/home";
+
+//        final String BASE_URL = "http://" + "172.20.62.23" +
+//                "/uc_brac_git/uc_server/index.php/home";
+
+
 
         Log.d("base url", BASE_URL);
         URL url;

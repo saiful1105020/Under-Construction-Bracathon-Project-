@@ -19,7 +19,7 @@ public class Utility {
 
         private static String userId = "1";
         private static int id=Integer.valueOf(userId), displayPage = 0;
-        private static String ip, apiKey,username="@string/user_name";
+        private static String ip, apiKey,username="Onix";
         public static boolean ipOK = false;
         private static boolean valid=false;
 
