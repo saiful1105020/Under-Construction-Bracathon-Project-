@@ -216,20 +216,27 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
 
     }
 
-    private void saveTheReportInDatabase(byte[] arr) {
+    private void saveTheReportInDatabase(byte[] imageByteArray) {
         //tempDatabase = openOrCreateDatabase("tempReport",MODE_PRIVATE,null);
         //tempDatabase.execSQL("CREATE TABLE IF NOT EXISTS tempTable(userName VARCHAR,Password VARCHAR);");
         //mydatabase.execSQL("INSERT INTO TutorialsPoint VALUES('admin','admin');");
+        //Log.d("before inserting in database:", locationAtrributes.toString());
 
+        // deleteWholeDatabase();
         DBHelper help=new DBHelper(this);
-        Log.d("before insertion : ", help.getAllRecords().toString());
-        Toast.makeText(this, "before: " + help.getAllRecords().toString(), Toast.LENGTH_LONG).show();
-        Toast.makeText(this,"in internal database before saving" + locationAtrributes.toString(),Toast.LENGTH_LONG).show();
+        Log.d("before new insertion : ",help.getAllRecords().toString());
+        help.insertRecord(locationAtrributes, imageByteArray);
+        Log.d("after new insertion : ", help.getAllRecords().toString());
+
+        //testDelete();
+        //fetchSavedDataOfaSingleUser("1");
+        /*
+        Log.d("before insertion : ",help.getAllRecords().toString());
         help.insertRecord(locationAtrributes, arr);
         Log.d("after insertion : ", help.getAllRecords().toString());
-        Toast.makeText(this, "before: " + help.getAllRecords().toString(), Toast.LENGTH_LONG).show();
         Log.d("numberInserted: ", "" + help.numberOfRows());
-        Toast.makeText(this, "numberInserted: " + help.numberOfRows(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this,help.numberOfRows()+"",Toast.LENGTH_LONG).show();
+        */
         //getUserRecords("Onix");
         //help.deleteRecord(1);
         //getUserRecords("Onix");
@@ -237,10 +244,101 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
         //sendStoredEntryToDatabase();
     }
 
+    public void sendTheSavedReportToMainDB(Report storedReport){
+        Log.d("result_output",resultOutput);
+        String[] locationPairs=resultOutput.split("~" +
+                "");
+
+        for(int i=0;i<locationPairs.length;i++){
+            locationAtrributes.add(locationPairs[i]);
+        }
+
+        locationAtrributes.add("latitude:"+mLastLocation.getLatitude()+"");
+        locationAtrributes.add("longitude:" + mLastLocation.getLongitude());
+        locationAtrributes.add("category:"+rbSelected);
+        locationAtrributes.add("time:" + getCurrentTimestamp());
+        String informalLocation=((EditText)findViewById(R.id.addInformalLocationEditText)).getText().toString();
+        locationAtrributes.add("informalLocation:" + informalLocation);
+        String informalDescription=((EditText)findViewById(R.id.addInformalDescEditText)).getText().toString();
+        locationAtrributes.add("problemDescription:" + informalDescription);
+        //locationAtrributes.add("userName:" + "Onix");
+
+        imageByteArray=convertBitmapIntoByteArray(imageBitmap);
+        //Log.d("byteArray", new String(imageByteArray));
+        //locationAtrributes.add("image:"+new String(imageByteArray));
+
+
+
+        //Log.d("Formatted arraylist", locationAtrributes.toString());
+        TextView locationTV=(TextView)findViewById(R.id.addReportLocationTextView);
+        String resultToShow=new String(resultOutput);
+
+        resultToShow=resultToShow.replaceAll("~",",");
+        Log.d("finally outputed address",resultToShow+"");
+        locationTV.setText(resultToShow);
+        if(whichButtonIsPressed==calledFromInsertReport){
+            new AddReportTask().execute();
+        }
+        else {
+            //Log.d("storage", "internal storage");
+            //formatDataForSavingInTheInternalDB();
+        }
+
+    }
+
+    public void fetchSavedDataOfaSingleUser(String userId){
+        DBHelper help = new DBHelper(this);
+        ArrayList<Report> allSavedReports = help.getDataForUser(userId);
+        Log.d("fetching reports from database: ",allSavedReports.toString());
+        // Log.d("pulling out of internal database: ",)
+    }
+
     private void deleteWholeDatabase(){
         DBHelper help=new DBHelper(this);
-        help.onUpgrade(help.getWritableDatabase(),0,1);
+        help.onUpgrade(help.getWritableDatabase(), 0, 1);
     }
+
+    public void sendDataToApproriateDatabase() {
+        // Only start the service to fetch the address if GoogleApiClient is
+        // connected.
+        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
+            Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
+            //THis post has to be inserted in the main database
+            if(whichButtonIsPressed ==calledFromInsertReport) {
+                startIntentServiceForReverseGeoTagging();
+            }
+            //This post will be saved in the internal database.
+            else if(whichButtonIsPressed == calledFromSaveReport){
+                //saveTheReportInDatabase(imageByteArray);
+                formatDataForSavingInTheInternalDB();
+
+
+            }
+        }
+        else
+            Toast.makeText(this,"Obtaining location failed. Please try after sometime",Toast.LENGTH_LONG).show();
+
+        // If GoogleApiClient isn't connected, process the user's request by
+        // setting mAddressRequested to true. Later, when GoogleApiClient connects,
+        // launch the service to fetch the address. As far as the user is
+        // concerned, pressing the Fetch Address button
+        // immediately kicks off the process of getting the address.
+        //mAddressRequested = true;
+        //updateUIWidgets();
+    }
+
+    protected void startIntentServiceForReverseGeoTagging() {
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
+        Toast.makeText(this,"Just before calling intent service",Toast.LENGTH_LONG).show();
+        //Log.d("inside service",mLastLocation.getLatitude()+" "+mLastLocation.getLongitude());
+        this.startService(intent);
+
+
+    }
+
+    /*
 
     public ArrayList<Report> getUserRecords(String name){
 
@@ -272,6 +370,10 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
         }
         return reportsToBeSent;
     }
+    */
+
+
+
     public void fetchAddressButtonHandler() {
         // Only start the service to fetch the address if GoogleApiClient is
         // connected.
@@ -395,40 +497,20 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
-        if(mLastLocation==null){
-            Toast.makeText(this,"Google client has returned null",Toast.LENGTH_LONG).show();
-        }
-        else if (mLastLocation != null) {
+        if (mLastLocation == null) {
+            Toast.makeText(this, "Google client has returned null", Toast.LENGTH_LONG).show();
+            //buildGoogleApiClient();
+        } else if (mLastLocation != null) {
             // Toast.makeText(this,"Google client has returned",Toast.LENGTH_LONG).show();
             // mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
             //mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-            Toast.makeText(this,"Google client has returned not null",Toast.LENGTH_LONG).show();
-            Toast.makeText(this,mLastLocation.getLatitude()+" "+mLastLocation.getLongitude(),Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Google client has returned not null", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_LONG).show();
 
-
-            fetchAddressButtonHandler();
-            // Determine whether a Geocoder is available.
-            /*
-                if (!Geocoder.isPresent()) {
-                    /*
-                    Toast.makeText(this, R.string.no_geocoder_available,
-                            Toast.LENGTH_LONG).show();
-
-                    return;
-                }
-
-               /*
-                if (mAddressRequested) {
-                    startIntentService();
-                }
-
-               else {
-                    fetchAddressButtonHandler();
-                }
-        */
+            sendDataToApproriateDatabase();
         }
-
     }
+
 
 
 
@@ -468,11 +550,75 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
                 //Toast.makeText(AddReport.class,resultOutput,Toast.LENGTH_LONG).show();
                 //Toast.makeText(this,resultOutput,Toast.LENGTH_LONG).show();
                 Log.d("address location", resultOutput);
-                FormatAndPopulateLocationTextView();
+                formatAndSendDataToMainDB();
             }
 
         }
     }
+
+
+    private void formatAndSendDataToMainDB() {
+        Log.d("result_output",resultOutput);
+        String[] locationPairs=resultOutput.split("~" +
+                "");
+
+        for(int i=0;i<locationPairs.length;i++){
+            locationAtrributes.add(locationPairs[i]);
+        }
+
+        locationAtrributes.add("latitude:"+mLastLocation.getLatitude()+"");
+        locationAtrributes.add("longitude:" + mLastLocation.getLongitude());
+        locationAtrributes.add("category:"+rbSelected);
+        locationAtrributes.add("time:" + getCurrentTimestamp());
+        String informalLocation=((EditText)findViewById(R.id.addInformalLocationEditText)).getText().toString();
+        locationAtrributes.add("informalLocation:" + informalLocation);
+        String informalDescription=((EditText)findViewById(R.id.addInformalDescEditText)).getText().toString();
+        locationAtrributes.add("problemDescription:" + informalDescription);
+        //locationAtrributes.add("userName:" + "Onix");
+
+        imageByteArray=convertBitmapIntoByteArray(imageBitmap);
+        //Log.d("byteArray", new String(imageByteArray));
+        //locationAtrributes.add("image:"+new String(imageByteArray));
+
+
+
+        //Log.d("Formatted arraylist", locationAtrributes.toString());
+        TextView locationTV=(TextView)findViewById(R.id.addReportLocationTextView);
+        String resultToShow=new String(resultOutput);
+
+        resultToShow=resultToShow.replaceAll("~",",");
+        Log.d("finally outputed address",resultToShow+"");
+        locationTV.setText(resultToShow);
+        if(whichButtonIsPressed==calledFromInsertReport){
+            new AddReportTask().execute();
+        }
+        else {
+            //Log.d("storage", "internal storage");
+            //formatDataForSavingInTheInternalDB();
+        }
+
+
+    }
+
+    private void formatDataForSavingInTheInternalDB(){
+
+        locationAtrributes.clear();
+        locationAtrributes.add("latitude:"+mLastLocation.getLatitude()+"");
+        locationAtrributes.add("longitude:" + mLastLocation.getLongitude());
+        locationAtrributes.add("category:"+rbSelected);
+        locationAtrributes.add("time:" + getCurrentTimestamp());
+        String informalLocation=((EditText)findViewById(R.id.addInformalLocationEditText)).getText().toString();
+        locationAtrributes.add("informalLocation:" + informalLocation);
+        String informalDescription=((EditText)findViewById(R.id.addInformalDescEditText)).getText().toString();
+        locationAtrributes.add("problemDescription:" + informalDescription);
+        //locationAtrributes.add("userName:" + "Onix");
+        //Log.d("before saving in the internal database: ",locationAtrributes.toString());
+        imageByteArray=convertBitmapIntoByteArray(imageBitmap);
+        saveTheReportInDatabase(imageByteArray);
+
+
+    }
+
 
 
     private byte[] convertBitmapIntoByteArray(Bitmap imageBitmap){
@@ -501,7 +647,7 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
         return timestamp;
     }
 
-
+/*
     private void sendStoredEntryToDatabase(){
         ArrayList<Report> records= getUserRecords("onix");
 
@@ -513,6 +659,9 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
 
 
     }
+    */
+
+    /*
 
     class AddReportFromInternalDBTask extends AsyncTask<Report, Void, String> {
 
@@ -546,15 +695,17 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
             params.add(new Pair("locality",reportToBeSent.getLocality()));
             params.add(new Pair("latitude",reportToBeSent.getLatitude()));
             params.add(new Pair("longitude",reportToBeSent.getLongitude()));
-            /*params.add(new Pair("fromLocationId", fromLocationId));
+            params.add(new Pair("fromLocationId", fromLocationId));
             params.add(new Pair("toLocationId", toLocationId));
             params.add(new Pair("estTimeToCross", estimatedTime));
             params.add(new Pair("situation", situation));
             params.add(new Pair("description", description));
             params.add(new Pair("timeOfSituation", timestamp));
             params.add(new Pair("updaterId", Utility.CurrentUser.getId()));
-            params.add(new Pair("requestId", requestId));*/
-            /*
+            params.add(new Pair("requestId", requestId));
+            */
+    /*
+
             for(int i=0;i<locationAtrributes.size();i++){
 
                 String tagAndValueString=locationAtrributes.get(i);
@@ -581,7 +732,7 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
             }
             String encodedString = Base64.encodeToString(imageByteArray, 0);
             params.add(new Pair("image",encodedString));
-            Log.d("image size", imageByteArray.length + "");*/
+            Log.d("image size", imageByteArray.length + "");
 
             // getting JSON string from URL
             jsonAddReport = jParser.makeHttpRequest("/insertPost", "POST", params);
@@ -600,10 +751,12 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
             return null;
 
         }
+        */
 
         /**
          * After completing background task Dismiss the progress dialog
          **/
+        /*
         protected void onPostExecute (String a){
 
 
@@ -613,6 +766,7 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
 
         }
     }
+*/
     private void FormatAndPopulateLocationTextView() {
         Log.d("result_output",resultOutput);
         String[] locationPairs=resultOutput.split("~");

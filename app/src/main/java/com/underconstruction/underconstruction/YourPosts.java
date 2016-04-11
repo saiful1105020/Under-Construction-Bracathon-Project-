@@ -1,7 +1,5 @@
 package com.underconstruction.underconstruction;
 
-import com.underconstruction.underconstruction.Report;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -96,7 +94,8 @@ public class YourPosts {
     public YourPosts(Report r)
     {
         this.timeStamp = r.getTime();
-        this.exactLocation = r.getRoute() + ", " + r.getNeighborhood() + ", " + r.getNeighborhood();
+        //this.exactLocation = r.getRoute() + ", " + r.getNeighborhood() + ", " + r.getNeighborhood();
+        this.exactLocation = " ";
         this.category = r.getCategory();
         this.locationDescription = r.getInformalLocation();
         this.problemDescription = r.getProblemDescription();

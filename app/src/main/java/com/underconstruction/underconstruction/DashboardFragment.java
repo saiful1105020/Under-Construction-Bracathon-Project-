@@ -4,19 +4,17 @@ package com.underconstruction.underconstruction;
  * userId hardcoded in new Report object instantiation
  */
 
-import android.support.v4.app.Fragment;
 import android.app.ProgressDialog;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -26,10 +24,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
-import com.underconstruction.underconstruction.LineGraphPackage.Line;
-import com.underconstruction.underconstruction.LineGraphPackage.LineGraph;
-import com.underconstruction.underconstruction.LineGraphPackage.LinePoint;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +44,7 @@ public class DashboardFragment extends Fragment {
     ScrollView parentScroll, childScroll;
     ListView myPosts;
     JSONObject jsonPosts;
+    DBHelper internalDb = new DBHelper(getContext());
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -124,14 +119,15 @@ public class DashboardFragment extends Fragment {
         }
         lst_online = new ArrayList<YourPosts>(lst);
         Log.d("List", "Construction passed");
-        ArrayList<Report> ar = new ArrayList<Report>(getUserRecords(Utility.CurrentUser.getName()));             //CHANGE
-        Log.d("List", getUserRecords("Onix").toString());
+        //ArrayList<Report> ar = new ArrayList<Report>(getUserRecords(Utility.CurrentUser.getName()));             //CHANGE
+        //ArrayList<Report> ar = internalDb.getDataForUser(Utility.CurrentUser.getUserId());
+        //Log.d("List", ar.toString());
 //        for (int i = 0; i<ar.size(); i++)
 //        {
 //            lst.add(new YourPosts(ar.get(i)));
 //        }
-        Log.d("List", "report converted to list");
-        lst.add(new YourPosts("2015-12-05 09:25:30", "Azimpur", "7", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
+        //Log.d("List", "report converted to list");
+        //lst.add(new YourPosts("2015-12-05 09:25:30", "Azimpur", "7", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
         //(new ArrayList<YourPosts>());
     }
 
@@ -366,6 +362,7 @@ public class DashboardFragment extends Fragment {
             populatePostListView();
         }
     }
+    /*
     public ArrayList<Report> getUserRecords(String name){
 
         DBHelper help=new DBHelper(getActivity());
@@ -397,4 +394,5 @@ public class DashboardFragment extends Fragment {
         }
         return reportsToBeSent;
     }
+    */
 }

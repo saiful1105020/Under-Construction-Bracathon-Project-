@@ -2,24 +2,16 @@ package com.underconstruction.underconstruction;
 
 import android.util.Log;
 import android.util.Pair;
-import android.view.View;
-import android.widget.EditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -48,11 +40,12 @@ public class JSONParser {
 //        final String BASE_URL = "http://" + Utility.CurrentUser.getIp() +
 //                "/uc_brac_git/uc_server/index.php/home";
 
-//        final String BASE_URL = "http://" + "192.168.56.1" +
-//                "/uc_brac_git/uc_server/index.php/home";
+     final String BASE_URL = "http://" + "172.20.62.23" +
+              "/uc_brac_git/uc_server/index.php/home";
 
-        final String BASE_URL = "http://" + "172.20.61.56" +                //Alternate Database
+       /* final String BASE_URL = "http://" + "172.20.61.56" +                //Alternate Database
                 "/hackThon/UC_Server/index.php/home";
+                */
 
         Log.d("base url", BASE_URL);
         URL url;
