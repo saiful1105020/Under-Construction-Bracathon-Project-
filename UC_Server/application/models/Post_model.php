@@ -114,7 +114,7 @@ class Post_model extends CI_Model
 	{
 		//$sql = 'SELECT u.user_name as userName , p.`category` as cat, p.`image` as img FROM `user` u,post p WHERE u.user_id = p.user_id';
 		
-		$sql = 'SELECT u.user_name as userName, p.`category` as cat, p.`image` as img, p.`time` as time, p.`text` as txt, 
+		$sql = 'SELECT u.user_name as userName, p.`category` as cat, p.`time` as time, p.`text` as txt, 
 				l.street_number as streetNo,l.route as route,l.neighbourhood as nighborhood,l.sublocality as sublocality,l.locality as locality,
 				p.`rating_change` as rating 
 				FROM `user` u,`post` p, `location` l 
