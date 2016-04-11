@@ -97,6 +97,7 @@ public class HomeFragment extends Fragment {
 //            DashboardFragment.populateRatingGraph(DashboardFragment.jsonPosts);
         Line l = new Line();
         l.setColor(Color.parseColor("#FFBB33"));
+        Log.d("onActivityCreated", "yes");
         new FetchRatingTask().execute();
     }
 
@@ -200,7 +201,7 @@ public class HomeFragment extends Fragment {
     }
 
     void populateRatingGraph(JSONObject jsonPosts) {
-        JSONArray ratingJSONArray = null;
+        JSONArray ratingJSONArray = new JSONArray();
         try {
             ratingJSONArray = jsonPosts.getJSONArray("rating");
         } catch (JSONException e) {

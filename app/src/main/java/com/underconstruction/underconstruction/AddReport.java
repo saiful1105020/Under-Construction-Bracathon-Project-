@@ -97,16 +97,16 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
         //radio grouping
         rbCatagory = new RadioButton[10];
 
-        rbCatagory[0] = (RadioButton)findViewById(R.id.rbFootpath);
-        rbCatagory[1] = (RadioButton)findViewById(R.id.rbDustbin);
-        rbCatagory[2] = (RadioButton)findViewById(R.id.rbManhole);
-        rbCatagory[3] = (RadioButton)findViewById(R.id.rbWire);
-        rbCatagory[4] = (RadioButton)findViewById(R.id.rbWaterclog);
-        rbCatagory[5] = (RadioButton)findViewById(R.id.rbRoadIntersection);
-        rbCatagory[6] = (RadioButton)findViewById(R.id.rbStreetlight);
-        rbCatagory[7] = (RadioButton)findViewById(R.id.rbCrime);
-        rbCatagory[8] = (RadioButton)findViewById(R.id.rbBrokenRoad);
-        rbCatagory[9] = (RadioButton)findViewById(R.id.rbTraffic);
+//        rbCatagory[0] = (RadioButton)findViewById(R.id.rbFootpath);
+//        rbCatagory[1] = (RadioButton)findViewById(R.id.rbDustbin);
+//        rbCatagory[2] = (RadioButton)findViewById(R.id.rbManhole);
+//        rbCatagory[3] = (RadioButton)findViewById(R.id.rbWire);
+//        rbCatagory[4] = (RadioButton)findViewById(R.id.rbWaterclog);
+//        rbCatagory[5] = (RadioButton)findViewById(R.id.rbRoadIntersection);
+//        rbCatagory[6] = (RadioButton)findViewById(R.id.rbStreetlight);
+//        rbCatagory[7] = (RadioButton)findViewById(R.id.rbCrime);
+//        rbCatagory[8] = (RadioButton)findViewById(R.id.rbBrokenRoad);
+//        rbCatagory[9] = (RadioButton)findViewById(R.id.rbTraffic);
 
         RadioButtonListener();
     }
@@ -187,10 +187,10 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
     */
     @Override
     public void onClick(View v) {
-        if(v.getId()==R.id.addReportAddPhotoButton){
-            Toast.makeText(this,"Add button pressed", Toast.LENGTH_LONG).show();
-            dispatchTakePictureIntent();
-        }
+//        if(v.getId()==R.id.addReportAddPhotoButton){
+//            Toast.makeText(this,"Add button pressed", Toast.LENGTH_LONG).show();
+//            dispatchTakePictureIntent();
+//        }
 
         if(v.getId()==R.id.addReportNewReportButton){
             Toast.makeText(this,"RB selected "+rbSelected,Toast.LENGTH_LONG).show();
@@ -270,12 +270,12 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
 
 
         //Log.d("Formatted arraylist", locationAtrributes.toString());
-        TextView locationTV=(TextView)findViewById(R.id.addReportLocationTextView);
+//        TextView locationTV=(TextView)findViewById(R.id.addReportLocationTextView);
         String resultToShow=new String(resultOutput);
 
         resultToShow=resultToShow.replaceAll("~",",");
         Log.d("finally outputed address",resultToShow+"");
-        locationTV.setText(resultToShow);
+//        locationTV.setText(resultToShow);
         if(whichButtonIsPressed==calledFromInsertReport){
             new AddReportTask().execute();
         }
@@ -422,7 +422,7 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
     }
 
 
-    private void dispatchTakePictureIntent() {
+    public void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -583,12 +583,12 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
 
 
         //Log.d("Formatted arraylist", locationAtrributes.toString());
-        TextView locationTV=(TextView)findViewById(R.id.addReportLocationTextView);
+//        TextView locationTV=(TextView)findViewById(R.id.addReportLocationTextView);
         String resultToShow=new String(resultOutput);
 
         resultToShow=resultToShow.replaceAll("~",",");
         Log.d("finally outputed address",resultToShow+"");
-        locationTV.setText(resultToShow);
+//        locationTV.setText(resultToShow);
         if(whichButtonIsPressed==calledFromInsertReport){
             new AddReportTask().execute();
         }
@@ -791,12 +791,12 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
 
 
         Log.d("Formatted arraylist", locationAtrributes.toString());
-        TextView locationTV=(TextView)findViewById(R.id.addReportLocationTextView);
+//        TextView locationTV=(TextView)findViewById(R.id.addReportLocationTextView);
         String resultToShow=new String(resultOutput);
 
         resultToShow=resultToShow.replaceAll("~",",");
 
-        locationTV.setText(resultToShow);
+//        locationTV.setText(resultToShow);
         Log.d("resultToShow", resultToShow);
 
         if(whichButtonIsPressed==calledFromInsertReport){
