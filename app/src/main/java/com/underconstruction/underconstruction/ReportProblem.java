@@ -1,6 +1,9 @@
 package com.underconstruction.underconstruction;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,7 +12,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -18,10 +23,33 @@ public class ReportProblem extends AppCompatActivity {
 
     ListView list;
     TextView txtCateDesc;
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static int camera =0;
+    ImageView mImageView;
+    String mCurrentPhotoPath;
+    Bitmap imageBitmap;
+    Button btnAddReport,btnSaveReport;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_problem);
+
+        if (camera == 0)
+        {
+            dispatchTakePictureIntent();
+            camera++;
+        }
+        else
+            finish();
+
+
+
+        mImageView=(ImageView)findViewById(R.id.addReportImageImageView);
+        btnAddReport=(Button)(findViewById(R.id.addReportNewReportButton));
+        btnSaveReport=(Button)(findViewById(R.id.addReportSaveReportButton));
+
         list = (ListView) findViewById(R.id.listView);
         txtCateDesc = (TextView) findViewById(R.id.txtCategoryDesc);
 
@@ -68,5 +96,28 @@ public class ReportProblem extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            imageBitmap = (Bitmap) extras.get("data");
+            mImageView.setImageBitmap(imageBitmap);
+            //FormatAndPopulateLocationTextView();
+            //setPic();
+            Intent intent =new Intent(this, ReportProblem.class);
+            startActivity(intent);
+            btnSaveReport.setClickable(true);
+            btnAddReport.setClickable(true);
+        }
     }
 }

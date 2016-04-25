@@ -33,12 +33,7 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
 
-    ImageView mImageView;
-    String mCurrentPhotoPath;
-    Bitmap imageBitmap;
-    Button btnAddReport,btnSaveReport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +54,6 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        mImageView=(ImageView)findViewById(R.id.addReportImageImageView);
-        btnAddReport=(Button)(findViewById(R.id.addReportNewReportButton));
-        btnSaveReport=(Button)(findViewById(R.id.addReportSaveReportButton));
     }
 
     @Override
@@ -129,33 +121,13 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
     }
 
     public void onReportButtonClick(View v){
-//        Intent intent =new Intent(this, ReportProblem.class);
-//        startActivity(intent);
-        dispatchTakePictureIntent();
+        Intent intent =new Intent(this, ReportProblem.class);
+        ReportProblem.camera=0;
+        startActivity(intent);
+//        dispatchTakePictureIntent();
 
     }
 
-    public void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            imageBitmap = (Bitmap) extras.get("data");
-            mImageView.setImageBitmap(imageBitmap);
-            //FormatAndPopulateLocationTextView();
-            //setPic();
-            Intent intent =new Intent(this, ReportProblem.class);
-            startActivity(intent);
-            btnSaveReport.setClickable(true);
-            btnAddReport.setClickable(true);
-        }
-    }
 
 }
