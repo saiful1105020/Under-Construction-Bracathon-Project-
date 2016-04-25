@@ -5,12 +5,17 @@ package com.underconstruction.underconstruction;
  */
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -24,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +40,11 @@ import java.util.List;
 
 public class DashboardFragment extends Fragment {
     public static ProgressDialog pd;
+    public String mAddressOutput;
+    private AddressResultReceiver mResultReceiver;
+    private ArrayList<String>locationAtrributes;
+    private String resultOutput;
+    byte[] imageByteArray;
     private static ListView lv;
     private ResultListAdaptor rla;
     private List<YourPosts> lst = new ArrayList<YourPosts>();
@@ -44,7 +55,8 @@ public class DashboardFragment extends Fragment {
     ScrollView parentScroll, childScroll;
     ListView myPosts;
     JSONObject jsonPosts;
-    DBHelper internalDb = new DBHelper(getContext());
+    DBHelper internalDb;
+    Report theReportToBeSentToMainDB;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,10 +97,110 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        locationAtrributes = new ArrayList<String >();
+        mResultReceiver = new AddressResultReceiver(new Handler());
+        bringDataFromInternalDb();
         new FetchDashboardTask().execute();
 
 
     }
+
+    private void bringDataFromInternalDb() {
+        internalDb = new DBHelper(getContext());
+        ArrayList<Report> allTheReportsOfIntDb = internalDb.getDataForUser(Utility.CurrentUser.getUserId());
+        uploadTheReportToMainDatabase(allTheReportsOfIntDb.get(0));
+        Log.d("bring back our report", allTheReportsOfIntDb.toString());
+
+    }
+
+
+    private void deleteAReportFromIntDb(Report deleteIt){
+        String idOfTheRecord = deleteIt.getRecordID();
+        //converting to int as the record id is in integer in sqlite database;
+        internalDb.deleteRecord(idOfTheRecord);
+
+    }
+
+    private void uploadTheReportToMainDatabase(Report sendIt){
+        theReportToBeSentToMainDB = sendIt;
+        Log.d("the selected report",theReportToBeSentToMainDB.toString());
+        startIntentServiceForReverseGeoTagging(sendIt);
+    }
+
+    protected void startIntentServiceForReverseGeoTagging(Report sendIt) {
+        double lat = Double.parseDouble(sendIt.getLatitude());
+        double lon = Double.parseDouble(sendIt.getLongitude());
+        Location mLastLocation = new Location("");
+        mLastLocation.setLatitude(lat);
+        mLastLocation.setLongitude(lon);
+        Intent intent = new Intent(getContext(), FetchAddressIntentService.class);
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
+        Toast.makeText(getActivity(), "Just before calling intent service", Toast.LENGTH_LONG).show();
+        //Log.d("inside service",mLastLocation.getLatitude()+" "+mLastLocation.getLongitude());
+        getActivity().startService(intent);
+
+
+    }
+
+    class AddressResultReceiver extends ResultReceiver {
+
+
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            // Display the address string
+            // or an error message sent from the intent service.
+            resultOutput= resultData.getString(Constants.RESULT_DATA_KEY);
+            Log.d("returned to destination","true");
+            // Log.d("address location", resultOutput);
+            //displayAddressOutput();
+
+            // Show a toast message if an address was found.
+            Log.d("result code",resultCode+"");
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                //showToast(getString(R.string.address_found));
+                //Toast.makeText(AddReport.class,resultOutput,Toast.LENGTH_LONG).show();
+                //Toast.makeText(this,resultOutput,Toast.LENGTH_LONG).show();
+                Log.d("address location", resultOutput);
+                formatAndSendDataToMainDB();
+            }
+
+        }
+    }
+
+
+    private void formatAndSendDataToMainDB() {
+        Log.d("result_output",resultOutput);
+        String[] locationPairs=resultOutput.split("~" +
+                "");
+
+        for(int i=0;i<locationPairs.length;i++){
+            locationAtrributes.add(locationPairs[i]);
+        }
+
+        locationAtrributes.add("latitude:"+theReportToBeSentToMainDB.getLatitude());
+        locationAtrributes.add("longitude:" + theReportToBeSentToMainDB.getLongitude());
+        locationAtrributes.add("category:"+ theReportToBeSentToMainDB.getCategory());
+        locationAtrributes.add("time:" + theReportToBeSentToMainDB.getTime());
+        String informalLocation= theReportToBeSentToMainDB.getInformalLocation();
+        locationAtrributes.add("informalLocation:" + informalLocation);
+        String informalDescription=theReportToBeSentToMainDB.getProblemDescription();
+        locationAtrributes.add("problemDescription:" + informalDescription);
+        //locationAtrributes.add("userName:" + "Onix");
+
+        imageByteArray=theReportToBeSentToMainDB.getImage();
+        //Log.d("byteArray", new String(imageByteArray));
+        //locationAtrributes.add("image:"+new String(imageByteArray));
+
+        new AddReportTask().execute();
+
+    }
+
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
@@ -362,6 +474,80 @@ public class DashboardFragment extends Fragment {
             populatePostListView();
         }
     }
+
+
+
+    class AddReportTask extends AsyncTask<String, Void, String> {
+
+        private JSONObject jsonAddReport;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(String... args) {
+
+            JSONParser jParser = new JSONParser();
+            // Building Parameters
+            List<Pair> params = new ArrayList<Pair>();
+
+
+            for(int i=0;i<locationAtrributes.size();i++){
+
+                String tagAndValueString=locationAtrributes.get(i);
+
+                String tag= tagAndValueString.split(":")[0];
+                Log.d("timest: ",tagAndValueString);
+                String value;
+                if(!tag.equals("time"))
+                    if(tagAndValueString.split(":").length==1){
+                        value="";
+                    }
+                    else value=tagAndValueString.split(":")[1];
+                else{
+                    value=tagAndValueString.substring(tagAndValueString.indexOf(":")+1);
+                }
+
+                if(tag.equals("street_number"))
+                    tag="streetNo";
+                else if(tag.equals("sublocality_level_1"))
+                    tag="sublocality";
+                params.add(new Pair(tag, value));
+
+                Log.d("string_test", tag + " " + value);
+            }
+            String encodedString = Base64.encodeToString(imageByteArray, 0);
+            params.add(new Pair("image",encodedString));
+//            params.add(new Pair("userName:", Utility.CurrentUser.getUsername()));
+            params.add(new Pair("userId",Utility.CurrentUser.getUserId()));
+            Log.d("image size", imageByteArray.length + "");
+
+            // getting JSON string from URL
+            jsonAddReport = jParser.makeHttpRequest("/insertPost", "POST", params);
+//            jsonLocations = jParser.makeHttpRequest("/locations", "GET", null);
+
+
+            // Check your log cat for JSON reponse
+//            Log.e("All info: ", jsonLogin.toString());
+            return null;
+
+        }
+
+
+        protected void onPostExecute (String a){
+
+
+            if(jsonAddReport==null)
+                Log.d("report_database"," null");
+            else Log.d("report_database",jsonAddReport.toString());
+
+
+
+        }
+    }
+
     /*
     public ArrayList<Report> getUserRecords(String name){
 

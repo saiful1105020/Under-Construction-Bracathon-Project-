@@ -269,26 +269,28 @@ class Home extends CI_Controller {
 	
 	public function getSuggestions()
 	{
-		if(isset($_POST['lat']))$lat=$_POST['lat'];
-		else $lat='';
+		$lat=$_GET['lat'];
+		//else $lat='';
 		
-		if(isset($_POST['lon']))$lon=$_POST['lon'];
-		else $lon='';
+		$lon=$_GET['lon'];
+		//else $lon='';
 	
-		if(isset($_POST['time']))$time=$_POST['time'];
-		else $time='';
+		$time=$_GET['time'];
+		//else $time='';
 		
-		if(isset($_POST['cat']))$cat=$_POST['cat'];
-		else $cat='';
+		$cat=$_GET['cat'];
+		//else $cat='';
 		
-		$jsonData['posts'] = $this->post_model->get_suggestions($lat,$lon,$time,$cat);
+		$jsonData['posts'] =$this->post_model->get_suggestions($lat,$lon,$time,$cat);
 		
 		/*
+		$jsonData['posts'] = array();
+		
 		foreach($result as $r)
 		{
 			$post['userName']=$r['userName'];
 			$post['cat']=$r['cat'];
-			$post['image'] = $r['img'];
+			//$post['image'] = $r['img'];
 			array_push($jsonData['posts'],$post);
 		}
 		*/
@@ -340,6 +342,8 @@ class Home extends CI_Controller {
 		
 		$jsonData['rating']=$this->getDashboardGraphData($user_id);
 		
+		//$jsonData['rating']=500;
 		echo json_encode($jsonData);
+		
 	}
 }
