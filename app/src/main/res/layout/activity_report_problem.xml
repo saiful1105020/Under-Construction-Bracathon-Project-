@@ -12,7 +12,9 @@
         android:layout_height="150dp"
         android:id="@+id/addReportImageImageView"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/takephoto" />
+        android:src="@drawable/takephoto"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp" />
 
     <RadioGroup
         android:layout_width="match_parent"
@@ -38,6 +40,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
+            android:fadeScrollbars="false"
             android:scrollIndicators="right" />
 
         <EditText
@@ -73,7 +76,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <Button
+        Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Upload Later"
@@ -87,7 +90,7 @@
             android:id="@+id/addReportNewReportButton"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
-            android:backgroundTint="#A1B3ED"
+            android:backgroundTint="#ff0099cc"
             android:onClick="onUploadNowButtonClick"/>
     </LinearLayout>
 

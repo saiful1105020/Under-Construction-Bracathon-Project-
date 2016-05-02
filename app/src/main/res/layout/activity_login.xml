@@ -68,19 +68,19 @@
         android:layout_weight="1"
         android:gravity="center_vertical|fill_horizontal">
 
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Login"
+            android:id="@+id/btnLoginLogin" />
+
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/lblLoginError"
             android:gravity="center_horizontal"
-            android:textColor="@android:color/holo_red_dark" />
-
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/Login"
-            android:id="@+id/btnLoginLogin" />
+            android:textColor="#ffcc0000" />
 
     </LinearLayout>
 
