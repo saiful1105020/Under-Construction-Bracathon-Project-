@@ -164,7 +164,7 @@ class Post_model extends CI_Model
 	
 	public function get_user_posts($user_id)
 	{
-		$sql = 'select p.* from post p where p.user_id=? order by p.time desc';
+		$sql = 'select p.* from post p where p.user_id=? order by p.time desc limit 20';
 		$query=$this->db->query($sql,$user_id)->result_array();
 		return $query;
 	}
