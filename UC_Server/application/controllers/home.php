@@ -176,6 +176,91 @@ class Home extends CI_Controller {
 		echo json_encode($jsonData);
 	}
 	
+	/**
+		Send the list of existing categories
+	*/
+	public function getCategoryList()
+	{
+		$jsonData['catList'] = array();
+		
+		$temp = $this->post_model->get_category_list();
+		foreach($temp as $t)
+		{	
+			array_push($jsonData['catList'],$t);
+		}
+		
+		echo json_encode($jsonData);
+	}
+	
+	/**
+		Insert a user suggestion for new category.
+		if any duplicate exists, count++
+		otherwise, insert with count 1
+	*/
+	public function insertCatSuggestion()
+	{
+		$newCat = $_GET['category'];
+		//$jsonData['str'] = $this->mapString("Hi T here");
+		//echo json_encode($jsonData);
+		//check duplicate
+		$duplicate = 0;
+		$duplicateId = -1;
+		//$jsonData['catList'] = array();
+		
+		
+		$temp = $this->post_model->get_suggested_category_list();
+		foreach($temp as $t)
+		{
+			$catName = $t['name'];
+			
+			//array_push($jsonData['catList'],$this->mapString($catName));
+			
+			if($this->mapString($newCat) === $this->mapString($catName)) 
+			{
+				//array_push($jsonData['catList'],$this->mapString($catName));
+				$duplicate = 1;
+				$duplicateId = $t['id'];
+				break;
+			}
+		}
+		
+		if($duplicate == 1)
+		{
+			//increment count
+			$this->post_model->inc_suggestion_count($duplicateId);
+		}
+		else
+		{
+			$this->post_model->insert_cat_sugegstion($newCat);
+		}
+		
+		//$jsonData['dup'] = $duplicate;
+		//echo json_encode($jsonData);
+	}
+	
+	/**
+		Open Dustbean = open dustbean = openDustbean = o pen dus t bean = OPENDUSTBEAN
+		Remove all whitespace characters
+	*/
+	public function mapString($strIn)
+	{
+		//$strIn = $_GET['string'];
+		
+		$str = "";
+		$length = strlen($strIn);
+		
+		for($i=0;$i<$length;$i++)
+		{
+			if(('a'<=$strIn[$i] and $strIn[$i]<='z') or ('A'<=$strIn[$i] and $strIn[$i]<='Z') or ('0'<=$strIn[$i] and $strIn[$i]<='9')) $str=$str.$strIn[$i];
+		}
+		
+		$str = strtoupper($str);
+		
+		//$jsonData['str'] = $str;
+		//echo json_encode($jsonData);
+		return $str;
+	}
+	
 	public function submitVote()
 	{
 		$user_id = $_POST['userId'];
@@ -217,8 +302,24 @@ class Home extends CI_Controller {
 		
 		$post['user_id'] = $_POST['userId'];
 
-		if(isset($_POST['category'])) $post['category']=$_POST['category'];
+		/**
+			if category doesn't exist, use Others
+			Not Tested
+		*/
+		if(isset($_POST['category']))
+		{
+			$catExist = $this->post_model->existCategory($_POST['category']);
+			if($catExist == 1)
+			{
+				$post['category']=$_POST['category'];
+			}
+			else
+			{
+				$post['category']=-1;
+			}
+		}
 		else $post['category']='';
+		
 		
 		if(isset($_POST['image']))$post['image']=base64_decode($_POST['image']);
 		else $post['image']='';

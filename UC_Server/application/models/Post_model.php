@@ -287,5 +287,41 @@ class Post_model extends CI_Model
 		$query=$this->db->query($sql,array($location_id))->row_array();
 		return $query;
 	}
+	
+	public function get_category_list()
+	{
+		$sql='SELECT * FROM category';
+		$query=$this->db->query($sql)->result_array();
+		return $query;
+	}
+	
+	public function get_suggested_category_list()
+	{
+		$sql='SELECT * FROM suggestedCategory';
+		$query=$this->db->query($sql)->result_array();
+		return $query;
+	}
+	
+	public function inc_suggestion_count($duplicateId)
+	{
+		$sql = 'UPDATE `suggestedcategory` SET `count`=`count` WHERE `id`= ?';
+		$query=$this->db->query($sql,array($duplicateId));
+	}
+	
+	public function insert_cat_sugegstion($newCat)
+	{
+		$sql = 'INSERT INTO `suggestedcategory`(`name`, `count`) VALUES (?,1)';
+		$query=$this->db->query($sql,array($newCat));
+	}
+	
+	public function existCategory($cat)
+	{
+		$sql = 'SELECT COUNT(*) as cnt FROM category WHERE `categoryId` = ?';
+		$query=$this->db->query($sql,array($cat))->row_array();
+		$count = $query['cnt'];
+		
+		if($count>0) return 1;
+		else return 0;
+	}
 }
 ?>
