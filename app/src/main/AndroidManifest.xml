@@ -19,7 +19,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/MyMaterialTheme" >
+        android:theme="@style/MyMaterialTheme">
 
         <!-- <activity -->
         <!-- android:name=".Post" -->
@@ -43,15 +43,18 @@
         </activity>
         <activity
             android:name=".AddReport"
-            android:label="@string/title_activity_add_report" >
+            android:label="@string/title_activity_add_report"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".TabbedHome"
-            android:label="@string/title_activity_tabbed_home" >
+            android:label="@string/title_activity_tabbed_home"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -63,20 +66,23 @@
         </activity>
         <activity
             android:name=".RegistrationActivity"
-            android:label="@string/title_activity_registration" >
+            android:label="@string/title_activity_registration"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".VerificationActivity"
-            android:label="@string/title_activity_verification" >
+            android:label="@string/title_activity_verification"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ForgetActivity"
-            android:label="@string/title_activity_forget" >
+            android:label="@string/title_activity_forget"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".PostSuggestion"
             android:label="@string/title_activity_post_suggestion"
-            >
+            android:screenOrientation="portrait">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->
 
@@ -90,10 +96,18 @@
             android:exported="false" >
         </service>
 
+        <receiver android:name=".MyBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" >
+                </action>
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".ReportProblem"
             android:label="@string/title_activity_report_problem"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

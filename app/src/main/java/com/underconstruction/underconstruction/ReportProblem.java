@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -319,17 +321,16 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
         if (mGoogleApiClient.isConnected() && mLastLocation != null) {
             Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
             //THis post has to be inserted in the main database
-//            if(whichButtonIsPressed ==calledFromInsertReport) {
-//                startIntentServiceForReverseGeoTagging();
-//            }
-//            //This post will be saved in the internal database.
-//            else if(whichButtonIsPressed == calledFromSaveReport){
-//                //saveTheReportInDatabase(imageByteArray);
-//                formatDataForSavingInTheInternalDB();
-//
-//
-//            }
-            startIntentServiceForReverseGeoTagging();
+            if(Utility.isOnline(getApplicationContext())) {
+                startIntentServiceForReverseGeoTagging();
+            }
+            //This post will be saved in the internal database.
+            else {
+                //saveTheReportInDatabase(imageByteArray);
+                formatDataForSavingInTheInternalDB();
+                Log.d("Internet Connection", "absent");
+
+            }
         }
         else
             Toast.makeText(this,"Obtaining location failed. Please try after sometime",Toast.LENGTH_LONG).show();
@@ -403,6 +404,7 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
         locationAtrributes.add("longitude:" + mLastLocation.getLongitude());
         locationAtrributes.add("category:"+categorySelected);
         locationAtrributes.add("time:" + getCurrentTimestamp());
+        Log.d("time from normal report", getCurrentTimestamp());
         String informalLocation=((EditText)findViewById(R.id.addInformalLocationEditText)).getText().toString();
         locationAtrributes.add("informalLocation:" + informalLocation);
         String informalDescription=((EditText)findViewById(R.id.addInformalDescEditText)).getText().toString();
@@ -448,8 +450,6 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
         //Log.d("before saving in the internal database: ",locationAtrributes.toString());
         imageByteArray=convertBitmapIntoByteArray(imageBitmap);
         saveTheReportInDatabase(imageByteArray);
-
-
     }
 
 
@@ -507,4 +507,6 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
         //help.getData()
         //sendStoredEntryToDatabase();
     }
+
+
 }

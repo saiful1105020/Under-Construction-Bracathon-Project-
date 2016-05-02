@@ -148,6 +148,7 @@ public class LoginActivity extends Activity {
             if(jsonSignUp == null) {
                 //Utility.CurrentUser.showConnectionError(getApplicationContext());
                 errorText.setText("Please check your internet connection");
+                busy_session(false);
                 return;
             }
             String userId = new String ("");

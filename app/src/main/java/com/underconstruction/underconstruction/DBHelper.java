@@ -80,7 +80,7 @@ public class DBHelper extends SQLiteOpenHelper {
             }
             else{
                 //take everything starting from 1st ":" [HH:MM:SS]
-                value=tagAndValueString.substring(tagAndValueString.indexOf(":"));
+                value=tagAndValueString.substring(tagAndValueString.indexOf(":")+1);
             }
 
             //edit the tags so that they match the column names in the central database (just two of them didn't match)
@@ -129,7 +129,8 @@ public class DBHelper extends SQLiteOpenHelper {
             byte[] image = res.getBlob(res.getColumnIndex(REPORT_COLUMN_IMAGE));
             String category = res.getString(res.getColumnIndex(REPORT_COLUMN_CATEGORY));
 
-            Report insertedReport = new Report(recordID,category,image,time,informalLocation,problemDesc,latitude,longitude);
+            Report insertedReport = new Report(userID,category,image,informalLocation,latitude,longitude,problemDesc,recordID,time);
+
             Log.d("created report:","" + insertedReport.toString());
             allReportsByAUser.add(insertedReport);
             //array_list.add(res.getString(res.getColumnIndex(REPORT_COLUMN_ID)) +" " +res.getString(res.getColumnIndex(REPORT_COLUMN_USERID)) + " " + res.getString(res.getColumnIndex(REPORT_COLUMN_TIME)) + " " + res.getString(res.getColumnIndex(REPORT_COLUMN_LATITUDE))+" "+res.getString(res.getColumnIndex(REPORT_COLUMN_LONGITUDE)));

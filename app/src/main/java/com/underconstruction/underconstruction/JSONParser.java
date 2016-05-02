@@ -122,7 +122,7 @@ public class JSONParser {
                 return null;
             }
             jsonString = buffer.toString();
-            //Log.d("Input Stream: ", jsonString);
+            Log.d("Input Stream: ", jsonString);
             urlConnection.disconnect();
 
         } catch (IOException e) {
