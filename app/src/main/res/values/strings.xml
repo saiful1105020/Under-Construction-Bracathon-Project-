@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">UnderConstruction</string>
-    <string name="user_name">Onix</string>
     <string name="user_id">1</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -11,4 +10,30 @@
     <string name="title_activity_add_report">AddReport</string>
     <string name="title_activity_tabbed_home">TabbedHome</string>
     <string name="title_activity_report_problem">ReportProblem</string>
+
+    <string name="user_name">User Name</string>
+    <string name="password">Password</string>
+    <string name="Login">Login</string>
+    <string name="Registration">Do not Have an account? SignUp, it is free.</string>
+    <string name="Forget">Forgot Password?</string>
+    <string name="Remember">Remember Me?</string>
+
+    <string name="title_activity_registration" translatable="false">RegistrationActivity</string>
+    <string name="registration_heading">Enter Registration Info</string>
+    <string name="email">Your Email Address</string>
+    <string name="confirm_password">Comfirm Password</string>
+    <string name="signup">Sign me Up!</string>
+    <string name="registration_warning">A verification code will be sent to your email</string>
+    <string name="title_activity_verification" translatable="false">VerificationActivity</string>
+    <string name="verification_title">A verification code has been sent to your email, enter it below.</string>
+    <string name="enter_verification_code">Enter Verification Code</string>
+    <string name="verify">Verify</string>
+    <string name="title_activity_forget">ForgetActivity</string>
+    <string name="ForgetTitle">Enter your email address:</string>
+    <string name="ForgetEmail">Your Email Address</string>
+    <string name="ForgetReset">Reset Password</string>
+    <string name="ForgetInstruction">A new password will be sent to your email address.</string>
+    <string name="VerificationDidntGetit">I did not receive any verification code . <u>Resend my code</u> .</string>
+    <string name="title_activity_post_suggestion">Post Suggestion</string>
+>>>>>>> 5deb6081736b34b0667e6a12edf9e2ee5a83b6f2
 </resources>

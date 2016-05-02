@@ -53,7 +53,7 @@ public class JSONParser {
               "/uc_brac_git/uc_server/index.php/home";
               */
 
-        final String BASE_URL = "http://" + "172.20.62.33" +                //Alternate Database
+        final String BASE_URL = "http://" + "172.20.62.11" +                //Alternate Database
                 "/hackThon/UC_Server/index.php/home";
 
 //        final String BASE_URL = "http://" + "172.20.62.23" +

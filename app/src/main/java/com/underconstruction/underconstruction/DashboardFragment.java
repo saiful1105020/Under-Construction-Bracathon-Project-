@@ -108,7 +108,9 @@ public class DashboardFragment extends Fragment {
     private void bringDataFromInternalDb() {
         internalDb = new DBHelper(getContext());
         ArrayList<Report> allTheReportsOfIntDb = internalDb.getDataForUser(Utility.CurrentUser.getUserId());
-        uploadTheReportToMainDatabase(allTheReportsOfIntDb.get(0));
+        if(!allTheReportsOfIntDb.isEmpty()) {
+            uploadTheReportToMainDatabase(allTheReportsOfIntDb.get(0));
+        }
         Log.d("bring back our report", allTheReportsOfIntDb.toString());
 
     }
@@ -440,7 +442,7 @@ public class DashboardFragment extends Fragment {
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
 
-            params.add(new Pair("userId", 1));
+            params.add(new Pair("userId", Utility.CurrentUser.getUserId()));
 //            params.add(new Pair("userName", Utility.CurrentUser.getId()));
 
             // getting JSON string from URL

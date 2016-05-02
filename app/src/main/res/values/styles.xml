@@ -11,5 +11,17 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <!-- Base application theme. -->
+    <style name="LoginPageTheme" parent="android:Theme.Holo.NoActionBar">
+        <!-- Customize your theme here. -->
+
+    </style>
+
+    <style name="AppThemeWOAcionbar" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+    </style>
 
 </resources>
