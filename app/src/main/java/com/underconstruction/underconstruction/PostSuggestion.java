@@ -22,7 +22,11 @@ public class PostSuggestion extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_suggestion);
-        txtRes = (TextView) findViewById(R.id.txtResult);
+
+        /**
+         * needs to be resolved
+         */
+//        txtRes = (TextView) findViewById(R.id.txtResult);
         PostSuggestionTask ps = new PostSuggestionTask();
         ps.execute();
     }

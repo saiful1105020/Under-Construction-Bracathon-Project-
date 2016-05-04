@@ -87,7 +87,7 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
 
         mImageView=(ImageView)findViewById(R.id.addReportImageImageView);
         btnAddReport=(Button)(findViewById(R.id.addReportNewReportButton));
-        btnSaveReport=(Button)(findViewById(R.id.addReportSaveReportButton));
+//        btnSaveReport=(Button)(findViewById(R.id.addReportSaveReportButton));
 
         list = (ListView) findViewById(R.id.listView);
         txtCateDesc = (TextView) findViewById(R.id.txtCategoryDesc);

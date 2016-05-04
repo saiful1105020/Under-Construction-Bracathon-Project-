@@ -13,6 +13,7 @@
     </style>
     <!-- Base application theme. -->
     <style name="LoginPageTheme" parent="android:Theme.Holo.NoActionBar">
+
         <!-- Customize your theme here. -->
 
     </style>
