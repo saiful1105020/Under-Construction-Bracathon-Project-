@@ -45,14 +45,6 @@
                 <!--android:layout_height="wrap_content"-->
                 <!--android:text="  ("/>-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/lblPostProblemInformalLocation"
-                android:text="Near Agora under the sky on the road thousands of kilometers from the center of teh earth and i shall go on to write more and more till i find success"
-                android:textSize="12dp"
-                android:paddingBottom="2dp"/>
-
         </LinearLayout>
 
         <!--<LinearLayout-->
@@ -75,7 +67,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="8dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="8dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lblPostProblemInformalLocation"
+            android:text="Near Agora under the sky on the road thousands of kilometers from the center of teh earth and i shall go on to write more and more till i find success"
+            android:textSize="12dp"
+            android:paddingBottom="2dp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -83,7 +84,8 @@
             android:id="@+id/lblPostProblemDescription"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Eto baaje road dekhi nai ami jibone"
-            android:textStyle="italic"/>
+            android:textStyle="italic"
+            android:layout_marginTop="5dp" />
 
     </LinearLayout>
 
