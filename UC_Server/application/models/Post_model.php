@@ -252,8 +252,14 @@ class Post_model extends CI_Model
 	public function get_location_id($lat,$lon)
 	{
 		$sql='SELECT location_id FROM location WHERE abs(`lat` - ?) <= 0.002 AND abs(`lon` - ?) <=0.002';
-		$query=$this->db->query($sql,array($lat,$lon))->row_array();
-		return $query['location_id'];
+		$query=$this->db->query($sql,array($lat,$lon));
+		
+		if($query->num_rows() > 0)
+		{
+			$t = $query->row_array();
+			return $t['location_id'];
+		}
+		else return -1;
 	}
 	
 	//insert location and get location id
@@ -288,6 +294,9 @@ class Post_model extends CI_Model
 		return $query;
 	}
 	
+	/**
+		UNTESTED
+	*/
 	public function get_category_list()
 	{
 		$sql='SELECT * FROM category';

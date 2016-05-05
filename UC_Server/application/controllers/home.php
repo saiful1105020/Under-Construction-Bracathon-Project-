@@ -131,11 +131,18 @@ class Home extends CI_Controller {
 		$lat = $_GET['lat'];
 		$lon = $_GET['lon'];
 		
+		$jsonData['posts']=array();
+		
 		$location_id=$this->post_model->get_location_id($lat,$lon);
 		
 		$result=$this->post_model->get_all_post($location_id);
 		
-		$jsonData['posts']=array();
+		if($location_id == -1)
+		{
+			echo json_encode($jsonData);
+			return;
+		}
+		
 		
 		foreach($result as $r)
 		{
