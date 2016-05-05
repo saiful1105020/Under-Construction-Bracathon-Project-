@@ -106,7 +106,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public ArrayList<Report> getDataForUser(String userId) {
         // handle using ID NOT user name
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from tempTable where userID=\"" + userId + "\"", null);
+        Cursor res = db.rawQuery("select * from tempTable where userID='" + userId + "'", null);
 
         return convertCursorIntoRecordList(res);
     }

@@ -156,7 +156,7 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
             //setPic();
             Intent intent =new Intent(this, ReportProblem.class);
             startActivity(intent);
-            btnSaveReport.setClickable(true);
+//            btnSaveReport.setClickable(true);
             btnAddReport.setClickable(true);
         }
     }

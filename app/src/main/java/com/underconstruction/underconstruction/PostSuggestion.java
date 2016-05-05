@@ -27,6 +27,7 @@ public class PostSuggestion extends AppCompatActivity {
          * needs to be resolved
          */
 //        txtRes = (TextView) findViewById(R.id.txtResult);
+        txtRes = (TextView) findViewById(R.id.textView9);
         PostSuggestionTask ps = new PostSuggestionTask();
         ps.execute();
     }
