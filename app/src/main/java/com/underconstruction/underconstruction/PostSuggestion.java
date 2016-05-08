@@ -7,6 +7,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -17,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PostSuggestion extends AppCompatActivity {
-    TextView txtRes;
+
+    Button btnUpload, btnCancel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +29,10 @@ public class PostSuggestion extends AppCompatActivity {
          * needs to be resolved
          */
 //        txtRes = (TextView) findViewById(R.id.txtResult);
-        txtRes = (TextView) findViewById(R.id.textView9);
+
+        btnUpload = (Button) findViewById(R.id.btnUploadSuggestionAnyway);
+        btnCancel = (Button) findViewById(R.id.btnSkipUpload);
+
         PostSuggestionTask ps = new PostSuggestionTask();
         ps.execute();
     }
@@ -66,7 +71,7 @@ public class PostSuggestion extends AppCompatActivity {
         protected void onPostExecute (String file_url){
             if(jsonPostSuggestion == null) {
                 //Utility.CurrentUser.showConnectionError(getApplicationContext());
-                txtRes.setText("Please check your internet connection");
+                //txtRes.setText("Please check your internet connection");
                 return;
             }
             String s = new String("");
@@ -85,7 +90,7 @@ public class PostSuggestion extends AppCompatActivity {
 
                     //Log.d("posts near you", uname);
                 }
-                txtRes.setText(s);
+                //txtRes.setText(s);
 
             } catch (JSONException e) {
                 e.printStackTrace();
