@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+/**
+	This class is used to provide support from database for the "MOBILE APP"
+*/
 class Home extends CI_Controller {
 	 
 	public function __construct()		//DONE
@@ -27,6 +29,10 @@ class Home extends CI_Controller {
 		
 	}
 	
+	/**
+		Returns 3 fields for a login attempt: userName, userId, isVerified
+		Failue: userName = "", userId = 0 , isVerified = 0
+	*/
 	public function login()	
 	{
 		
@@ -42,11 +48,14 @@ class Home extends CI_Controller {
 		echo json_encode($jsonData);
 	}
 	
-	
-	
-	//
-	//working ...
-	//
+	/**
+		Input:
+			userName,email,password
+		Output:
+		Returns a status and userId ; save a verification code in database for verification process
+		Failure: status = 0 , userId = 0
+		Success: status = 1
+	*/
 	public function register()
 	{
 		$data['user_name'] = trim($_GET['userName']);
@@ -55,32 +64,38 @@ class Home extends CI_Controller {
 		
 		$json_data = array();
 		
-		$json_data['status'] = $this->post_model->is_duplicate($data['email']);
+		$json_data['status'] = $this->post_model->is_email_available($data['email']);
 		
-		
-		$data['user_rating']=500;
-		$data['is_verified']=0;
-		$data['is_suspended']=0;
-		
-		//GENERATE A VERIFICATION CODE AND SAVE IT TO DATABASE
-		//$random_hash = md5(uniqid(rand(), true));
-		$random_hash = substr(md5(uniqid(rand(), true)), 6, 6);
-		
-		$data['ver_code'] = $random_hash;
-		
-		
-		
-		//SAVE TO SERVER
-		$json_data['userId'] = $this->post_model->register($data);
+		if($json_data['status']==0)
+		{
+			$json_data['userId']=0;
+		}
+		else
+		{
+			$data['user_rating']=500;
+			$data['is_verified']=0;
+			$data['is_suspended']=0;
+			
+			//GENERATE A VERIFICATION CODE AND SAVE IT TO DATABASE
+			$random_hash = substr(md5(uniqid(rand(), true)), 6, 6);
+			
+			$data['ver_code'] = $random_hash;
+			
+			
+			
+			//SAVE TO SERVER
+			$json_data['userId'] = $this->post_model->register($data);
+			
+		}		
 		echo json_encode($json_data);
-		
-		
-		//send_mail();
-		
 	}
 	
-	
-	
+	/**
+		Input: userId , verCode (verification code)
+		Output: status
+			Success: status = 1
+			Failure: status = 0
+	*/
 	public function verify_registration()
 	{
 		$user_id = $_GET['userId'];
@@ -95,16 +110,25 @@ class Home extends CI_Controller {
 		else $json_data['status']=0;
 		echo json_encode($json_data);
 		
+		/**
+			Need to check the loop in mobile app
+		*/
 		//IF EQUALS, VERIFIED. INSERT INTO USER DATABASE; RETURN 1
 		//ELSE , RETURN 0
 	}
 	
-	
+	/**
+		Just for test purpose
+	*/
 	public function test()
 	{
 		$this->post_model->get_all_post(12);
 	}
 	
+	/**
+		Send verification code to email address provided by the user.
+		Not done yet.
+	*/
 	public function send_mail()
 	{
 		//$json_data=array();
@@ -122,12 +146,12 @@ class Home extends CI_Controller {
 		//echo json_encode($text);
 	}
 	
+	/**
+		Input: <lat,lon> (A location)
+		Output: Array of all posts nearby the location
+	*/
 	public function getAllPosts()
 	{
-		/**
-			TEST
-		*/
-		
 		$lat = $_GET['lat'];
 		$lon = $_GET['lon'];
 		
@@ -137,16 +161,15 @@ class Home extends CI_Controller {
 		
 		$result=$this->post_model->get_all_post($location_id);
 		
-		if($location_id == -1)
+		if($location_id == -1)				//The current location isn't inserted into the database
 		{
-			echo json_encode($jsonData);
+			echo json_encode($jsonData);	//Returns empty array
 			return;
 		}
 		
 		
 		foreach($result as $r)
 		{
-			
 			$post['postId']=$r['post_id'];
 			$post['category']=$r['category'];
 			$post['timeOfPost']=$r['time'];
@@ -162,6 +185,7 @@ class Home extends CI_Controller {
 			
 			$post['userName']=$r['user_name'];
 			$post['userRating']=$r['user_rating'];
+			$post['userId']=$r['user_id'];
 			
 			/**
 				Find upvote and downvote counts
@@ -353,6 +377,9 @@ class Home extends CI_Controller {
 		
 	}
 
+	/**
+		Required for showing dashboard (user profile)
+	*/
 	public function getDashboardGraphData($user_id)
 	{
 		$result=$this->post_model->get_last_10_user_post($user_id);
@@ -375,6 +402,10 @@ class Home extends CI_Controller {
 		return $jsonData;
 	}
 	
+	/**
+		Input: lat(latitude), lon(longitude), time, cat(category)
+		Output: an array of similar posts
+	*/
 	public function getSuggestions()
 	{
 		$lat=$_GET['lat'];
@@ -389,19 +420,51 @@ class Home extends CI_Controller {
 		$cat=$_GET['cat'];
 		//else $cat='';
 		
-		$jsonData['posts'] =$this->post_model->get_suggestions($lat,$lon,$time,$cat);
+		$result =$this->post_model->get_suggestions($lat,$lon,$time,$cat);
 		
-		/*
+		
 		$jsonData['posts'] = array();
 		
 		foreach($result as $r)
 		{
-			$post['userName']=$r['userName'];
-			$post['cat']=$r['cat'];
-			//$post['image'] = $r['img'];
+			$post['userName']=$r['user_name'];
+			$post['userId']=$r['user_id'];
+			
+			$post['postId']=$r['post_id'];
+			$post['category']=$r['category'];
+			$post['timeOfPost']=$r['time'];
+			$post['informalLocation']=$r['informal_location'];
+			$post['problemDescription']=$r['text'];
+			$post['image']=base64_encode($r['image']);
+			
+			//$temp=$this->post_model->get_location($r['actual_location_id']);
+			$post['formalLocation']=$r['neighbourhood'];
+			
+			///$post['status']=$r['status'];
+			///$post['rating_change']=$r['rating_change'];
+			
+			$post['userName']=$r['user_name'];
+			$post['userRating']=$r['user_rating'];
+			$post['userId']=$r['user_id'];
+			
+			/**
+				Find upvote and downvote counts
+			*/
+			$temp = $this->post_model->get_vote_count($post['postId']);
+			$post['voteCount']=$temp['upvotes']-$temp['downvotes'];
+			//$post['downCount']=$temp['downvotes'];
+			
+			/**
+				Find user ids' who already have voted for the post
+			*/
+			/*
+			$tmp = $this->post_model->get_voters($post['postId']);
+			$post['upVoters']=$tmp['up_voters'];
+			$post['downVoters']=$tmp['down_voters'];
+			*/
 			array_push($jsonData['posts'],$post);
 		}
-		*/
+		
 		
 		
 		
@@ -410,6 +473,10 @@ class Home extends CI_Controller {
 		echo json_encode($jsonData);
 	}
 	
+	/**
+		Input: userId
+		Output: An array of all posts of an user
+	*/
 	public function getUserPosts()
 	{
 		$user_id = $_GET['userId'];
@@ -442,6 +509,10 @@ class Home extends CI_Controller {
 		echo json_encode($jsonData);
 	}
 	
+	/**
+		Input: userId
+		Output: Rating of the user
+	*/
 	public function getUserRating()
 	{
 		$user_id = $_GET['userId'];
