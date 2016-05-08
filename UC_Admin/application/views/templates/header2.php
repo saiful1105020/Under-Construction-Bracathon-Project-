@@ -18,6 +18,9 @@
     <link href="<?php echo base_url("assets/css/dashboard.css"); ?>" rel="stylesheet">
     <script src="<?php echo base_url("assets/js/ie-emulation-modes-warning.js"); ?>"></script>
     <link href="<?php echo base_url("assets/css/mynavbar.css"); ?>" rel="stylesheet">
+    <link href="<?php echo base_url("assets/css/newlogin.css"); ?>" rel="stylesheet">
+    <link href="<?php echo base_url("assets/css/myMap.css"); ?>" rel="stylesheet">
+     <script src="<?php echo base_url("assets/js/myMap.js"); ?>"></script>
   </head>
 
   <body>
@@ -36,9 +39,11 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><a href="<?php echo site_url('admin'); ?>" class="glyphicon glyphicon-home"> Home</a></li>
-            <li><a href="<?php echo site_url('start/settings');?>">Settings</a></li>
-            <li><a href="<?php echo site_url('start/profile');?>">Profile</a></li>
             <li><a href="<?php echo site_url('admin/showBarGraph');?>">Show Bar Graph</a></li>
+            <li><a href="<?php echo site_url('admin/addCategory');?>">Add Category</a></li>
+            <li><a href="<?php echo site_url('admin/deleteCategory');?>">Delete Category</a></li>
+            <li><a href="<?php echo site_url('admin/showMap');?>">Show Map</a></li>
+            <li><a href="<?php echo site_url('admin/profile');?>">Profile</a></li>
             <li><a href="<?php echo site_url('admin/logout'); ?>" class="glyphicon glyphicon-log-out"> LogOut</a></li>
           </ul>
           
