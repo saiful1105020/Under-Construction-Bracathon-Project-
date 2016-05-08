@@ -1,5 +1,7 @@
 package com.underconstruction.underconstruction;
 
+import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,29 +9,60 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PostSuggestion extends AppCompatActivity {
-    TextView txtRes;
+
+    Button btnUpload, btnCancel;
+    ListView lvwPostSugg;
+    ArrayList<PostSuggestionItem> suggestionItems;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_suggestion);
 
-        /**
-         * needs to be resolved
-         */
-//        txtRes = (TextView) findViewById(R.id.txtResult);
-        txtRes = (TextView) findViewById(R.id.textView9);
-//        PostSuggestionTask ps = new PostSuggestionTask();
-//        ps.execute();
+        btnUpload = (Button) findViewById(R.id.btnUploadSuggestionAnyway);
+        btnCancel = (Button) findViewById(R.id.btnSkipUpload);
+        lvwPostSugg = (ListView) findViewById(R.id.lvwPostSuggestion);
+
+        //populate Arraylist 'suggestionItems' Here, get from intent maybe?
+
+        PostSuggestionAdapter ps_adapter = new PostSuggestionAdapter();
+        lvwPostSugg.setAdapter(ps_adapter);
+
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Don't forget to delete from SQLite db
+                //write code for upload here
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Don't forget to delete from SQLite db
+                finish();
+
+            }
+        });
+
+        //PostSuggestionTask ps = new PostSuggestionTask();
+        //ps.execute();
     }
 
 
@@ -53,5 +86,29 @@ public class PostSuggestion extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    class PostSuggestionAdapter extends ArrayAdapter<PostSuggestionItem>
+    {
+
+        public PostSuggestionAdapter() {
+            super(getApplicationContext(), R.layout.activity_post_suggestion);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+            if (v == null)
+                v = getLayoutInflater().inflate(R.layout.activity_post_suggestion, parent, false);
+
+            ((TextView) v.findViewById(R.id.lblSuggestionRating)).setText(suggestionItems.get(position).rating);
+            ((TextView) v.findViewById(R.id.lblSuggestionDate)).setText(suggestionItems.get(position).date);
+            ((TextView) v.findViewById(R.id.lblSuggestionInformalLocation)).setText(suggestionItems.get(position).informalLocation);
+            ((TextView) v.findViewById(R.id.lblSuggestionInformalProblemDesc)).setText(suggestionItems.get(position).informalProblemDescription);
+            ((TextView) v.findViewById(R.id.lblSuggestionUser)).setText(suggestionItems.get(position).username);
+            ((ImageView) v.findViewById(R.id.imgSuggestion)).setImageBitmap(BitmapFactory.decodeByteArray(suggestionItems.get(position).img, 0, suggestionItems.get(position).img.length));
+
+            return v;
+        }
     }
 }

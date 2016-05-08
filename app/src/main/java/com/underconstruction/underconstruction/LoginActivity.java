@@ -191,7 +191,7 @@ public class LoginActivity extends Activity {
                 Log.d("Logging in", "My ID: " + Utility.CurrentUser.getUserId());
                 Utility.CurrentUser.setUsername(userName);
 
-                //finish();
+                finish();
 
                 /**
                  * Bypassing without linking login user id to home page received // or maybe i don't need to :/
