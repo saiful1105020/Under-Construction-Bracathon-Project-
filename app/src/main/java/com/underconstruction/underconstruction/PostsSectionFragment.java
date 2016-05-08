@@ -1,6 +1,7 @@
 package com.underconstruction.underconstruction;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -62,11 +63,12 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     private String mParam2;
 
     private View v;
+    private static Context context;
 
     private OnFragmentInteractionListener mListener;
 
-    GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
+    static GoogleApiClient mGoogleApiClient;
+    static Location mLastLocation;
 
     /**
      * Use this factory method to create a new instance of
@@ -97,6 +99,8 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        context = getActivity();
     }
 
     @Override
@@ -506,7 +510,11 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     }
 
 
-    class FetchHomePostsTask extends AsyncTask<String, Void, String> {
+    public class FetchHomePostsTask extends AsyncTask<String, Void, String> {
+
+        public FetchHomePostsTask() {
+
+        }
 
         private JSONObject jsonPosts;
 
@@ -559,7 +567,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     }
 
     public synchronized void getLatLong() {
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)

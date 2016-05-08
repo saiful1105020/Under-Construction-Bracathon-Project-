@@ -88,7 +88,7 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
         //initiateHazardTagsInSpinner();
         mImageView=(ImageView)findViewById(R.id.addReportImageImageView);
         btnAddReport=(Button)(findViewById(R.id.addReportNewReportButton));
-        btnSaveReport=(Button)(findViewById(R.id.addReportSaveReportButton));
+//        btnSaveReport=(Button)(findViewById(R.id.addReportSaveReportButton));
 
         mResultReceiver = new AddressResultReceiver(new Handler());
         // mResultReceiver.setReceiver(this);
@@ -203,16 +203,16 @@ public class AddReport extends AppCompatActivity implements View.OnClickListener
 //            buildGoogleApiClient();
             //handleNewReport()
         }
-        else if(v.getId()==R.id.addReportSaveReportButton){
-            whichButtonIsPressed=calledFromSaveReport;
-            new FetchLocation().execute();
-//            Intent intent = new Intent(AddReport.this, Home.class);
-            Intent intent = new Intent(AddReport.this, TabbedHome.class);
-            startActivity(intent);
-//            buildGoogleApiClient();
-            //saveTheReportInDatabase();
-
-        }
+//        else if(v.getId()==R.id.addReportSaveReportButton){
+//            whichButtonIsPressed=calledFromSaveReport;
+//            new FetchLocation().execute();
+////            Intent intent = new Intent(AddReport.this, Home.class);
+//            Intent intent = new Intent(AddReport.this, TabbedHome.class);
+//            startActivity(intent);
+////            buildGoogleApiClient();
+//            //saveTheReportInDatabase();
+//
+//        }
 
     }
 

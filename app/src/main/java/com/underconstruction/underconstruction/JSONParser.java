@@ -49,12 +49,12 @@ public class JSONParser {
 //                "/uc_brac_git/uc_server/index.php/home";
 
 
-     /*final String BASE_URL = "http://" + "172.20.62.23" +
+     final String BASE_URL = "http://" + "172.20.62.6" +
               "/uc_brac_git/uc_server/index.php/home";
-              */
 
-        final String BASE_URL = "http://" + "172.20.62.11" +                //Alternate Database
-                "/hackThon/UC_Server/index.php/home";
+
+      //  final String BASE_URL = "http://" + "172.20.62.6" +                //Alternate Database
+      //          "/hackThon/UC_Server/index.php/home";
 
 //        final String BASE_URL = "http://" + "172.20.62.23" +
 //                "/uc_brac_git/uc_server/index.php/home";
@@ -122,7 +122,7 @@ public class JSONParser {
                 return null;
             }
             jsonString = buffer.toString();
-            //Log.d("Input Stream: ", jsonString);
+            Log.d("Input Stream: ", jsonString);
             urlConnection.disconnect();
 
         } catch (IOException e) {

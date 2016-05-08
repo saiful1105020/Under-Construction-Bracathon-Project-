@@ -16,21 +16,15 @@ public class Report implements Serializable{
     private String time;
     private String informalLocation;
 
-
-    private String problemDescription;
-
-    private String latitude;
-    private String longitude;
-
-
     @Override
     public String toString() {
         return "Report{" +
-                "recordID='" + recordID + '\'' +
-                ", category='" + category + '\'' +
-
+                "category='" + category + '\'' +
+                ", recordID='" + recordID + '\'' +
+                ", image=" + Arrays.toString(image) +
                 ", time='" + time + '\'' +
                 ", informalLocation='" + informalLocation + '\'' +
+                ", userId='" + userId + '\'' +
                 ", problemDescription='" + problemDescription + '\'' +
                 ", latitude='" + latitude + '\'' +
                 ", longitude='" + longitude + '\'' +
@@ -40,35 +34,67 @@ public class Report implements Serializable{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Report)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         Report report = (Report) o;
 
-        if (!getRecordID().equals(report.getRecordID())) return false;
-        if (!getCategory().equals(report.getCategory())) return false;
-        if (!Arrays.equals(getImage(), report.getImage())) return false;
-        if (!getTime().equals(report.getTime())) return false;
-        if (getInformalLocation() != null ? !getInformalLocation().equals(report.getInformalLocation()) : report.getInformalLocation() != null)
+        if (recordID != null ? !recordID.equals(report.recordID) : report.recordID != null)
             return false;
-        if (getProblemDescription() != null ? !getProblemDescription().equals(report.getProblemDescription()) : report.getProblemDescription() != null)
+        if (category != null ? !category.equals(report.category) : report.category != null)
             return false;
-        if (!getLatitude().equals(report.getLatitude())) return false;
-        return getLongitude().equals(report.getLongitude());
+        if (!Arrays.equals(image, report.image)) return false;
+        if (time != null ? !time.equals(report.time) : report.time != null) return false;
+        if (!informalLocation.equals(report.informalLocation)) return false;
+        if (userId != null ? !userId.equals(report.userId) : report.userId != null) return false;
+        if (!problemDescription.equals(report.problemDescription)) return false;
+        if (latitude != null ? !latitude.equals(report.latitude) : report.latitude != null)
+            return false;
+        return !(longitude != null ? !longitude.equals(report.longitude) : report.longitude != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = getRecordID().hashCode();
-        result = 31 * result + getCategory().hashCode();
-        result = 31 * result + Arrays.hashCode(getImage());
-        result = 31 * result + getTime().hashCode();
-        result = 31 * result + (getInformalLocation() != null ? getInformalLocation().hashCode() : 0);
-        result = 31 * result + (getProblemDescription() != null ? getProblemDescription().hashCode() : 0);
-        result = 31 * result + getLatitude().hashCode();
-        result = 31 * result + getLongitude().hashCode();
+        int result = recordID != null ? recordID.hashCode() : 0;
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + (image != null ? Arrays.hashCode(image) : 0);
+        result = 31 * result + (time != null ? time.hashCode() : 0);
+        result = 31 * result + informalLocation.hashCode();
+        result = 31 * result + (userId != null ? userId.hashCode() : 0);
+        result = 31 * result + problemDescription.hashCode();
+        result = 31 * result + (latitude != null ? latitude.hashCode() : 0);
+        result = 31 * result + (longitude != null ? longitude.hashCode() : 0);
         return result;
     }
+
+    public String getUserId() {
+
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    private String userId;
+
+    public Report(String userId, String category, byte[] image, String informalLocation, String latitude, String longitude, String problemDescription, String recordID, String time) {
+        this.userId = userId;
+        this.category = category;
+        this.image = image;
+        this.informalLocation = informalLocation;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.problemDescription = problemDescription;
+        this.recordID = recordID;
+        this.time = time;
+    }
+
+    private String problemDescription;
+
+    private String latitude;
+    private String longitude;
+
 
     public Report(String recordID, String category, byte[] image, String time, String informalLocation, String problemDescription, String latitude, String longitude) {
         this.recordID = recordID;

@@ -158,7 +158,7 @@ public class HomeFragment extends Fragment {
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
 
-            params.add(new Pair("userId", 1));
+            params.add(new Pair("userId", Utility.CurrentUser.getUserId()));
 //            params.add(new Pair("userName", Utility.CurrentUser.getId()));
 
             // getting JSON string from URL

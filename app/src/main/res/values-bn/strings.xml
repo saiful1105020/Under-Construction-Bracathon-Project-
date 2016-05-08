@@ -24,7 +24,8 @@
     <string name="ForgetInstruction">আপনার ইমেইলে একটা নতুন পাসওয়ার্ড পাঠানো হবে</string>
     <string name="VerificationDidntGetit">আমি কোন ভেরিফিকেশন কোড পাইনি। <u>আবার কোড পাঠান</u> </string>
     <string name="post_suggestion_title">আপনার সমস্যাটি কী আগেই লিপিবদ্ধ করা হয়েছে?</string>
-    <string name="post_suggestion_subtitle">হয়ে থাকলে অনুগ্রহ করে লিস্ট থেকে সিলেক্ট করুন</string>
+    <string name="post_suggestion_subtitle">হয়ে থাকলে অনুগ্রহ করে ক্যানসেল বাটনে ক্লিক করুন</string>
     <string name="post_suggestion_button">না, আমার পোস্ট আপলোড করুন</string>
+    <string name="cancel_button">ক্যানসেল</string>
 
 </resources>
