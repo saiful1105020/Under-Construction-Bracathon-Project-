@@ -314,13 +314,13 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     public void testHomePage() {
         postArrayList.clear();
 
-        Post post1 = new Post(0, 2, "Gulshan", null, "BRAC University'r 3 goli pore", 1, "bishal gorto", 420, "Dec 4", 5, "Khan Shaheb", null);
+        Post post1 = new Post(1,0, 2, "Gulshan", null, "BRAC University'r 3 goli pore", 1, "bishal gorto", 420, "Dec 4", 5, "Khan Shaheb", null);
         postArrayList.add(post1);
 
-        Post post2 = new Post(0, 2, "Shantinagar", null, "Habibullah Bahar University'r 3 goli pore", 1, "majhari gorto, probably a majhari alien spaceship landed", 420, "Dec 4", 3, "Khan Shaheb", null);
+        Post post2 = new Post(1,0, 2, "Shantinagar", null, "Habibullah Bahar University'r 3 goli pore", 1, "majhari gorto, probably a majhari alien spaceship landed", 420, "Dec 4", 3, "Khan Shaheb", null);
         postArrayList.add(post2);
 
-        Post post3 = new Post(0, 2, "Bashundhara", null, "North South University'r 3 goli pore", 1, "chhoto gorto, probably a chhoto alien spaceship landed", 420, "Dec 4", 10, "Khan Shaheb", null);
+        Post post3 = new Post(1,0, 2, "Bashundhara", null, "North South University'r 3 goli pore", 1, "chhoto gorto, probably a chhoto alien spaceship landed", 420, "Dec 4", 10, "Khan Shaheb", null);
         postArrayList.add(post3);
 
         populatePostListView();
@@ -371,8 +371,15 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     }
 
     private void handleUpvoteView(int index, ImageView voteUpView, ImageView voteDownView, TextView totalVote) {
+        Log.d("Upvoting", "Voter's id: " + Utility.CurrentUser.getId());
         Voter curVoter = new Voter(Utility.CurrentUser.getId());
         Post curPost = postArrayList.get(index);
+        Log.d("Upvoting", "Poster id: " + curPost.getUserId());
+
+//        if(Utility.CurrentUser.getUserId().equals(curPost.getUserId()))
+//            return;                                         //user cannot vote in his own post
+
+                                                              //Of course, he can! Ref: Facebook
 
         if(curPost.hasTheUserUpvoted(curVoter)) {           //if user has upvoted before... trying to upvote again
             //do nothing

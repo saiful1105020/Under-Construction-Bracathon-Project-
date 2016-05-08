@@ -66,6 +66,9 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             Log.d("device ", "online");
 //            Log.d("the number of data that has come back", ""+allDatasToBeSent.size());
 //            callNextData(0);
+            Intent newIntent = new Intent(context, PostSuggestion.class);
+            newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(newIntent);
             bringDataFromInternalDb();
             if(allTheReportsOfIntDb.size()>0){
                 uploadTheReportToMainDatabase(0);

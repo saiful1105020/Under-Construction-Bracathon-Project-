@@ -130,6 +130,10 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
 
     public void onFeedRefreshButtonClick(View v) {
 //        PostsSectionFragment.getLatLong();
+
+        /**
+         * Dummy usage
+         */
         Intent intent = new Intent(this, PostSuggestion.class);
         startActivity(intent);
     }

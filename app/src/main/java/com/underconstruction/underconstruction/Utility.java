@@ -47,6 +47,7 @@ public class Utility {
 
         public static void setUserId(String userId) {
             CurrentUser.userId = userId;
+            CurrentUser.id = Integer.valueOf(userId);
         }
 
         public static String getIp() {

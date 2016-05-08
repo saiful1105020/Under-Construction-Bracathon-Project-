@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Layout;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -187,6 +188,7 @@ public class LoginActivity extends Activity {
             else {
                 errorText.setText("Success! Hello " + userName + " :" + userId);
                 Utility.CurrentUser.setUserId(userId);
+                Log.d("Logging in", "My ID: " + Utility.CurrentUser.getUserId());
                 Utility.CurrentUser.setUsername(userName);
 
                 //finish();

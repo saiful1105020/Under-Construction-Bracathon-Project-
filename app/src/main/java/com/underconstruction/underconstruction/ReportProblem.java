@@ -33,6 +33,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -67,7 +69,7 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
     private AddressResultReceiver mResultReceiver;
     private View view;
     private String resultOutput;
-    private int categorySelected;
+    private int categorySelected = 1;
 
 
     @Override
@@ -432,8 +434,10 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
 //            //formatDataForSavingInTheInternalDB();
 //        }
 
-        new AddReportTask().execute();
+//        new AddReportTask().execute();
+        new PostSuggestionTask().execute();
     }
+
 
     private void formatDataForSavingInTheInternalDB(){
 
@@ -506,6 +510,73 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
         //getUserRecords("Onix");
         //help.getData()
         //sendStoredEntryToDatabase();
+    }
+
+    class PostSuggestionTask extends AsyncTask<String, Void, String> {
+
+        private JSONObject jsonPostSuggestion, jsonLocations;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(String... args) {
+
+            JSONParser jParser = new JSONParser();
+            // Building Parameters
+            List<Pair> params = new ArrayList<Pair>();
+            params.add(new Pair("lat",mLastLocation.getLatitude()+""));
+            params.add(new Pair("lon",mLastLocation.getLongitude() + ""));
+            params.add(new Pair("time", getCurrentTimestamp()));
+            params.add(new Pair("cat", categorySelected + ""));
+
+            // getting JSON string from URL
+            Log.d("PostSuggest", params.toString());
+            jsonPostSuggestion = jParser.makeHttpRequest("/getSuggestions", "GET", params);
+
+
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         **/
+        protected void onPostExecute (String file_url){
+            if(jsonPostSuggestion == null) {
+                //Utility.CurrentUser.showConnectionError(getApplicationContext());
+//                txtRes.setText("Please check your internet connection");
+                return;
+            }
+            Log.d("PostSuggest", jsonPostSuggestion.toString());
+            String s = new String("");
+            try {
+                JSONArray postsJSONArray = jsonPostSuggestion.getJSONArray("posts");
+                //postArrayList.clear();
+
+                int curIndex=0, N=postsJSONArray.length();
+
+                if (N==0) {                     // No conflict with other posts
+                    new AddReportTask().execute();
+                }
+
+                while(curIndex<N) {
+                    JSONObject curObj = postsJSONArray.getJSONObject(curIndex++);
+                    Log.d("jsonReturned", curObj.toString());
+
+                    String uname =curObj.getString("userName");
+                    s = s + uname + "\n";
+
+                    //Log.d("posts near you", uname);
+                }
+//                txtRes.setText(s);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
 

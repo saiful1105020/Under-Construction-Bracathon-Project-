@@ -28,71 +28,11 @@ public class PostSuggestion extends AppCompatActivity {
          */
 //        txtRes = (TextView) findViewById(R.id.txtResult);
         txtRes = (TextView) findViewById(R.id.textView9);
-        PostSuggestionTask ps = new PostSuggestionTask();
-        ps.execute();
+//        PostSuggestionTask ps = new PostSuggestionTask();
+//        ps.execute();
     }
 
-    class PostSuggestionTask extends AsyncTask<String, Void, String> {
 
-        private JSONObject jsonPostSuggestion, jsonLocations;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-
-        protected String doInBackground(String... args) {
-
-            JSONParser jParser = new JSONParser();
-            // Building Parameters
-            List<Pair> params = new ArrayList<Pair>();
-            params.add(new Pair("lat","23.7852"));
-            params.add(new Pair("lon","90.4131"));
-            params.add(new Pair("time", "2015-12-06 17:21:43"));
-            params.add(new Pair("cat", "0"));
-
-            // getting JSON string from URL
-            Log.d("PostSuggest", params.toString());
-            jsonPostSuggestion = jParser.makeHttpRequest("/getSuggestions", "GET", params);
-            Log.d("PostSuggest", jsonPostSuggestion.toString());
-
-            return null;
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
-        protected void onPostExecute (String file_url){
-            if(jsonPostSuggestion == null) {
-                //Utility.CurrentUser.showConnectionError(getApplicationContext());
-                txtRes.setText("Please check your internet connection");
-                return;
-            }
-            String s = new String("");
-            try {
-                JSONArray postsJSONArray = jsonPostSuggestion.getJSONArray("posts");
-                //postArrayList.clear();
-
-                int curIndex=0, N=postsJSONArray.length();
-
-                while(curIndex<N) {
-                    JSONObject curObj = postsJSONArray.getJSONObject(curIndex++);
-                    Log.d("jsonReturned", curObj.toString());
-
-                    String uname =curObj.getString("userName");
-                    s = s + uname + "\n";
-
-                    //Log.d("posts near you", uname);
-                }
-                txtRes.setText(s);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
