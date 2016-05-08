@@ -46,12 +46,13 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-public class ReportProblem extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
+public class ReportProblem extends AppCompatActivity implements Utility.UploadDecision,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
 
     ListView list;
     TextView txtCateDesc;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_POST_SUGGESTION = 2;
     static int camera =0;
     Button btnAddReport,btnSaveReport;
     private ArrayList<String>locationAtrributes=new ArrayList<String>();
@@ -70,6 +71,8 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
     private View view;
     private String resultOutput;
     private int categorySelected = 1;
+    private String TAG = getClass().getSimpleName().toString();
+
 
 
     @Override
@@ -150,6 +153,8 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //Log.d(TAG,"returned from intent");
+
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
@@ -160,6 +165,16 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
             startActivity(intent);
 //            btnSaveReport.setClickable(true);
             btnAddReport.setClickable(true);
+        }
+        else if(requestCode == REQUEST_POST_SUGGESTION){
+            int chosenOption = data.getIntExtra("uploadDecision",-1);
+            Log.d(TAG,chosenOption+"");
+            if(chosenOption == UPLOAD_REPORT){
+                Log.d(TAG,"upload");
+            }
+            else if(chosenOption == DONT_UPLOAD_REPORT){
+                Log.d(TAG,"dont upload");
+            }
         }
     }
 
@@ -281,8 +296,8 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
 
         new FetchLocation().execute();
 
-        Intent intent =new Intent(this, TabbedHome.class);
-        startActivity(intent);
+//        Intent intent =new Intent(this, TabbedHome.class);
+//        startActivity(intent);
 //        dispatchTakePictureIntent();
 
     }
@@ -533,7 +548,7 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
             params.add(new Pair("cat", categorySelected + ""));
 
             // getting JSON string from URL
-            Log.d("PostSuggest", params.toString());
+//            Log.d("PostSuggest", params.toString());
             jsonPostSuggestion = jParser.makeHttpRequest("/getSuggestions", "GET", params);
 
 
@@ -545,6 +560,7 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
          **/
         protected void onPostExecute (String file_url){
             if(jsonPostSuggestion == null) {
+                Log.d("OnPostExecute", "jsonPostSuggestion == null");
                 //Utility.CurrentUser.showConnectionError(getApplicationContext());
 //                txtRes.setText("Please check your internet connection");
                 return;
@@ -557,19 +573,16 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
 
                 int curIndex=0, N=postsJSONArray.length();
 
-                if (N==0) {                     // No conflict with other posts
-                    new AddReportTask().execute();
-                }
+//                if (N==0) {                     // No conflict with other posts
+//                    new AddReportTask().execute();
+//                    return;
+//                }
 
-                while(curIndex<N) {
-                    JSONObject curObj = postsJSONArray.getJSONObject(curIndex++);
-                    Log.d("jsonReturned", curObj.toString());
+                Intent intent = new Intent(getApplicationContext(), PostSuggestion.class);
+                intent.putExtra("jsonPostSuggestions", jsonPostSuggestion.toString());
+                startActivityForResult(intent, REQUEST_POST_SUGGESTION);
 
-                    String uname =curObj.getString("userName");
-                    s = s + uname + "\n";
 
-                    //Log.d("posts near you", uname);
-                }
 //                txtRes.setText(s);
 
             } catch (JSONException e) {
@@ -578,6 +591,8 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
 
         }
     }
+
+
 
 
 }

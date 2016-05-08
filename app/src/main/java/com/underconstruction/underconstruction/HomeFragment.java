@@ -193,7 +193,7 @@ public class HomeFragment extends Fragment {
             //JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("userRating");
             int userR = jsonPosts.getInt("userRating");
             TextView lblUsrt = (TextView)getView().findViewById(R.id.lblDashboardCurrentRating);
-            lblUsrt.setText("Your current rating is " + userR);
+            lblUsrt.setText("Your current voteCount is " + userR);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -219,9 +219,9 @@ public class HomeFragment extends Fragment {
                 int ratingChange = curObj.getInt("ratingChange");
                 if (ratingChange >max) max = ratingChange;
                 if (ratingChange <min) min = ratingChange;
-                //rating += ratingChange;
-                //if(rating>max) max=rating;
-                //if(rating<min) min=rating;
+                //voteCount += ratingChange;
+                //if(voteCount>max) max=voteCount;
+                //if(voteCount<min) min=voteCount;
                 LinePoint p = new LinePoint();
                 p.setX(curIndex);
                 p.setY(ratingChange);

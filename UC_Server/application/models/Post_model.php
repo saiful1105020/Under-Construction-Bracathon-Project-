@@ -19,7 +19,7 @@ class Post_model extends CI_Model
 	*/
 	public function get_all_post($location_id)
 	{
-		$sql='select p.*,u.user_name,u.user_rating from post p, user u where p.actual_location_id = ? and p.status = 0 and p.user_id=u.user_id order by p.time desc';
+		$sql='select p.*,u.user_id,u.user_name,u.user_rating from post p, user u where p.actual_location_id = ? and p.status = 0 and p.user_id=u.user_id order by p.time desc';
 		$query=$this->db->query($sql,$location_id)->result_array();
 		return $query;
 	}
@@ -116,7 +116,7 @@ class Post_model extends CI_Model
 		
 		$sql = 'SELECT u.user_name as userName, p.`category` as cat, p.`time` as time, p.`text` as txt, 
 				l.street_number as streetNo,l.route as route,l.neighbourhood as nighborhood,l.sublocality as sublocality,l.locality as locality,
-				p.`rating_change` as rating 
+				p.`rating_change` as voteCount
 				FROM `user` u,`post` p, `location` l 
 				WHERE u.user_id = p.user_id AND l.location_id = p.actual_location_id AND p.category = ? 
 				AND abs(l.`lat` - ?) <= 0.0004 AND abs(l.`lon` - ?) <=0.0004

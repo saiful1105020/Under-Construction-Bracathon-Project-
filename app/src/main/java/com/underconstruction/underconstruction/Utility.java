@@ -148,4 +148,11 @@ public class Utility {
     }
 
 
+    public interface UploadDecision{
+        int UPLOAD_REPORT = 3;
+        int DONT_UPLOAD_REPORT = 4;
+
+    }
+
+
 }

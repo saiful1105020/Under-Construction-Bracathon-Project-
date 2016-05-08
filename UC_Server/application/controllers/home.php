@@ -159,7 +159,7 @@ class Home extends CI_Controller {
 			
 			///$post['status']=$r['status'];
 			///$post['rating_change']=$r['rating_change'];
-			
+			$post['userId']=$r['user_id'];
 			$post['userName']=$r['user_name'];
 			$post['userRating']=$r['user_rating'];
 			
@@ -437,7 +437,7 @@ class Home extends CI_Controller {
 		
 		//$jsonData['userRating']=$this->post_model->get_current_rating($user_id);
 		
-		//$jsonData['rating']=$this->getDashboardGraphData($user_id);
+		//$jsonData['voteCount']=$this->getDashboardGraphData($user_id);
 		
 		echo json_encode($jsonData);
 	}
@@ -448,9 +448,9 @@ class Home extends CI_Controller {
 		
 		$jsonData['userRating']=$this->post_model->get_current_rating($user_id);
 		
-		$jsonData['rating']=$this->getDashboardGraphData($user_id);
+		$jsonData['voteCount']=$this->getDashboardGraphData($user_id);
 		
-		//$jsonData['rating']=500;
+		//$jsonData['voteCount']=500;
 		echo json_encode($jsonData);
 		
 	}

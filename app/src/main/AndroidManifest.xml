@@ -41,11 +41,11 @@
             <!-- &lt;!&ndash;<category android:name="android.intent.category.LAUNCHER" />&ndash;&gt; -->
             <!-- </intent-filter> -->
         </activity>
-        <activity
-            android:name=".AddReport"
-            android:label="@string/title_activity_add_report"
-            android:screenOrientation="portrait">
-        </activity>
+        <!--<activity-->
+            <!--android:name=".AddReport"-->
+            <!--android:label="@string/title_activity_add_report"-->
+            <!--android:screenOrientation="portrait">-->
+        <!--</activity>-->
         <activity
             android:name=".TabbedHome"
             android:label="@string/title_activity_tabbed_home"
@@ -106,7 +106,8 @@
             android:name=".ReportProblem"
             android:label="@string/title_activity_report_problem"
             android:windowSoftInputMode="adjustPan"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:noHistory="false">
         </activity>
     </application>
 
