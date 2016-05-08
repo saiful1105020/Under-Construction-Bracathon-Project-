@@ -18,15 +18,18 @@
 		//console.log(jArray1);
 		var chart = new CanvasJS.Chart("chartContainer", {
 			title: {
-				text: "Problems Vs Category"
+				text: "Category vs Problems"
 			},
 			axisY: {
-				labelFontSize: 12,
+				labelFontSize: 20,
 				labelFontColor: "dimGrey"
 			},
 			axisX: {
 				labelAngle: -30
 			},
+			axisY:{
+		        title:"# of Problems"   
+		    },
 			data: [
 			{
 				type: "column",
@@ -56,24 +59,23 @@
 		console.log(jArray3);
 		var chart1 = new CanvasJS.Chart("chartContainer1", {
 			title: {
-				text: "Problems Vs Locations"
+				text: "Locations Vs Problems"
 			},
 			axisY: {
-				labelFontSize: 15,
+				labelFontSize: 12,
 				labelFontColor: "dimGrey"
 			},
 			axisX: {
 				labelAngle: -30
 			},
+			axisY:{
+		        title:"# of Problems"   
+		    },
 			data: [
 			{
 				type: "column",
 				dataPoints: [
-				/*{ y: 10, label: "Dhanmondi" },
-				{ y: 15, label: "Mirpur" },
-				{ y: 25, label: "Palashi" },
-				{ y: 30, label: "Lalbagh" },
-				{ y: 28, label: "Uttara" }*/
+				
 				]
 			}
 			]
@@ -86,6 +88,203 @@
 		}
 		chart1.render();
 
+		///location with comparison
+		var chart5 = new CanvasJS.Chart("chartContainer5",
+		    {
+		      
+		      animationEnabled: true,
+		      title:{
+		        text: "Location Vs Problems (with comparison)",
+		        fontSize: 30
+		      },
+		      toolTip: {
+		        shared: true
+		      },      
+		      axisY: {
+		        title: "# of problems",
+		        labelFontColor: "dimGrey"
+		      },
+		      axisX: {
+				labelFontSize: 15,
+				labelAngle: -30
+			  },
+		            
+		      data: [ 
+		      {
+		        type: "column", 
+		        color: "#C24642",
+		        name: "Total Problems",
+		        legendText: "Total Problems",
+		
+		        showInLegend: true,
+		        dataPoints:[
+		       
+		        ]
+		      },
+		      {
+		        type: "column",
+		        color: "#369EAD",
+		        name: "Solved Problems",
+		        legendText: "Solved Problems",
+		        showInLegend: true, 
+		        dataPoints:[
+		        
+		        ]
+		      },
+		      
+		      ],
+		          legend:{
+		            cursor:"pointer",
+		            itemclick: function(e){
+		              if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		                e.dataSeries.visible = false;
+		              }
+		              else {
+		                e.dataSeries.visible = true;
+		              }
+		              chart.render();
+		            }
+		          },
+		        });
+		for(var i=0;i<jArray2.length;i++){
+			chart5.options.data[0].dataPoints.push({y: parseInt(jArray3[i]), label: jArray2[i]}); // Add a new dataPoint to dataPoints array
+		}
+		for(var i=0;i<jArray2.length;i++){
+			chart5.options.data[1].dataPoints.push({ y: parseInt(jArray3[i]), label: jArray2[i]}); // Add a new dataPoint to dataPoints array
+		}
+		chart5.render();
+		///new chart
+		/*var chart3 = new CanvasJS.Chart("chartContainer3",
+		    {
+		      title:{
+		      text: "Category Vs Problems"   
+		      },
+		      axisY: {
+				labelFontSize: 12,
+				labelFontColor: "dimGrey"
+			  },
+			  axisX: {
+				labelAngle: -30
+			  },
+		      axisY:{
+		        title:"# of Problems"   
+		      },
+		      animationEnabled: true,
+		      data: [
+		      {        
+		        type: "stackedColumn",
+		        toolTipContent: "{label}<br/><span style='\"'color: {color};'\"'><strong>{name}</strong></span>: {y} Problems",
+		        name: "Solved Problems",
+		        showInLegend: "true",
+		        dataPoints: [
+		        
+		        ]
+		      
+				},  {        
+		        type: "stackedColumn",
+		        toolTipContent: "{label}<br/><span style='\"'color: {color};'\"'><strong>{name}</strong></span>: {y} Problems",
+		        name: "Total Reported",
+		        showInLegend: "true",
+		        dataPoints: [
+		       
+		        ]
+		      }            
+		      ]
+		      ,
+		      legend:{
+		        cursor:"pointer",
+		        itemclick: function(e) {
+		          if (typeof (e.dataSeries.visible) ===  "undefined" || e.dataSeries.visible) {
+			          e.dataSeries.visible = false;
+		          }
+		          else
+		          {
+		            e.dataSeries.visible = true;
+		          }
+		          //chart3.render();
+		        }
+		      }
+		    });
+			for(var i=0;i<jArray1.length;i++){
+			chart3.options.data[1].dataPoints.push({y: parseInt(jArray1[i]), label: jArray[i][1]}); // Add a new dataPoint to dataPoints array
+			}
+			for(var i=0;i<jArray3.length;i++){
+			chart3.options.data[0].dataPoints.push({ y: parseInt(jArray3[i]), label: jArray[i][1]}); // Add a new dataPoint to dataPoints array
+			}
+			
+			
+		    chart3.render();*/
+
+		    ///one more new chart
+
+		    var chart4 = new CanvasJS.Chart("chartContainer4",
+		    {
+		      
+		      animationEnabled: true,
+		      title:{
+		        text: "Category Vs Problems (with comparison)",
+		        fontSize: 30
+		      },
+		      toolTip: {
+		        shared: true
+		      },      
+		      axisY: {
+		        title: "# of problems",
+		        labelFontColor: "dimGrey"
+		      },
+		      axisX: {
+				labelFontSize: 15,
+				labelAngle: -30
+			  },
+		            
+		      data: [ 
+		      {
+		        type: "column", 
+		        color: "#C24642",
+		        name: "Total Problems",
+		        legendText: "Total Problems",
+		
+		        showInLegend: true,
+		        dataPoints:[
+		       
+		        ]
+		      },
+		      {
+		        type: "column",
+		        color: "#369EAD",
+		        name: "Solved Problems",
+		        legendText: "Solved Problems",
+		        showInLegend: true, 
+		        dataPoints:[
+		        
+		        ]
+		      },
+		      
+		      ],
+		          legend:{
+		            cursor:"pointer",
+		            itemclick: function(e){
+		              if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		                e.dataSeries.visible = false;
+		              }
+		              else {
+		                e.dataSeries.visible = true;
+		              }
+		              chart.render();
+		            }
+		          },
+		        });
+		for(var i=0;i<jArray1.length;i++){
+			chart4.options.data[0].dataPoints.push({y: parseInt(jArray1[i]), label: jArray[i][1]}); // Add a new dataPoint to dataPoints array
+		}
+		for(var i=0;i<jArray3.length;i++){
+			chart4.options.data[1].dataPoints.push({ y: parseInt(jArray3[i]), label: jArray[i][1]}); // Add a new dataPoint to dataPoints array
+		}
+		console.log(jArray3.length, jArray1.length);
+		for(var i=5;i<10;i++){
+			chart4.options.data[1].dataPoints.push({ y: 0, label: jArray[i][1]}); // Add a new dataPoint to dataPoints array
+		}
+		chart4.render();
 
 	//chart1.render();
 	}
@@ -93,94 +292,37 @@
 </head>
 
 	<body>
-			
+			<div class="container-fluid">
+				<div class="col-md-2">.</div>
+				<div class="col-md-8" id="chartContainer1" style="height: 300px; margin-top: 20px width: 60%;"></div>
+				<div class="col-md-2"></div>
+			</div>
+			<div class="container-fluid">
+				<div class="col-md-2">.</div>
+				<div class="col-md-8" id="chartContainer5" style="height: 300px; margin-top: 20px width: 60%;"></div>
+				<div class="col-md-2"></div>
+			</div>
 			<div class="container-fluid">
 				<div class="col-md-2"></div>
-				<div class="col-md-8" id="chartContainer" style="height: 300px; margin-top: 20px width: 50%;"></div>
+				<div class="col-md-8" id="chartContainer" style="height: 400px; margin-top: 20px width: 60%;"></div>
 				<div class="col-md-2"></div>
 			</div>
-		<div class="container-fluid">
+			<div class="container-fluid">
 				<div class="col-md-2">.</div>
-				<div class="col-md-8" id="chartContainer1" style="height: 300px; margin-top: 20px width: 50%;"></div>
+				<div class="col-md-8" id="chartContainer4" style="height: 400px; margin-top: 20px width: 60%;"></div>
 				<div class="col-md-2"></div>
 			</div>
-		<!--
+			
+			<!--
+			<div class="container-fluid">
+				<div class="col-md-2">.</div>
+				<div class="col-md-8" id="chartContainer3" style="height: 400px; margin-top: 20px width: 60%;"></div>
+				<div class="col-md-2"></div>
+			</div>-->
+			
+			<br><br><br><br>
+			
 		
-		<script type="text/javascript">
-			/*var jArray = <?php 
-							echo json_encode($catData);
-						?>;
-			var jArray1 = <?php 
-							echo json_encode($teamData);
-						?>;	*/
-			var jArray = []; 
-			var jArray1 = [];
-			jArray[0] = []; jArray[1] = []; jArray[2] = []; jArray[3] = [];
-			jArray1[0] = []; jArray1[1] = []; jArray1[2] = []; jArray1[3] = [];
-			jArray[0]['catPoint']=120;
-			jArray[0]['cat']="Open Dustbin";
-			jArray[1]['catPoint']=50;
-			jArray[1]['cat']="Open Manhole";
-			jArray[2]['catPoint']=80;
-			jArray[2]['cat']="Broken Bridge";
-			jArray[3]['catPoint']=10;
-			jArray[3]['cat']="occupied footpath";
-
-			jArray1[0]['teamPoint']=30;
-			jArray1[0]['team_name']="Dhanmondi";
-			jArray1[1]['teamPoint']=17;
-			jArray1[1]['team_name']="Palashi";
-			jArray1[2]['teamPoint']=21;
-			jArray1[2]['team_name']="Lalbagh";
-			jArray1[3]['teamPoint']=41;
-			jArray1[3]['team_name']="Uttara";
-			window.onload = function () {
-			var chart = new CanvasJS.Chart("chartContainer",
-			{
-			  title:{
-				text: "prroblems per category"
-			  },
-			  data: [
-
-			  {
-				dataPoints: [
-				{ x: 10, y: jArray[0]['catPoint'], label: jArray[0]['cat']},
-				{ x: 20, y: jArray[1]['catPoint'], label: jArray[1]['cat'] },
-				{ x: 30, y: jArray[2]['catPoint'], label: jArray[2]['cat']},
-				{ x: 40, y: jArray[3]['catPoint'], label: jArray[3]['cat']}
-				]
-			  }
-			  ]
-			});
-
-			chart.render();
-
-			var chart1 = new CanvasJS.Chart("chartContainer1",
-			{
-			  title:{
-				text: "problems Vs Area"
-			  },
-			  data: [
-
-			  {
-				dataPoints: [
-					
-				]
-			  }
-			  ]
-			});
-			
-			var offset = 10;
-			var init = 0;
-			for(var i=0;i<jArray1.length;i++){
-				chart1.options.data[0].dataPoints.push({x:init+=offset, y: jArray1[i]['teamPoint'], label: jArray1[i]['team_name']}); // Add a new dataPoint to dataPoints array
-			}
-			chart1.render();
-			
-		}
-		  
-
-		</script>-->
 
 	</body>
 </html>

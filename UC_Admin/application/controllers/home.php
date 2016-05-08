@@ -32,6 +32,7 @@ class Home extends CI_Controller {
                'login_error' => false
 			);
 			$this->load->view('admin-login',$data);
+			//$this->load->view('newLogin1');
 		}
 	}
 	
