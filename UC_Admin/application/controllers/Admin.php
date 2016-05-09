@@ -211,4 +211,19 @@ class Admin extends CI_Controller {
 		$this->load->view("showBarGraph", $data);
 		//print_r($data);
 	}
+
+	public function addCategory()
+	{
+		$this->load->view('addCategory');
+	}
+
+	public function deleteCategory()
+	{
+		$this->load->view('deleteCategory');
+	}
+
+	public function showMap()
+	{
+		$this->load->view('showMap');
+	}
 }
