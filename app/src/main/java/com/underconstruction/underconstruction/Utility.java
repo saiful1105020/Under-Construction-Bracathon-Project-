@@ -8,8 +8,11 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by Shabab on 12/5/2015.
@@ -17,6 +20,29 @@ import java.util.Date;
 
 public class Utility {
 
+    public static class CategoryList
+    {
+        public static HashMap<String, Integer> categoryMap = new HashMap<String, Integer> ();
+
+        public CategoryList() {
+            categoryMap.put("Others", -1);
+        }
+
+        public static void add(String name, int id)
+        {
+            categoryMap.put(name, id);
+        }
+        public static ArrayList<String> getArrayList()
+        {
+            ArrayList<String> temp = new ArrayList<String>();
+            Object [] t = categoryMap.keySet().toArray();
+            for (int i = 0 ; i< t.length; i++)
+                if (!(((String)t[i]).equals("Others")))
+                    temp.add((String)t[i]);
+            temp.add("Others");
+            return temp;
+        }
+    }
     public static class CurrentUser{
 
         private static String userId = "1";

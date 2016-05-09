@@ -25,6 +25,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 
 /**
@@ -202,8 +203,10 @@ public class HomeFragment extends Fragment {
 
     void populateRatingGraph(JSONObject jsonPosts) {
         JSONArray ratingJSONArray = new JSONArray();
+        int userR = 0;
         try {
             ratingJSONArray = jsonPosts.getJSONArray("rating");
+            userR = jsonPosts.getInt("userRating");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -211,26 +214,55 @@ public class HomeFragment extends Fragment {
         int curIndex=0, N=ratingJSONArray.length();
 
         Line l = new Line();
-        int max=0, min=100000, rating=0;
 
+        int max, min, rating=0;
+
+        //ArrayList<RatingGraphItem> graphItems = new ArrayList<RatingGraphItem>();
+        int currentRating = userR;
+        min = max = userR;
+
+        Stack<RatingGraphItem> graphItemStack = new Stack<>();
+        graphItemStack.push(new RatingGraphItem(currentRating, ""));
         while(curIndex<N) {
             try{
                 JSONObject curObj = ratingJSONArray.getJSONObject(curIndex);
                 int ratingChange = curObj.getInt("ratingChange");
-                if (ratingChange >max) max = ratingChange;
-                if (ratingChange <min) min = ratingChange;
+                currentRating -=ratingChange;
+                Log.d("RatingItems Loop", currentRating + " :" + N);
+                if (currentRating >max) max = currentRating;
+                if (currentRating <min) min = currentRating;
+
+                graphItemStack.push(new RatingGraphItem(currentRating, curObj.getString("time")));
+
                 //rating += ratingChange;
                 //if(rating>max) max=rating;
                 //if(rating<min) min=rating;
+
+                /*
                 LinePoint p = new LinePoint();
                 p.setX(curIndex);
                 p.setY(ratingChange);
                 p.setLabel_string(curObj.getString("time"));
-                l.addPoint(p);
+                l.addPoint(p);*/
+
                 curIndex++;
             }catch(JSONException e) {
                 e.printStackTrace();
             }
+        }
+
+
+        for (int i = 0; i< N; i++)
+        {
+
+            RatingGraphItem g = graphItemStack.pop();
+            Log.d("RatingItems", g.toString());
+            LinePoint p = new LinePoint();
+            p.setX(i);
+            p.setY(g.rating);
+            p.setLabel_string(g.label);
+            l.addPoint(p);
+
         }
 
         l.setColor(Color.parseColor("#FFBB33"));
@@ -241,5 +273,23 @@ public class HomeFragment extends Fragment {
 
         li.setRangeY(min-2, max+2);
         li.setLineToFill(0);
+    }
+    class RatingGraphItem
+    {
+        int rating;
+        String label;
+
+        public RatingGraphItem(int rating, String label) {
+            this.rating = rating;
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return "RatingGraphItem{" +
+                    "rating=" + rating +
+                    ", label='" + label + '\'' +
+                    '}';
+        }
     }
 }

@@ -190,6 +190,12 @@ public class LoginActivity extends Activity {
                 Utility.CurrentUser.setUsername(userName);
 
                 finish();
+                //String[] values = new String[]{"Broken Road", "Manhole", "Risky Intersection", "Crime prone area", "Others"};
+                Utility.CategoryList.add("~Broken Road", 1);
+                Utility.CategoryList.add("~Manhole", 4);
+                Utility.CategoryList.add("~Risky Intersection", 7);
+                Utility.CategoryList.add("~Crime prone area", 9);
+                //Utility.CategoryList.add("Others", -1); No Need, auto added
 
                 /**
                  * Bypassing without linking login user id to home page received // or maybe i don't need to :/
