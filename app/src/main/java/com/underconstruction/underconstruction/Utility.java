@@ -9,7 +9,6 @@ import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,6 +42,7 @@ public class Utility {
             return temp;
         }
     }
+
     public static class CurrentUser{
 
         private static String userId = "1";

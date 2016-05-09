@@ -1,19 +1,25 @@
 package com.underconstruction.underconstruction;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.text.Layout;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import org.json.JSONException;
@@ -25,10 +31,12 @@ import java.util.Locale;
 
 public class LoginActivity extends Activity {
 
+    String savedUserName, savedPassword;
     public EditText txtEmail, txtPassword;
     public Button btnLogin;
     public LinearLayout layoutWait;
     public TextView errorText;
+    CheckBox chkSave;
     String email, password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +52,17 @@ public class LoginActivity extends Activity {
 
         setContentView(R.layout.activity_login);
 
+
         txtEmail = (EditText) findViewById(R.id.txtLoginEmail);
         txtPassword = (EditText) findViewById(R.id.txtLoginPassword);
         errorText = (TextView) findViewById(R.id.lblLoginError);
+        chkSave = (CheckBox) findViewById(R.id.chkLoginRemember);
         layoutWait = (LinearLayout) findViewById(R.id.layoutLoginWait);
         Button btnRegistration = (Button) findViewById(R.id.btnLoginRegistration);
+
+        restoreInstance();
+        requestGPS();
+
         btnRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +90,10 @@ public class LoginActivity extends Activity {
                     errorText.setText("Please enter email and password.");
                 else
                 {
+                    if (!chkSave.isChecked())
+                    {
+                        savedUserName = savedPassword = "";
+                    }
                     busy_session(true);
                     LoginTask loginTask = new LoginTask();
                     loginTask.execute();
@@ -188,7 +206,12 @@ public class LoginActivity extends Activity {
                 errorText.setText("Success! Hello " + userName + " :" + userId);
                 Utility.CurrentUser.setUserId(userId);
                 Utility.CurrentUser.setUsername(userName);
-
+                if (chkSave.isChecked())
+                {
+                    savedUserName = email;
+                    savedPassword = password;
+                }
+                saveInstance();
                 finish();
                 //String[] values = new String[]{"Broken Road", "Manhole", "Risky Intersection", "Crime prone area", "Others"};
                 Utility.CategoryList.add("~Broken Road", 1);
@@ -206,6 +229,18 @@ public class LoginActivity extends Activity {
             }
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+        savedInstanceState.putString("Email", savedUserName);
+        savedInstanceState.putString("Password", savedPassword);
+        // etc.
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -228,6 +263,64 @@ public class LoginActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    void requestGPS()
+    {
+        if (!isLocationEnabled(this))
+        {
+            Toast.makeText(this, "Please enable GPS Service" , Toast.LENGTH_LONG).show();
+            Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(gpsOptionsIntent);
+        }
+
+
+
+    }
+    public static boolean isLocationEnabled(Context context) {
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+        }else{
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
+        }
+
+
+    }
+    void saveInstance()
+    {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("LoginPref", 0); // 0 - for private mode
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean("Save", chkSave.isChecked());
+        if (chkSave.isChecked())
+        {
+            editor.putString("Email", savedUserName);
+            editor.putString("Password", savedPassword);
+        }
+        editor.commit();
+    }
+    void restoreInstance()
+    {
+        chkSave.setChecked(false);
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("LoginPref", 0); // 0 - for private mode
+        //SharedPreferences.Editor editor = pref.edit();
+        if (pref.getBoolean("Save", false))
+        {
+            chkSave.setChecked(true);
+            txtEmail.setText(pref.getString("Email", null));
+            txtPassword.setText(pref.getString("Password", null));
+        }
+    }
 
 }
 
