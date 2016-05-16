@@ -34,6 +34,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -45,12 +47,13 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-public class ReportProblem extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
+public class ReportProblem extends AppCompatActivity implements Utility.UploadDecision,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
 
     ListView list;
     TextView txtCateDesc;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_POST_SUGGESTION = 2;
     static int camera =0;
     Button btnAddReport,btnSaveReport;
     private ArrayList<String>locationAtrributes=new ArrayList<String>();
@@ -68,7 +71,9 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
     private AddressResultReceiver mResultReceiver;
     private View view;
     private String resultOutput;
-    private int categorySelected;
+    private int categorySelected = 1;
+    private String TAG = getClass().getSimpleName().toString();
+
 
 
     @Override
@@ -151,6 +156,8 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //Log.d(TAG,"returned from intent");
+
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
@@ -161,6 +168,18 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
             startActivity(intent);
 //            btnSaveReport.setClickable(true);
             btnAddReport.setClickable(true);
+        }
+        else if(requestCode == REQUEST_POST_SUGGESTION  && resultCode == RESULT_OK){
+            int chosenOption = data.getIntExtra("uploadDecision",-1);
+            Log.d(TAG,chosenOption+"");
+            if(chosenOption == UPLOAD_REPORT){
+                initiateTaskForPopulatingTheMainDB();
+                Log.d(TAG,"upload");
+            }
+            else if(chosenOption == DONT_UPLOAD_REPORT){
+                Log.d(TAG,"dont upload");
+                goToHomeActivity();
+            }
         }
     }
 
@@ -282,8 +301,6 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
 
         new FetchLocation().execute();
 
-        Intent intent =new Intent(this, TabbedHome.class);
-        startActivity(intent);
 //        dispatchTakePictureIntent();
 
     }
@@ -325,7 +342,8 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
             Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
             //THis post has to be inserted in the main database
             if(Utility.isOnline(getApplicationContext())) {
-                startIntentServiceForReverseGeoTagging();
+                //startIntentServiceForReverseGeoTagging();
+                new PostSuggestionTask().execute();
             }
             //This post will be saved in the internal database.
             else {
@@ -351,7 +369,7 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
         Intent intent = new Intent(this, FetchAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, mResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
-        Toast.makeText(this,"Just before calling intent service",Toast.LENGTH_LONG).show();
+//        Toast.makeText(this,"Just before calling intent service",Toast.LENGTH_LONG).show();
         //Log.d("inside service",mLastLocation.getLatitude()+" "+mLastLocation.getLongitude());
         this.startService(intent);
 
@@ -436,7 +454,9 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
 //        }
 
         new AddReportTask().execute();
+
     }
+
 
     private void formatDataForSavingInTheInternalDB(){
 
@@ -495,6 +515,8 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
         help.insertRecord(locationAtrributes, imageByteArray);
         Log.d("after new insertion : ", help.getAllRecords().toString());
 
+        goToHomeActivity();
+
         //testDelete();
         //fetchSavedDataOfaSingleUser("1");
         /*
@@ -509,6 +531,110 @@ public class ReportProblem extends AppCompatActivity implements GoogleApiClient.
         //getUserRecords("Onix");
         //help.getData()
         //sendStoredEntryToDatabase();
+    }
+
+    class PostSuggestionTask extends AsyncTask<String, Void, String> {
+
+        private JSONObject jsonPostSuggestion;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(String... args) {
+
+            JSONParser jParser = new JSONParser();
+            // Building Parameters
+            List<Pair> params = new ArrayList<Pair>();
+            params.add(new Pair("lat",mLastLocation.getLatitude()+""));
+            params.add(new Pair("lon",mLastLocation.getLongitude() + ""));
+            params.add(new Pair("time", getCurrentTimestamp()));
+            params.add(new Pair("cat", categorySelected + ""));
+
+            // getting JSON string from URL
+//            Log.d("PostSuggest", params.toString());
+            jsonPostSuggestion = jParser.makeHttpRequest("/getSuggestions", "GET", params);
+
+
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         **/
+        protected void onPostExecute (String file_url){
+            if(jsonPostSuggestion == null) {
+                Log.d("OnPostExecute", "jsonPostSuggestion == null");
+                //Utility.CurrentUser.showConnectionError(getApplicationContext());
+//                txtRes.setText("Please check your internet connection");
+                return;
+            }
+            Log.d("PostSuggest", jsonPostSuggestion.toString());
+            String s = new String("");
+            try {
+                JSONArray postsJSONArray = jsonPostSuggestion.getJSONArray("posts");
+                //postArrayList.clear();
+
+                int curIndex=0, N=postsJSONArray.length();
+
+                if (N==0) {
+                    // No conflict with other posts
+                    initiateTaskForPopulatingTheMainDB();
+                    //startIntentServiceForReverseGeoTagging();
+
+                    return;
+                }
+
+                Intent intent = new Intent(getApplicationContext(), PostSuggestion.class);
+                intent.putExtra("jsonPostSuggestions", jsonPostSuggestion.toString());
+                startActivityForResult(intent, REQUEST_POST_SUGGESTION);
+
+
+//                txtRes.setText(s);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private void initiateTaskForPopulatingTheMainDB() {
+        new StartReverseGeoTaggingTask().execute();         //first start the task of fetching address in a background thread
+        goToHomeActivity();                                 //return to Homepage
+    }
+
+    private void goToHomeActivity() {
+        Intent intent = new Intent(this, TabbedHome.class);
+        startActivity(intent);
+    }
+
+
+    class StartReverseGeoTaggingTask extends AsyncTask<Void, Void, String> {
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(Void... args) {
+
+            startIntentServiceForReverseGeoTagging();
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         **/
+        protected void onPostExecute (String a){
+
+
+
+        }
     }
 
 

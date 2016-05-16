@@ -234,6 +234,13 @@ public class HomeFragment extends Fragment {
             try{
                 JSONObject curObj = ratingJSONArray.getJSONObject(curIndex);
                 int ratingChange = curObj.getInt("ratingChange");
+
+                if (ratingChange >max) max = ratingChange;
+                if (ratingChange <min) min = ratingChange;
+                //voteCount += ratingChange;
+                //if(voteCount>max) max=voteCount;
+                //if(voteCount<min) min=voteCount;
+
                 currentRating -=ratingChange;
                 Log.d("RatingItems Loop", currentRating + " :" + N);
                 if (currentRating >max) max = currentRating;
@@ -246,6 +253,7 @@ public class HomeFragment extends Fragment {
                 //if(rating<min) min=rating;
 
                 /*
+>>>>>>> a36a5b6958b2c440cfa8d32280c49f5ea9887921
                 LinePoint p = new LinePoint();
                 p.setX(curIndex);
                 p.setY(ratingChange);

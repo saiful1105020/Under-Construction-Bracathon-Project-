@@ -8,17 +8,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +33,23 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.underconstruction.underconstruction.PostsSectionFragment;
 import com.underconstruction.underconstruction.DashboardFragment;
 
-public class TabbedHome extends AppCompatActivity implements PostsSectionFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener {
+public class TabbedHome extends AppCompatActivity implements PostsSectionFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, DashboardFragment.OnFragmentInteractionListener {
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+
+    private ArrayList<Post> postsList;
+    private ArrayList<YourPosts> profilePostsList;
+//    private ArrayList<Post> postsList;
+//    private DrawerLayout mDrawerLayout;
+//    private ActionBarDrawerToggle mDrawerToggle;
+//    private CharSequence mDrawerTitle;
+//    private CharSequence mTitle;
+//    private String[] mPlanetTitles;
+//    private DrawerLayout mDrawerLayout;
+//    private ListView mDrawerList;
+
 
 
 
@@ -45,7 +63,7 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
 
 //        toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
-
+//
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -54,7 +72,53 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
+//        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+//
+//        // Set the adapter for the list view
+//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+//                R.layout.drawer_list_item, mPlanetTitles));
+//        // Set the list's click listener
+//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+//
+//
+//        mTitle = mDrawerTitle = getTitle();
+//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+//                R.string.drawer_open, R.string.drawer_close) {
+//
+//            /** Called when a drawer has settled in a completely closed state. */
+//            public void onDrawerClosed(View view) {
+//                super.onDrawerClosed(view);
+////                getActionBar().setTitle(mTitle);
+//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+//            }
+//
+//            /** Called when a drawer has settled in a completely open state. */
+//            public void onDrawerOpened(View drawerView) {
+//                super.onDrawerOpened(drawerView);
+//                Log.d("Nav Drawer", "Opened!");
+////                getActionBar().setTitle(mDrawerTitle);
+//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+//            }
+//        };
+//
+//        // Set the drawer toggle as the DrawerListener
+//        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+
     }
+
+    /* Called whenever we call invalidateOptionsMenu() */
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        // If the nav drawer is open, hide action items related to the content view
+//        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+//        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
+//        return super.onPrepareOptionsMenu(menu);
+//    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -91,6 +155,26 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
 
     }
 
+    @Override
+    public void storeLatestProfilePosts(ArrayList<YourPosts> postsList) {
+        this.profilePostsList = postsList;
+    }
+
+    @Override
+    public ArrayList<YourPosts> retrieveLatestProfilePosts() {
+        return profilePostsList;
+    }
+
+    @Override
+    public void storeLatestFeed(ArrayList<Post> postsList) {
+        this.postsList = postsList;
+    }
+
+    @Override
+    public ArrayList<Post> retrieveLatestFeed() {
+        return postsList;
+    }
+
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
@@ -120,6 +204,43 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
         }
     }
 
+
+//    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+//        @Override
+//        public void onItemClick(AdapterView parent, View view, int position, long id) {
+//            selectItem(position);
+//        }
+//    }
+
+    /** Swaps fragments in the main content view */
+//    private void selectItem(int position) {
+//        // Create a new fragment and specify the planet to show based on position
+//        Fragment fragment = new PlanetFragment();
+//        Bundle args = new Bundle();
+//        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+//        fragment.setArguments(args);
+//
+//        // Insert the fragment by replacing any existing fragment
+//        FragmentManager fragmentManager = getFragmentManager();
+//        fragmentManager.beginTransaction()
+//                .replace(R.id.content_frame, fragment)
+//                .commit();
+//
+//        // Highlight the selected item, update the title, and close the drawer
+//        mDrawerList.setItemChecked(position, true);
+//        setTitle(mPlanetTitles[position]);
+//        mDrawerLayout.closeDrawer(mDrawerList);
+//    }
+//
+//    @Override
+//    public void setTitle(CharSequence title) {
+//        mTitle = title;
+//        getActionBar().setTitle(mTitle);
+//    }
+
+
+
+
     public void onReportButtonClick(View v){
         Intent intent =new Intent(this, ReportProblem.class);
         ReportProblem.camera=0;
@@ -128,11 +249,7 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
 
     }
 
-    public void onFeedRefreshButtonClick(View v) {
-//        PostsSectionFragment.getLatLong();
-        Intent intent = new Intent(this, PostSuggestion.class);
-        startActivity(intent);
-    }
+
 
     public void onProfileRefreshButtonClick(View v) {
 

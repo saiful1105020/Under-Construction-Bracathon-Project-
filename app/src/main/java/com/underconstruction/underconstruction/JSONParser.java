@@ -45,19 +45,11 @@ public class JSONParser {
     public JSONObject  makeHttpRequest(String urlParameter, String method,
                                        List<Pair> params) {
 
-//        final String BASE_URL = "http://" + Utility.CurrentUser.getIp() +
-//                "/uc_brac_git/uc_server/index.php/home";
+//        final String BASE_URL = "http://" + "172.20.62.63"r
 
 
-     final String BASE_URL = "http://" + "172.20.62.63" +
-              "/uc_brac_git/uc_server/index.php/home";
-
-
-      //  final String BASE_URL = "http://" + "172.20.62.6" +                //Alternate Database
-      //          "/hackThon/UC_Server/index.php/home";
-
-//        final String BASE_URL = "http://" + "172.20.62.23" +
-//                "/uc_brac_git/uc_server/index.php/home";
+        final String BASE_URL = "http://" + "172.20.62.104" +                //Alternate Database
+                "/hackThon/UC_Server/index.php/home";
 
 
 
@@ -139,6 +131,7 @@ public class JSONParser {
             //System.out.println(jsonString);
             // Log.d("jsonString: ", jsonString);
             jObj = new JSONObject(jsonString);
+            Log.d("JSONParser", "json object created successfully " + jObj.toString());
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
             Log.d("JSON Parser inputstream", jsonString);

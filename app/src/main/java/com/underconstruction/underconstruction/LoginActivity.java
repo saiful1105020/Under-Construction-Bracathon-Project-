@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.provider.Settings;
 import android.text.Layout;
 import android.text.TextUtils;
@@ -214,6 +215,7 @@ public class LoginActivity extends Activity {
             else {
                 errorText.setText("Success! Hello " + userName + " :" + userId);
                 Utility.CurrentUser.setUserId(userId);
+                Log.d("Logging in", "My ID: " + Utility.CurrentUser.getUserId());
                 Utility.CurrentUser.setUsername(userName);
                 if (chkSave.isChecked())
                 {

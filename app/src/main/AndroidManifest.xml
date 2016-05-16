@@ -29,21 +29,25 @@
 
         <!-- </intent-filter> -->
         <!-- </activity> -->
-        <activity
-            android:name=".Home"
-            android:label="@string/title_activity_home">
+        <!--&lt;!&ndash;activity-->
+            <!--android:name=".Home"-->
+            <!--android:label="@string/title_activity_home"&ndash;&gt;-->
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
+            <!--&lt;!&ndash; <intent-filter> &ndash;&gt;-->
+            <!--&lt;!&ndash; <action android:name="android.intent.action.MAIN" /> >-->
 
 
-            <!-- &lt;!&ndash;<category android:name="android.intent.category.LAUNCHER" />&ndash;&gt; -->
-            <!-- </intent-filter> -->
-        </activity>
-        <activity
-            android:name=".AddReport"
-            android:label="@string/title_activity_add_report"
-            android:screenOrientation="portrait"></activity>
+            <!--&lt;!&ndash; &lt;!&ndash;<category android:name="android.intent.category.LAUNCHER" />&ndash;&gt; &ndash;&gt;-->
+            <!--&lt;!&ndash; </intent-filter> &ndash;&gt;-->
+        <!--</activity&ndash;&gt;-->
+
+
+        <!--<activity-->
+            <!--android:name=".AddReport"-->
+            <!--android:label="@string/title_activity_add_report"-->
+            <!--android:screenOrientation="portrait">-->
+        <!--</activity>-->
+
         <activity
             android:name=".TabbedHome"
             android:label="@string/title_activity_tabbed_home"
@@ -97,9 +101,27 @@
         <activity
             android:name=".ReportProblem"
             android:label="@string/title_activity_report_problem"
+
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"></activity>
         <activity android:name=".SettingsActivity"></activity>
+
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
+            android:noHistory="false">
+
+
+        <!--
+            Because android:exported is set to "false",
+            the service is only available to this app.
+        -->
+        <activity
+            android:name=".ReportAutoUploadActivity"
+            android:label="@string/title_activity_post_suggestion"
+            android:screenOrientation="portrait"
+            android:exported="false"/>
+
+
     </application>
 
 </manifest>

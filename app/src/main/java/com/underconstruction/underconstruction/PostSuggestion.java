@@ -1,12 +1,10 @@
 package com.underconstruction.underconstruction;
 
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,16 +18,14 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class PostSuggestion extends AppCompatActivity {
+public class PostSuggestion extends AppCompatActivity implements  Utility.UploadDecision{
 
     Button btnUpload, btnCancel;
     ListView lvwPostSugg;
-    ArrayList<PostSuggestionItem> suggestionItems;
+    ArrayList<PostSuggestionItem> suggestionItems = new ArrayList<PostSuggestionItem>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,14 +37,20 @@ public class PostSuggestion extends AppCompatActivity {
 
         //populate Arraylist 'suggestionItems' Here, get from intent maybe?
 
-        PostSuggestionAdapter ps_adapter = new PostSuggestionAdapter();
-        lvwPostSugg.setAdapter(ps_adapter);
-
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Don't forget to delete from SQLite db
                 //write code for upload here
+                Log.d("Inside PostSuggestion", "upload clicked");
+                Intent returnIntent = getIntent();
+                returnIntent.putExtra("uploadDecision", UPLOAD_REPORT);
+                if (getParent() == null) {
+                    setResult(AppCompatActivity.RESULT_OK, returnIntent);
+                }
+                else
+                    getParent().setResult(AppCompatActivity.RESULT_OK, returnIntent);
+                finish();
             }
         });
 
@@ -56,76 +58,52 @@ public class PostSuggestion extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Don't forget to delete from SQLite db
+                Log.d("Inside PostSuggestion","dont upload clicked");
+                Intent returnIntent = getIntent();
+                returnIntent.putExtra("uploadDecision", DONT_UPLOAD_REPORT);
+                setResult(RESULT_OK, returnIntent);
                 finish();
 
             }
         });
 
+        JSONObject jsonPostSuggestions;
+        int N=0;
+
+        try {
+            jsonPostSuggestions = new JSONObject(getIntent().getStringExtra("jsonPostSuggestions"));
+            Log.d("PostSuggestion.java", jsonPostSuggestions.toString());
+
+            JSONArray postsJSONArray = jsonPostSuggestions.getJSONArray("posts");
+            N=postsJSONArray.length();
+
+            int curIndex=0;
+            suggestionItems.clear();
+
+            while(curIndex<N) {
+                JSONObject curObj = postsJSONArray.getJSONObject(curIndex++);
+
+                PostSuggestionItem postSuggestionItem = PostSuggestionItem.createPost(curObj);
+                suggestionItems.add(postSuggestionItem);
+                Log.d("PostSuggestionArrayList", suggestionItems.toString());
+                //ps_adapter.notifyDataSetChanged();
+//                    String uname =curObj.getString("userName");
+//                    s = s + uname + "\n";
+
+                //Log.d("posts near you", uname);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        PostSuggestionAdapter ps_adapter = new PostSuggestionAdapter();
+        lvwPostSugg.setAdapter(ps_adapter);
+
         //PostSuggestionTask ps = new PostSuggestionTask();
         //ps.execute();
     }
 
-    class PostSuggestionTask extends AsyncTask<String, Void, String> {
-
-        private JSONObject jsonPostSuggestion, jsonLocations;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-
-        protected String doInBackground(String... args) {
-
-            JSONParser jParser = new JSONParser();
-            // Building Parameters
-            List<Pair> params = new ArrayList<Pair>();
-            params.add(new Pair("lat","23.7852"));
-            params.add(new Pair("lon","90.4131"));
-            params.add(new Pair("time", "2015-12-06 17:21:43"));
-            params.add(new Pair("cat", "0"));
-
-            // getting JSON string from URL
-            Log.d("PostSuggest", params.toString());
-            jsonPostSuggestion = jParser.makeHttpRequest("/getSuggestions", "GET", params);
-            Log.d("PostSuggest", jsonPostSuggestion.toString());
-
-            return null;
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
-        protected void onPostExecute (String file_url){
-            if(jsonPostSuggestion == null) {
-                //Utility.CurrentUser.showConnectionError(getApplicationContext());
-                //txtRes.setText("Please check your internet connection");
-                return;
-            }
-            String s = new String("");
-            try {
-                JSONArray postsJSONArray = jsonPostSuggestion.getJSONArray("posts");
-                //postArrayList.clear();
-
-                int curIndex=0, N=postsJSONArray.length();
-
-                while(curIndex<N) {
-                    JSONObject curObj = postsJSONArray.getJSONObject(curIndex++);
-                    Log.d("jsonReturned", curObj.toString());
-
-                    String uname =curObj.getString("userName");
-                    s = s + uname + "\n";
-
-                    //Log.d("posts near you", uname);
-                }
-                //txtRes.setText(s);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -153,17 +131,26 @@ public class PostSuggestion extends AppCompatActivity {
     {
 
         public PostSuggestionAdapter() {
-            super(getApplicationContext(), R.layout.activity_post_suggestion);
+            super(getApplicationContext(), R.layout.activity_post_suggestion, suggestionItems);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = convertView;
             if (v == null)
-                v = getLayoutInflater().inflate(R.layout.activity_post_suggestion, parent, false);
+                v = getLayoutInflater().inflate(R.layout.suggestion_row, parent, false);
 
-            ((TextView) v.findViewById(R.id.lblSuggestionRating)).setText(suggestionItems.get(position).rating);
-            ((TextView) v.findViewById(R.id.lblSuggestionDate)).setText(suggestionItems.get(position).date);
+            Log.d("PostSuggestionAdapter", "inside getView");
+
+            int voteCount = Integer.valueOf(suggestionItems.get(position).voteCount);
+            if(voteCount>0)
+                ((TextView) v.findViewById(R.id.lblSuggestionVoteCount)).setText("+" + voteCount);
+            else if(voteCount==0)
+                ((TextView) v.findViewById(R.id.lblSuggestionVoteCount)).setText(voteCount + "");
+            else
+                ((TextView) v.findViewById(R.id.lblSuggestionVoteCount)).setText(voteCount + "");
+
+            ((TextView) v.findViewById(R.id.lblSuggestionDate)).setText(Utility.CurrentUser.parsePostTime(suggestionItems.get(position).date));
             ((TextView) v.findViewById(R.id.lblSuggestionInformalLocation)).setText(suggestionItems.get(position).informalLocation);
             ((TextView) v.findViewById(R.id.lblSuggestionInformalProblemDesc)).setText(suggestionItems.get(position).informalProblemDescription);
             ((TextView) v.findViewById(R.id.lblSuggestionUser)).setText(suggestionItems.get(position).username);
@@ -171,5 +158,6 @@ public class PostSuggestion extends AppCompatActivity {
 
             return v;
         }
+
     }
 }

@@ -11,6 +11,7 @@ import java.util.HashSet;
 public class Post {
 
     private int postId;
+    private int userId;
     private String userName;
     private int category;
     private ResultSet resultSet;
@@ -28,7 +29,8 @@ public class Post {
     private HashSet<Voter> upvotersId =new HashSet<Voter>();
     private HashSet<Voter> downvotersId=new HashSet<Voter>();
 
-    public Post(int category, int downCount, String formalLocation, byte[] imageBytes, String informalLocation, int postId, String problemDescription, int userRating, int status, String timeOfPost, int upCount, String userName, byte[] videoBytes, int ratingChange) {
+    public Post(int userId, int category, int downCount, String formalLocation, byte[] imageBytes, String informalLocation, int postId, String problemDescription, int userRating, int status, String timeOfPost, int upCount, String userName, byte[] videoBytes, int ratingChange) {
+        this.userId = userId;
         this.category = category;
         this.downCount = downCount;
         this.formalLocation = formalLocation;
@@ -45,7 +47,8 @@ public class Post {
         this.videoBytes = videoBytes;
     }
 
-    public Post(int category, int downCount, String formalLocation, byte[] imageBytes, String informalLocation, int postId, String problemDescription, int userRating, String timeOfPost, int upCount, String userName, byte[] videoBytes) {
+    public Post(int userId, int category, int downCount, String formalLocation, byte[] imageBytes, String informalLocation, int postId, String problemDescription, int userRating, String timeOfPost, int upCount, String userName, byte[] videoBytes) {
+        this.userId = userId;
         this.category = category;
         this.downCount = downCount;
         this.formalLocation = formalLocation;
@@ -64,6 +67,7 @@ public class Post {
     public static Post createPost(JSONObject jsonObject) {
         try {
             return new Post(
+                    jsonObject.getInt("userId"),
                     jsonObject.getInt("category"),
                     jsonObject.getInt("downCount"),
                     jsonObject.getString("formalLocation"),
@@ -231,5 +235,13 @@ public class Post {
             upvotersId.add(voter);
         else
             downvotersId.add(voter);
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

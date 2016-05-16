@@ -108,6 +108,7 @@ public class Utility {
 
         public static void setUserId(String userId) {
             CurrentUser.userId = userId;
+            CurrentUser.id = Integer.valueOf(userId);
         }
 
         public static String getIp() {
@@ -205,6 +206,13 @@ public class Utility {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         //should check null because in air plan mode it will be null
         return (netInfo != null && netInfo.isConnected());
+    }
+
+
+    public interface UploadDecision{
+        int UPLOAD_REPORT = 3;
+        int DONT_UPLOAD_REPORT = 4;
+
     }
 
 
