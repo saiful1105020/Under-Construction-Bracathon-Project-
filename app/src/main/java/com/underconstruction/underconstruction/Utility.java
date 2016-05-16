@@ -1,6 +1,8 @@
 package com.underconstruction.underconstruction;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.Toast;
@@ -12,12 +14,45 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Created by Shabab on 12/5/2015.
  */
 
 public class Utility {
+
+
+    static class Settings
+    {
+
+        public static String get_language(Context context)
+        {
+            String lang;
+            SharedPreferences pref = context.getSharedPreferences("LangPref", 0); // 0 - for private mode
+            lang = pref.getString("Language", "en");
+            return lang;
+        }
+        public static void set_language(Context context, String lang)
+        {
+            SharedPreferences pref = context.getSharedPreferences("LangPref", 0); // 0 - for private mode
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString("Language", lang);
+
+            editor.commit();
+        }
+
+        public static void set_app_language(String lang, Context context)
+        {
+            Locale locale = new Locale(lang);
+            Locale.setDefault(locale);
+            Configuration config = new Configuration();
+            config.locale = locale;
+            context.getResources().updateConfiguration(config, null);
+        }
+
+    }
+
 
     public static class CategoryList
     {

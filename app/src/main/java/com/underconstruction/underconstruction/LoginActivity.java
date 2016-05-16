@@ -10,7 +10,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.provider.Settings;
+import android.text.Layout;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,16 +41,22 @@ public class LoginActivity extends Activity {
     public TextView errorText;
     CheckBox chkSave;
     String email, password;
+
+    @Override
+    protected void onResume() {
+        Log.d("Resume", "Language set " + Utility.Settings.get_language(getApplicationContext()));
+
+        //Utility.Settings.set_app_language(Utility.Settings.get_language(getApplicationContext()), getApplicationContext());
+        super.onResume();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //==hardcode to use bangla (en/bn)=====================
-        Locale locale = new Locale("en");
-        Locale.setDefault(locale);
-        Configuration config = new Configuration();
-        config.locale = locale;
-        getApplicationContext().getResources().updateConfiguration(config, null);
+        //==Language Support (en/bn)=====================
+        //Locale locale = new Locale("en");
+        Utility.Settings.set_app_language(Utility.Settings.get_language(getApplicationContext()), getApplicationContext());
         //=============================================
 
         setContentView(R.layout.activity_login);
@@ -76,7 +84,8 @@ public class LoginActivity extends Activity {
         lblForgetPassword.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent k = new Intent(LoginActivity.this, ForgetActivity.class);
+                //Intent k = new Intent(LoginActivity.this, ForgetActivity.class);
+                Intent k = new Intent(LoginActivity.this, SettingsActivity.class);
                 startActivity(k);
             }
         });
