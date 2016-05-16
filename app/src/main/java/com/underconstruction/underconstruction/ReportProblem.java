@@ -8,6 +8,7 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.provider.MediaStore;
@@ -97,23 +98,25 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         list = (ListView) findViewById(R.id.listView);
         txtCateDesc = (TextView) findViewById(R.id.txtCategoryDesc);
 
-        String[] values = new String[]{"Broken Road", "Manhole", "Risky Intersection", "Crime prone area", "Others"};
-        ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, values);
+
+        //String[] values = new String[]{"Broken Road", "Manhole", "Risky Intersection", "Crime prone area", "Others"};
+        ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, Utility.CategoryList.getArrayList());
         list.setAdapter(adapt);
         list.setItemChecked(0, true);
+        categorySelected = 0;
+        Log.d("Category Selected", categorySelected + "");
+
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 categorySelected = position;
-                if (list.getItemAtPosition(position).equals("Others"))
-                {
+                Log.d("Category Selected", position + "");
+                if (list.getItemAtPosition(position).equals("Others")) {
                     txtCateDesc.setVisibility(View.VISIBLE);
                     txtCateDesc.requestFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.showSoftInput(txtCateDesc, InputMethodManager.SHOW_IMPLICIT);
-                }
-                else
-                {
+                } else {
                     txtCateDesc.setVisibility(View.GONE);
                 }
             }

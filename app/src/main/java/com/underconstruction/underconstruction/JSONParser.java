@@ -48,7 +48,6 @@ public class JSONParser {
 //        final String BASE_URL = "http://" + "172.20.62.63"r
 
 
-
         final String BASE_URL = "http://" + "172.20.62.104" +                //Alternate Database
                 "/hackThon/UC_Server/index.php/home";
 
