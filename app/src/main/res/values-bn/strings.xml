@@ -27,5 +27,6 @@
     <string name="post_suggestion_subtitle">হয়ে থাকলে অনুগ্রহ করে ক্যানসেল বাটনে ক্লিক করুন</string>
     <string name="post_suggestion_button">না, আমার পোস্ট আপলোড করুন</string>
     <string name="cancel_button">ক্যানসেল</string>
+    <string name="key1">সেটিংস</string>
 
 </resources>
