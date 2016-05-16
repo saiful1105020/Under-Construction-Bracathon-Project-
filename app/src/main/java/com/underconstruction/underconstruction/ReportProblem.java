@@ -166,14 +166,16 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 //            btnSaveReport.setClickable(true);
             btnAddReport.setClickable(true);
         }
-        else if(requestCode == REQUEST_POST_SUGGESTION){
+        else if(requestCode == REQUEST_POST_SUGGESTION  && resultCode == RESULT_OK){
             int chosenOption = data.getIntExtra("uploadDecision",-1);
             Log.d(TAG,chosenOption+"");
             if(chosenOption == UPLOAD_REPORT){
+                initiateTaskForPopulatingTheMainDB();
                 Log.d(TAG,"upload");
             }
             else if(chosenOption == DONT_UPLOAD_REPORT){
                 Log.d(TAG,"dont upload");
+                goToHomeActivity();
             }
         }
     }
@@ -296,8 +298,6 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
         new FetchLocation().execute();
 
-//        Intent intent =new Intent(this, TabbedHome.class);
-//        startActivity(intent);
 //        dispatchTakePictureIntent();
 
     }
@@ -339,7 +339,8 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
             Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
             //THis post has to be inserted in the main database
             if(Utility.isOnline(getApplicationContext())) {
-                startIntentServiceForReverseGeoTagging();
+                //startIntentServiceForReverseGeoTagging();
+                new PostSuggestionTask().execute();
             }
             //This post will be saved in the internal database.
             else {
@@ -365,7 +366,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         Intent intent = new Intent(this, FetchAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, mResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
-        Toast.makeText(this,"Just before calling intent service",Toast.LENGTH_LONG).show();
+//        Toast.makeText(this,"Just before calling intent service",Toast.LENGTH_LONG).show();
         //Log.d("inside service",mLastLocation.getLatitude()+" "+mLastLocation.getLongitude());
         this.startService(intent);
 
@@ -449,8 +450,8 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 //            //formatDataForSavingInTheInternalDB();
 //        }
 
-//        new AddReportTask().execute();
-        new PostSuggestionTask().execute();
+        new AddReportTask().execute();
+
     }
 
 
@@ -511,6 +512,8 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         help.insertRecord(locationAtrributes, imageByteArray);
         Log.d("after new insertion : ", help.getAllRecords().toString());
 
+        goToHomeActivity();
+
         //testDelete();
         //fetchSavedDataOfaSingleUser("1");
         /*
@@ -529,7 +532,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
     class PostSuggestionTask extends AsyncTask<String, Void, String> {
 
-        private JSONObject jsonPostSuggestion, jsonLocations;
+        private JSONObject jsonPostSuggestion;
 
         @Override
         protected void onPreExecute() {
@@ -573,10 +576,13 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
                 int curIndex=0, N=postsJSONArray.length();
 
-//                if (N==0) {                     // No conflict with other posts
-//                    new AddReportTask().execute();
-//                    return;
-//                }
+                if (N==0) {
+                    // No conflict with other posts
+                    initiateTaskForPopulatingTheMainDB();
+                    //startIntentServiceForReverseGeoTagging();
+
+                    return;
+                }
 
                 Intent intent = new Intent(getApplicationContext(), PostSuggestion.class);
                 intent.putExtra("jsonPostSuggestions", jsonPostSuggestion.toString());
@@ -592,7 +598,41 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         }
     }
 
+    private void initiateTaskForPopulatingTheMainDB() {
+        new StartReverseGeoTaggingTask().execute();         //first start the task of fetching address in a background thread
+        goToHomeActivity();                                 //return to Homepage
+    }
 
+    private void goToHomeActivity() {
+        Intent intent = new Intent(this, TabbedHome.class);
+        startActivity(intent);
+    }
+
+
+    class StartReverseGeoTaggingTask extends AsyncTask<Void, Void, String> {
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(Void... args) {
+
+            startIntentServiceForReverseGeoTagging();
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         **/
+        protected void onPostExecute (String a){
+
+
+
+        }
+    }
 
 
 }

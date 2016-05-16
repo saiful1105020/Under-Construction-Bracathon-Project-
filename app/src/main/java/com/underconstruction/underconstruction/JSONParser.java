@@ -45,12 +45,11 @@ public class JSONParser {
     public JSONObject  makeHttpRequest(String urlParameter, String method,
                                        List<Pair> params) {
 
-//        final String BASE_URL = "http://" + "172.20.62.6" +
-//                "/uc_brac_git/uc_server/index.php/home";
+//        final String BASE_URL = "http://" + "172.20.62.63"r
 
 
 
-        final String BASE_URL = "http://" + "192.168.0.103" +                //Alternate Database
+        final String BASE_URL = "http://" + "172.20.62.104" +                //Alternate Database
                 "/hackThon/UC_Server/index.php/home";
 
 

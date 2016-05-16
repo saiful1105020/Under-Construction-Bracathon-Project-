@@ -43,7 +43,7 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
                 //Don't forget to delete from SQLite db
                 //write code for upload here
                 Log.d("Inside PostSuggestion", "upload clicked");
-                Intent returnIntent = new Intent(getApplicationContext(),ReportProblem.class);
+                Intent returnIntent = getIntent();
                 returnIntent.putExtra("uploadDecision", UPLOAD_REPORT);
                 if (getParent() == null) {
                     setResult(AppCompatActivity.RESULT_OK, returnIntent);
@@ -62,7 +62,7 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
                 Intent returnIntent = getIntent();
                 returnIntent.putExtra("uploadDecision", DONT_UPLOAD_REPORT);
                 setResult(RESULT_OK, returnIntent);
-                //finish();
+                finish();
 
             }
         });
@@ -150,7 +150,7 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
             else
                 ((TextView) v.findViewById(R.id.lblSuggestionVoteCount)).setText(voteCount + "");
 
-            ((TextView) v.findViewById(R.id.lblSuggestionDate)).setText(suggestionItems.get(position).date);
+            ((TextView) v.findViewById(R.id.lblSuggestionDate)).setText(Utility.CurrentUser.parsePostTime(suggestionItems.get(position).date));
             ((TextView) v.findViewById(R.id.lblSuggestionInformalLocation)).setText(suggestionItems.get(position).informalLocation);
             ((TextView) v.findViewById(R.id.lblSuggestionInformalProblemDesc)).setText(suggestionItems.get(position).informalProblemDescription);
             ((TextView) v.findViewById(R.id.lblSuggestionUser)).setText(suggestionItems.get(position).username);

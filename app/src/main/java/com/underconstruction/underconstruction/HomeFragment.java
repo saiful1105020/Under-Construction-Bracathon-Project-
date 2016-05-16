@@ -193,7 +193,7 @@ public class HomeFragment extends Fragment {
             //JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("userRating");
             int userR = jsonPosts.getInt("userRating");
             TextView lblUsrt = (TextView)getView().findViewById(R.id.lblDashboardCurrentRating);
-            lblUsrt.setText("Your current voteCount is " + userR);
+            lblUsrt.setText("Your current rating is " + userR);
 
         } catch (JSONException e) {
             e.printStackTrace();

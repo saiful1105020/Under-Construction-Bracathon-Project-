@@ -35,9 +35,10 @@
     <string name="ForgetInstruction">A new password will be sent to your email address.</string>
     <string name="VerificationDidntGetit">I did not receive any verification code . <u>Resend my code</u> .</string>
     <string name="title_activity_post_suggestion">Post Suggestion</string>
+    <string name="title_activity_report_auto_upload">Report Auto Upload</string>
     <string name="post_suggestion_title">Is your problem already reported?</string>
     <string name="post_suggestion_subtitle">If so, then please press CANCEL button</string>
     <string name="post_suggestion_button">No, just upload my post</string>
     <string name="cancel_button">Cancel</string>
-    >>>>>>> 5deb6081736b34b0667e6a12edf9e2ee5a83b6f2
+
 </resources>

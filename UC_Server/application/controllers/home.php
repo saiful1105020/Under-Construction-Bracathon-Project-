@@ -519,7 +519,7 @@ class Home extends CI_Controller {
 		
 		$jsonData['userRating']=$this->post_model->get_current_rating($user_id);
 		
-		$jsonData['voteCount']=$this->getDashboardGraphData($user_id);
+		$jsonData['rating']=$this->getDashboardGraphData($user_id);
 		
 		//$jsonData['voteCount']=500;
 		echo json_encode($jsonData);
