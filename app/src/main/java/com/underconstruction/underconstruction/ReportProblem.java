@@ -5,15 +5,12 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Debug;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
@@ -47,25 +44,25 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-public class ReportProblem extends AppCompatActivity implements Utility.UploadDecision,GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
+public class ReportProblem extends AppCompatActivity implements Utility.UploadDecision, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     ListView list;
     TextView txtCateDesc;
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_POST_SUGGESTION = 2;
-    static int camera =0;
-    Button btnAddReport,btnSaveReport;
-    private ArrayList<String>locationAtrributes=new ArrayList<String>();
+    static int camera = 0;
+    Button btnAddReport, btnSaveReport;
+    private ArrayList<String> locationAtrributes = new ArrayList<String>();
     Bitmap imageBitmap;
     byte[] imageByteArray;
     SQLiteDatabase tempDatabase;
-    HashSet<String> tagHashSet=new HashSet<String>();
+    HashSet<String> tagHashSet = new HashSet<String>();
     ImageView mImageView;
     String mCurrentPhotoPath;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
-    boolean mAddressRequested=true;
+    boolean mAddressRequested = true;
     //private String mAddressOutput;
     public String mAddressOutput;
     private AddressResultReceiver mResultReceiver;
@@ -75,24 +72,23 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
     private String TAG = getClass().getSimpleName().toString();
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_problem);
 
-        if (camera == 0)
-        {
+
+
+        if (camera == 0) {
             dispatchTakePictureIntent();
             camera++;
-        }
-        else
+        } else
             finish();
 
         mResultReceiver = new AddressResultReceiver(new Handler());
 
-        mImageView=(ImageView)findViewById(R.id.addReportImageImageView);
-        btnAddReport=(Button)(findViewById(R.id.addReportNewReportButton));
+        mImageView = (ImageView) findViewById(R.id.addReportImageImageView);
+        btnAddReport = (Button) (findViewById(R.id.addReportNewReportButton));
 //        btnSaveReport=(Button)(findViewById(R.id.addReportSaveReportButton));
 
         list = (ListView) findViewById(R.id.listView);
@@ -164,20 +160,18 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
             mImageView.setImageBitmap(imageBitmap);
             //FormatAndPopulateLocationTextView();
             //setPic();
-            Intent intent =new Intent(this, ReportProblem.class);
+            Intent intent = new Intent(this, ReportProblem.class);
             startActivity(intent);
 //            btnSaveReport.setClickable(true);
             btnAddReport.setClickable(true);
-        }
-        else if(requestCode == REQUEST_POST_SUGGESTION  && resultCode == RESULT_OK){
-            int chosenOption = data.getIntExtra("uploadDecision",-1);
-            Log.d(TAG,chosenOption+"");
-            if(chosenOption == UPLOAD_REPORT){
+        } else if (requestCode == REQUEST_POST_SUGGESTION && resultCode == RESULT_OK) {
+            int chosenOption = data.getIntExtra("uploadDecision", -1);
+            Log.d(TAG, chosenOption + "");
+            if (chosenOption == UPLOAD_REPORT) {
                 initiateTaskForPopulatingTheMainDB();
-                Log.d(TAG,"upload");
-            }
-            else if(chosenOption == DONT_UPLOAD_REPORT){
-                Log.d(TAG,"dont upload");
+                Log.d(TAG, "upload");
+            } else if (chosenOption == DONT_UPLOAD_REPORT) {
+                Log.d(TAG, "dont upload");
                 goToHomeActivity();
             }
         }
@@ -212,34 +206,33 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
             params.add(new Pair("timeOfSituation", timestamp));
             params.add(new Pair("updaterId", Utility.CurrentUser.getId()));
             params.add(new Pair("requestId", requestId));*/
-            for(int i=0;i<locationAtrributes.size();i++){
+            for (int i = 0; i < locationAtrributes.size(); i++) {
 
-                String tagAndValueString=locationAtrributes.get(i);
+                String tagAndValueString = locationAtrributes.get(i);
 
-                String tag= tagAndValueString.split(":")[0];
+                String tag = tagAndValueString.split(":")[0];
                 Log.d("timest: ", tagAndValueString);
                 String value;
-                if(!tag.equals("time"))
-                    if(tagAndValueString.split(":").length==1){
-                        value="";
-                    }
-                    else value=tagAndValueString.split(":")[1];
-                else{
-                    value=tagAndValueString.substring(tagAndValueString.indexOf(":")+1);
+                if (!tag.equals("time"))
+                    if (tagAndValueString.split(":").length == 1) {
+                        value = "";
+                    } else value = tagAndValueString.split(":")[1];
+                else {
+                    value = tagAndValueString.substring(tagAndValueString.indexOf(":") + 1);
                 }
 
-                if(tag.equals("street_number"))
-                    tag="streetNo";
-                else if(tag.equals("sublocality_level_1"))
-                    tag="sublocality";
+                if (tag.equals("street_number"))
+                    tag = "streetNo";
+                else if (tag.equals("sublocality_level_1"))
+                    tag = "sublocality";
                 params.add(new Pair(tag, value));
 
                 Log.d("string_test", tag + " " + value);
             }
             String encodedString = Base64.encodeToString(imageByteArray, 0);
-            params.add(new Pair("image",encodedString));
+            params.add(new Pair("image", encodedString));
 //            params.add(new Pair("userName:", Utility.CurrentUser.getUsername()));
-            params.add(new Pair("userId",Utility.CurrentUser.getUserId()));
+            params.add(new Pair("userId", Utility.CurrentUser.getUserId()));
             Log.d("image size", imageByteArray.length + "");
 
             // getting JSON string from URL
@@ -256,13 +249,12 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         /**
          * After completing background task Dismiss the progress dialog
          **/
-        protected void onPostExecute (String a){
+        protected void onPostExecute(String a) {
 
 
-            if(jsonAddReport==null)
-                Log.d("report_database"," null");
-            else Log.d("report_database",jsonAddReport.toString());
-
+            if (jsonAddReport == null)
+                Log.d("report_database", " null");
+            else Log.d("report_database", jsonAddReport.toString());
 
 
         }
@@ -287,17 +279,17 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         /**
          * After completing background task Dismiss the progress dialog
          **/
-        protected void onPostExecute (String a){
+        protected void onPostExecute(String a) {
 
 
-            if(jsonAddReport==null)
-                Log.d("report_database"," null");
-            else Log.d("report_database",jsonAddReport.toString());
+            if (jsonAddReport == null)
+                Log.d("report_database", " null");
+            else Log.d("report_database", jsonAddReport.toString());
 
         }
     }
 
-    public void onUploadNowButtonClick(View v){
+    public void onUploadNowButtonClick(View v) {
 
         new FetchLocation().execute();
 
@@ -319,8 +311,14 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
     public void onConnected(Bundle connectionHint) {
         //Log.d("google map client", "returned");
 
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+
+        try {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+        }catch(SecurityException e){
+            e.printStackTrace();
+        }
+
         if (mLastLocation == null) {
             Toast.makeText(this, "Google client has returned null", Toast.LENGTH_LONG).show();
             //buildGoogleApiClient();
