@@ -53,7 +53,7 @@
                 android:paddingRight="2dp"
                 android:paddingBottom="2dp"
 
-                android:text="Home"
+                android:text="@string/home_btn"
                 android:textSize="17dp"
                 android:textColor="#000000"
                 android:id="@+id/lblHome"
@@ -120,7 +120,7 @@
                 android:paddingTop="2dp"
                 android:paddingRight="4dp"
                 android:paddingBottom="2dp"
-                android:text="Help"
+                android:text="@string/help_btn"
                 android:textSize="17dp"
                 android:textColor="#000000"
                 android:id="@+id/lblHomeHelp"
@@ -155,7 +155,7 @@
                 android:paddingRight="4dp"
                 android:paddingBottom="2dp"
                 android:paddingLeft="5dp"
-                android:text="Profile"
+                android:text="@string/profile_btn"
                 android:textSize="17dp"
                 android:textColor="#000000"
                 android:id="@+id/lblHomeProfile"
@@ -177,7 +177,7 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/report"
         android:onClick="onReportButtonClick"
-        android:text="Report a Problem"/>
+        android:text="@string/report_problem_btn"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -188,7 +188,7 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No Image Mode"
+            android:text="@string/no_image_box"
             android:id="@+id/checkBox"/>
     </LinearLayout>
 

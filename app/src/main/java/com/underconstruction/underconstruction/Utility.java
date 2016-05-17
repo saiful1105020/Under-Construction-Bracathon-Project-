@@ -158,6 +158,8 @@ public class Utility {
         private static int id=Integer.valueOf(userId);
         //the name of the user
         static String username="Onix";
+        //used to check if the provided ip address is ok.Used in debugging
+        static boolean ipOK = false;
 
 
 
