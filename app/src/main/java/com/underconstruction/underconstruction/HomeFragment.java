@@ -3,6 +3,7 @@ package com.underconstruction.underconstruction;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -86,14 +87,32 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
+        View v = inflater.inflate(R.layout.fragment_home, container, false);
+        btnSettings = (ImageButton)v.findViewById(R.id.btnSettings);
+        btnLogout = (ImageButton)v.findViewById(R.id.btnLogout);
         btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent k = new Intent(getContext(), SettingsActivity.class);
+                startActivity(k);
             }
         });
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Disable autologin and clear login history
+                SharedPreferences pref = getActivity().getApplicationContext().getSharedPreferences("LoginPref", 0); // 0 - for private mode
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("Save", false);
+                editor.commit();
+
+                //signOut
+                getActivity().finish();
+                Intent k = new Intent(getContext(), LoginActivity.class);
+                startActivity(k);
+            }
+        });
+        return v;
     }
 
     @Override

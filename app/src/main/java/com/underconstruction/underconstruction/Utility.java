@@ -1,10 +1,12 @@
 package com.underconstruction.underconstruction;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.text.DateFormat;
@@ -15,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Shabab on 12/5/2015.
@@ -57,15 +60,21 @@ public class Utility {
     public static class CategoryList
     {
         public static HashMap<String, Integer> categoryMap = new HashMap<String, Integer> ();
+        public static HashMap<Integer, String> IdMap = new HashMap<Integer, String> ();
 
         public CategoryList() {
+            //Add the Others option automatically
             categoryMap.put("Others", -1);
+            IdMap.put(-1, "Others");
         }
-
+        //used when category list is received from server
         public static void add(String name, int id)
         {
             categoryMap.put(name, id);
+            IdMap.put(id, name);
         }
+
+        //When populating category list
         public static ArrayList<String> getArrayList()
         {
             ArrayList<String> temp = new ArrayList<String>();
@@ -73,8 +82,20 @@ public class Utility {
             for (int i = 0 ; i< t.length; i++)
                 if (!(((String)t[i]).equals("Others")))
                     temp.add((String)t[i]);
-            temp.add("Others");
+            temp.add("Others"); //display Others as the last element in Category list
             return temp;
+        }
+
+        //f(id) = CategoryName
+        public static String get(int id)
+        {
+            return IdMap.get(id);
+        }
+
+        //f(CategoryName) = id
+        public static int get(String cat)
+        {
+            return categoryMap.get(cat);
         }
     }
 
@@ -181,7 +202,14 @@ public class Utility {
                 } else {
                     String monthString = new DateFormatSymbols().getMonths()[Integer.parseInt(date.substring(5,7))-1];
 //                    Log.d("monthString", monthString);
-                    date = " " + monthString.substring(0,3) + " " + date.substring(8,10);
+                    try {
+                        date = " " + monthString.substring(0,3) + " " + date.substring(8,10);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.d("Time", "Invalid Substring");
+                        e.printStackTrace();
+                    }
                 }
             }
 

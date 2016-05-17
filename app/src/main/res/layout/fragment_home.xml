@@ -39,7 +39,8 @@
                     android:layout_gravity="right"
                     android:tint="#ffcc0000"
                     android:background="@null"
-                    android:onClick="onProfileRefreshButtonClick" />
+                    android:onClick="onProfileRefreshButtonClick"
+                    android:visibility="gone" />
 
                 <ImageButton
                     android:layout_width="50dp"
