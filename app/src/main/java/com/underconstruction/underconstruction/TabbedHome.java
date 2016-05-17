@@ -1,37 +1,21 @@
 package com.underconstruction.underconstruction;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.underconstruction.underconstruction.PostsSectionFragment;
-import com.underconstruction.underconstruction.DashboardFragment;
 
 public class TabbedHome extends AppCompatActivity implements PostsSectionFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, DashboardFragment.OnFragmentInteractionListener {
 
@@ -41,6 +25,7 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
 
     private ArrayList<Post> postsList;
     private ArrayList<YourPosts> profilePostsList;
+    private UserRating userRating = null;
 //    private ArrayList<Post> postsList;
 //    private DrawerLayout mDrawerLayout;
 //    private ActionBarDrawerToggle mDrawerToggle;
@@ -153,6 +138,16 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public UserRating getUserRating() {
+        return userRating;
+    }
+
+    @Override
+    public void setUserRating(UserRating userRating) {
+            this.userRating = userRating;
     }
 
     @Override
