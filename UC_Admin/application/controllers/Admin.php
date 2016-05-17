@@ -278,6 +278,8 @@ class Admin extends CI_Controller {
 		
 		unset($data['existingCat'][0]);
 		
+		//ksort($data['existingCat']);
+		
 		//echo '<br><br><br>';
 		//print_r($data['existingCat']);
 		
@@ -289,7 +291,18 @@ class Admin extends CI_Controller {
 	*/
 	public function addCategoryAction($id)
 	{
+		//get category name from suggestedCategories table
+		$cat_name = $this->post_model->get_suggested_cat_name($id);
 		
+		//remove it from suggestedCategories table
+		$this->post_model->delete_suggested_cat($id);
+		
+		//insert it into categories table
+		$this->post_model->insert_cat($cat_name);
+		
+		$data['success']=true;
+		$data['success_message']='Category added successfully.';
+		$this->load->view('status_message',$data);
 	}
 	
 	/**
@@ -297,8 +310,13 @@ class Admin extends CI_Controller {
 	*/
 	public function addNewCategory()
 	{
-		echo '<br><br><br>';
-		echo $_POST['newCat'];
+		$cat_name = $_POST['newCat'];
+		//insert it into categories table
+		$this->post_model->insert_cat($cat_name);
+		
+		$data['success']=true;
+		$data['success_message']='Category added successfully.';
+		$this->load->view('status_message',$data);
 	}
 	
 
@@ -319,7 +337,11 @@ class Admin extends CI_Controller {
 	*/
 	public function deleteCategoryAction($id)
 	{
-		echo '<br><br><br>'.$id;
+		$this->post_model->delete_cat($id);
+		
+		$data['success']=true;
+		$data['success_message']='Category deleted successfully.';
+		$this->load->view('status_message',$data);
 	}
 
 	public function showMap()
@@ -337,8 +359,8 @@ class Admin extends CI_Controller {
 			array_push($existingCat,$e);
 		}
 		
-		echo '<br><br><br>';
-		print_r($existingCat);
+		//echo '<br><br><br>';
+		//print_r($existingCat);
 		
 		$data['mapData'] = $existingCat;
 		

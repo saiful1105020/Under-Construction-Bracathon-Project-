@@ -312,5 +312,30 @@ class Post_model extends CI_Model
 		$query = $this->db->query($q,$cat_id )->result_array();
 		return $query;
 	}
+	
+	public function get_suggested_cat_name($id)
+	{
+		$sql = 'SELECT `name` FROM `suggestedcategory` WHERE `id` = ? ORDER BY `count`';
+		$query = $this->db->query($sql,$id)->row_array();
+		return $query['name'];
+	}
+	
+	public function delete_suggested_cat($id)
+	{
+		$sql = 'DELETE FROM `suggestedcategory` WHERE `id` = ?';
+		$query = $this->db->query($sql,$id);
+	}
+	
+	public function insert_cat($cat_name)
+	{
+		$sql = 'INSERT INTO `category`(`name`) VALUES (?)';
+		$query = $this->db->query($sql,$cat_name);
+	}
+	
+	public function delete_cat($id)
+	{
+		$sql = 'DELETE FROM `category` WHERE `categoryId` = ?';
+		$query = $this->db->query($sql,$id);
+	}
 }
 ?>
