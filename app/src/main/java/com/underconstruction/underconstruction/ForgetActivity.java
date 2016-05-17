@@ -1,11 +1,13 @@
 package com.underconstruction.underconstruction;
 
 import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/**
+ * Currently not used. It will be used to reset password in future
+ */
 public class ForgetActivity extends Activity {
 
     @Override

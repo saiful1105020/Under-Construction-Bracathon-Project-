@@ -8,6 +8,9 @@ import org.json.JSONObject;
 import java.sql.ResultSet;
 import java.util.HashSet;
 
+/**
+ *
+ */
 public class Post {
 
     private int postId;
