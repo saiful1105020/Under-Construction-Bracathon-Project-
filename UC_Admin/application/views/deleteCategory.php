@@ -12,49 +12,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Category</td>
-                        <td><button type="button" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td><button type="button" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td><button type="button" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td><button type="button" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-
-                    <tr>
-                        <td>Category</td>
-                        <td><button type="button" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td><button type="button" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-
-                    <tr>
-                        <td>Category</td>
-                        <td><button type="button" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td><button type="button" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td><button type="button" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td><button type="button" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-
+					<?php foreach($existingCat as $e){
+						echo'
+						<tr>
+							<form method="POST" action="deleteCategoryAction/'.$e['categoryId'].'">
+								<td>'.$e['name'].'</td>
+								<td><button type="submit" class="btn btn-danger btn-md">Delete</button></td>	
+							</form>
+						</tr>';
+						}
+					?>
                 </tbody>
             </table>
         </div>

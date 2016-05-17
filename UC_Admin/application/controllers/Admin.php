@@ -271,16 +271,79 @@ class Admin extends CI_Controller {
 
 	public function addCategory()
 	{
-		$this->load->view('addCategory');
+		$catData = $this->post_model->get_suggested_categories();
+
+		$data['catData'] = $catData;
+		$data['existingCat'] = $this->post_model->get_all_categories();
+		
+		unset($data['existingCat'][0]);
+		
+		//echo '<br><br><br>';
+		//print_r($data['existingCat']);
+		
+		$this->load->view('addCategory',$data);
 	}
+	
+	/**
+	To-Do
+	*/
+	public function addCategoryAction($id)
+	{
+		
+	}
+	
+	/**
+	To-Do
+	*/
+	public function addNewCategory()
+	{
+		echo '<br><br><br>';
+		echo $_POST['newCat'];
+	}
+	
 
 	public function deleteCategory()
 	{
-		$this->load->view('deleteCategory');
+		$data['existingCat'] = $this->post_model->get_all_categories();
+		
+		unset($data['existingCat'][0]);
+		
+		//echo '<br><br><br>';
+		//print_r($data['existingCat']);
+		
+		$this->load->view('deleteCategory',$data);
+	}
+	
+	/**
+	To-Do
+	*/
+	public function deleteCategoryAction($id)
+	{
+		echo '<br><br><br>'.$id;
 	}
 
 	public function showMap()
 	{
-		$this->load->view('showMap');
+		$temp = $this->post_model->get_all_categories();
+		$existingCat = array();
+		
+		foreach($temp as $t)
+		{
+			$e = array();
+			$e['id'] = $t['categoryId'];
+			$e['name'] = $t['name'];
+			$e['locations'] = $this->post_model->get_category_problem_locations($e['id']);
+			
+			array_push($existingCat,$e);
+		}
+		
+		echo '<br><br><br>';
+		print_r($existingCat);
+		
+		$data['mapData'] = $existingCat;
+		
+		//unset($data['existingCat'][0]);
+		
+		$this->load->view('showMap',$data);
 	}
 }

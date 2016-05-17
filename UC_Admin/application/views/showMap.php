@@ -11,16 +11,16 @@
                 </tr>
             </thead>
             <tbody>
+		
                 <tr>
                     <td></td>
-                    <td><input type="checkbox" id="vehicle" value="1"> Broken Road<br></td>
-                    <td><input type="checkbox" id="vehicle1" value="1"> Broken Road<br></td>
-                    <td><input type="checkbox" id="vehicle2" value="1"> Broken Road<br></td>
-                    <td><input type="checkbox" id="vehicle3" value="1"> Broken Road<br></td>
-                    <td><input type="checkbox" id="vehicle4" value="1"> Broken Road<br></td>
-                    <td><input type="checkbox" id="vehicle5" value="1"> Broken Road<br></td>
-
-
+					<?php 
+						foreach($mapData as $e)
+						{
+							echo '<td><input type="radio" name="showCat" id="cat'.$e['id'].'" value="'.$e['id'].'"> ' . $e['name'].'<br></td>';
+						}
+					?>
+					
 
                 </tr>
                 

@@ -28,6 +28,13 @@ class Post_model extends CI_Model
 	}
 	*/
 	
+	public function get_suggested_categories()
+	{
+		$sql = 'SELECT * FROM `suggestedcategory`';
+		$query = $this->db->query($sql)->result_array();
+		return $query;
+	}
+	
 	public function get_user_name($user_id)
 	{
 		$sql="SELECT user_name FROM user WHERE user_id = ? ";
@@ -295,6 +302,15 @@ class Post_model extends CI_Model
 		$sql = 'SELECT count(*) as cnt from post where `status` = 3 and `flag`=0 and actual_location_id in ?';
 		$result = $this->db->query($sql,array($idList))->row_array();
 		return $result['cnt'];
+	}
+	
+	public function get_category_problem_locations($cat_id)
+	{
+		$q = 'SELECT p.`post_id`,l.`lat`,l.`lon` FROM `post` p , `location` l
+				WHERE p.`actual_location_id` = l.`location_id` 
+				and p.category = ? and status = 0 and flag = 0';
+		$query = $this->db->query($q,$cat_id )->result_array();
+		return $query;
 	}
 }
 ?>

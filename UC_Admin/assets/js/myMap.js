@@ -41,8 +41,9 @@ function myMap(a, b ) {
         
       }
 
-      function initMap( ) {
+      function init1Map( ) {
         //var ar = <?php json_encode($r)?>;
+		var radioArray = <?php echo json_encode($mapData);?>;
         var jArray = [];
         jArray[0] =23.8103; jArray[1] = 90.4125;
         jArray[2] = 22.3475; jArray[3] = 91.8123;
@@ -57,8 +58,9 @@ function myMap(a, b ) {
             zoom: 8,
             center: myLatLng
           });
-
-          var x=document.getElementById('vehicle').checked;
+		//var radioArray = <?php json_encode($mapData); ?>;
+		console.log(radioArray);
+          //var x=document.getElementById('vehicle').checked;
         for(var i=0;i<6;i++)
         {
           myLatLng = {lat: jArray[i*2] , lng: jArray[i*2+1] };
