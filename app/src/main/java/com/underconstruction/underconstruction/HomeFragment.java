@@ -95,9 +95,9 @@ public class HomeFragment extends Fragment {
         btnLogout = (ImageButton)v.findViewById(R.id.btnLogout);
 
 
-        /*
 
->>>>>>> 6be30e58ac021a58711444db309ff775385b7727
+
+
         btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,11 +120,11 @@ public class HomeFragment extends Fragment {
                 startActivity(k);
             }
         });
-<<<<<<< HEAD
 
-=======
 
-        */
+
+
+
 //        return inflater.inflate(R.layout.fragment_home, container, false);
         return v;
 
