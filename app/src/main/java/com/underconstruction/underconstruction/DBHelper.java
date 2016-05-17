@@ -45,10 +45,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         //Create new table.
         db.execSQL(
-                "create table tempTable " +
-                        "(id integer primary key,userID text,category text,image blob,time text,informalLocation text,problemDescription text,latitude text,longitude text)"
+                "create table if not exists tempTable " +
+                        "(id integer primary key autoincrement,userID text,category text,image blob,time text,informalLocation text,problemDescription text,latitude text,longitude text)"
         );
-        Log.d("Database created", "yes we can");
+        Log.d("table created", "yes we can");
     }
 
     @Override
