@@ -83,7 +83,7 @@ class Admin extends CI_Controller {
 				$post['up_votes']=$temp['upvotes'];
 				$post['down_votes']=$temp['downvotes'];
 				$post['user_name']=$this->post_model->get_user_name($p['user_id']);
-				$post['user_rating']=$this->post_model->get_current_rating($post['user_name']);
+				$post['user_rating']=$this->post_model->get_current_rating($p['user_id']);
 				
 				$post['location']=$this->post_model->get_location($p['actual_location_id']);
 				
@@ -148,27 +148,78 @@ class Admin extends CI_Controller {
 	*/
 	public function showBarGraph()
 	{
+		$catIds = $this->post_model->get_category_ids();
+		$cats = array();
+		$pCount = array();
+		$solvedCount = array();
+		$i = 0;
+		foreach($catIds as $id)
+		{
+			$newCat[0] = "Avoid This";
+			$newCat[1] = $this->post_model->get_category_name($id);
+			
+			$count = $this->post_model->category_problem_count($id);
+			
+			$sCount = $this->post_model->category_solved_count($id);
+			
+			$cats[$i]=$newCat;
+			$pCount[$i] = $count;
+			$solvedCount[$i] = $sCount;
+			
+			$i++;
+		}
+		
+		//echo '<br><br><br><br><br><br><br>';
+		
+		//print_r($cats);
+		
+		//echo '<br>';
+		//print_r($pCount);
+		
+		/*
 		$pCounts = $this->post_model->get_problem_count();
-		$cats = array(array(0,'Occupied Footpath'), array(1,'Open Dustbin'), array(2,'Open Manhole'), array(3,'Cluttered Electric Wires'), array(4,'Waterlogging'), array(5,'Risky Intersection'), array(6,'No Street Light'), array(7,'Crime Prone Area'), array(8,'Damaged Road'), array(9,'Wrong Way Traffic'));
-		$data['pCounts'] = $pCounts;
+		$temp = $this->post_model->get_all_categories();
+		$cats = array();
+		
+		foreach($temp as $t)
+		{
+			$newCat = array();
+			$newCat[0] = $t['categoryId'];
+			$newCat[1] = $t['name'];
+			
+			array_push($newCat, $cats);
+		}
+		*/
+		//print_r($cats);
+		
+		
+		$data['pCounts'] = $pCount;
 		$data['cats'] = $cats;
+		$data['solvedCounts'] = $solvedCount;
+		
+		//echo '<br><br><br><br><br><br><br>';
+		
+		//print_r($solvedCount);
 
-		$locations = array();	//
-		$lCounts = array();	//
+		$locations = array();	
+		$lCounts = array();
+		$solvedCounts2 = array();
 
 
 		$nbrhood = $this->post_model->get_all_neighborhoods();
 		foreach ($nbrhood as $n) {
 			//echo $n['neighbourhood'];
 			$element = array();
-			$element['name']=$n['neighbourhood'];
-			$element['loc_id']=$this->post_model->get_location_ids($n['neighbourhood']);
+			//$element['name']=$n['neighbourhood'];
+			$element['loc_id']=$this->post_model->get_nbrhd_location_ids($n['neighbourhood']);
 			$element['problem_count'] = $this->post_model->get_problem_count_location($element['loc_id']);
+			$element['solved_count'] = $this->post_model->get_solved_count_location($element['loc_id']);
 			//array_push($data,$element);
 
 
 			array_push($locations,$n['neighbourhood']);				//
 			array_push($lCounts, $element['problem_count']);	//
+			array_push($solvedCounts2, $element['solved_count']);
 
 		}
 
@@ -176,8 +227,14 @@ class Admin extends CI_Controller {
 		//$cats = array(array(0,'Occupied Footpath'), array(1,'Open Dustbin'), array(2,'Open Manhole'), array(3,'Cluttered Electric Wires'), array(4,'Waterlogging'), array(5,'Risky Intersection'), array(6,'No Street Light'), array(7,'Crime Prone Area'), array(8,'Damaged Road'), array(9,'Wrong Way Traffic'));
 		$data['lCounts'] = $lCounts;
 		$data['locations'] = $locations;
+		$data['solvedCounts2'] = $solvedCounts2;
+		
+		
+		//echo '<br><br><br><br>';
+		//print_r($data);
 		
 		$this->load->view("showBarGraph", $data);
+		
 	}
 
 	public function test()
@@ -194,7 +251,7 @@ class Admin extends CI_Controller {
 			//echo $n['neighbourhood'];
 			$element = array();
 			$element['name']=$n['neighbourhood'];
-			$element['loc_id']=$this->post_model->get_location_ids($n['neighbourhood']);
+			$element['loc_id']=$this->post_model->get_nbrhd_location_ids($n['neighbourhood']);
 			$element['problem_count'] = $this->post_model->get_problem_count_location($element['loc_id']);
 			//array_push($data,$element);
 
