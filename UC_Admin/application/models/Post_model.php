@@ -123,12 +123,12 @@ class Post_model extends CI_Model
 		$sql='UPDATE `post` SET `rating_change`=? WHERE post_id = ?';
 		$query=$this->db->query($sql,array($change,$post_id));
 		
-		//update user rating
+		//update user voteCount
 		$sql='SELECT user_id FROM post WHERE post_id=?';
 		$query=$this->db->query($sql,$post_id)->row_array();
 		
 		$user_id=$query['user_id'];
-		//get current user rating
+		//get current user voteCount
 		
 		$sql='SELECT user_rating FROM user WHERE user_id = ? ';
 		$query=$this->db->query($sql,array($user_id))->row_array();
@@ -136,7 +136,7 @@ class Post_model extends CI_Model
 		
 		$current_rating+=$change;
 		
-		//update rating
+		//update voteCount
 		$sql='UPDATE user SET user_rating = ? WHERE user_id = ? ';
 		$query=$this->db->query($sql,array($current_rating,$user_id));
 		

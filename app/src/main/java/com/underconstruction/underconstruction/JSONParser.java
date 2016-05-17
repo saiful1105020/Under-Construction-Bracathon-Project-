@@ -2,24 +2,16 @@ package com.underconstruction.underconstruction;
 
 import android.util.Log;
 import android.util.Pair;
-import android.view.View;
-import android.widget.EditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -45,19 +37,11 @@ public class JSONParser {
     public JSONObject  makeHttpRequest(String urlParameter, String method,
                                        List<Pair> params) {
 
-//        final String BASE_URL = "http://" + Utility.CurrentUser.getIp() +
-//                "/uc_brac_git/uc_server/index.php/home";
+//        final String BASE_URL = "http://" + "172.20.62.63"r
 
 
-     final String BASE_URL = "http://" + "172.20.62.6" +
-              "/uc_brac_git/uc_server/index.php/home";
-
-
-      //  final String BASE_URL = "http://" + "172.20.62.6" +                //Alternate Database
-      //          "/hackThon/UC_Server/index.php/home";
-
-//        final String BASE_URL = "http://" + "172.20.62.23" +
-//                "/uc_brac_git/uc_server/index.php/home";
+        final String BASE_URL = "http://" + "172.20.62.8" +                //Alternate Database
+                "/hackThon/UC_Server/index.php/home";
 
 
 
@@ -139,6 +123,7 @@ public class JSONParser {
             //System.out.println(jsonString);
             // Log.d("jsonString: ", jsonString);
             jObj = new JSONObject(jsonString);
+            Log.d("JSONParser", "json object created successfully " + jObj.toString());
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
             Log.d("JSON Parser inputstream", jsonString);

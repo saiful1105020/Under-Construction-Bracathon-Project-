@@ -1,21 +1,103 @@
 package com.underconstruction.underconstruction;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Shabab on 12/5/2015.
  */
 
 public class Utility {
+
+
+    static class Settings
+    {
+
+        public static String get_language(Context context)
+        {
+            String lang;
+            SharedPreferences pref = context.getSharedPreferences("LangPref", 0); // 0 - for private mode
+            lang = pref.getString("Language", "en");
+            return lang;
+        }
+        public static void set_language(Context context, String lang)
+        {
+            SharedPreferences pref = context.getSharedPreferences("LangPref", 0); // 0 - for private mode
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString("Language", lang);
+
+            editor.commit();
+        }
+
+        public static void set_app_language(String lang, Context context)
+        {
+            Locale locale = new Locale(lang);
+            Locale.setDefault(locale);
+            Configuration config = new Configuration();
+            config.locale = locale;
+            context.getResources().updateConfiguration(config, null);
+        }
+
+    }
+
+
+    public static class CategoryList
+    {
+        public static HashMap<String, Integer> categoryMap = new HashMap<String, Integer> ();
+        public static HashMap<Integer, String> IdMap = new HashMap<Integer, String> ();
+
+        public CategoryList() {
+            //Add the Others option automatically
+            categoryMap.put("Others", -1);
+            IdMap.put(-1, "Others");
+        }
+        //used when category list is received from server
+        public static void add(String name, int id)
+        {
+            categoryMap.put(name, id);
+            IdMap.put(id, name);
+        }
+
+        //When populating category list
+        public static ArrayList<String> getArrayList()
+        {
+            ArrayList<String> temp = new ArrayList<String>();
+            Object [] t = categoryMap.keySet().toArray();
+            for (int i = 0 ; i< t.length; i++)
+                if (!(((String)t[i]).equals("Others")))
+                    temp.add((String)t[i]);
+            temp.add("Others"); //display Others as the last element in Category list
+            return temp;
+        }
+
+        //f(id) = CategoryName
+        public static String get(int id)
+        {
+            return IdMap.get(id);
+        }
+
+        //f(CategoryName) = id
+        public static int get(String cat)
+        {
+            return categoryMap.get(cat);
+        }
+    }
 
     public static class CurrentUser{
 
@@ -47,6 +129,7 @@ public class Utility {
 
         public static void setUserId(String userId) {
             CurrentUser.userId = userId;
+            CurrentUser.id = Integer.valueOf(userId);
         }
 
         public static String getIp() {
@@ -119,7 +202,14 @@ public class Utility {
                 } else {
                     String monthString = new DateFormatSymbols().getMonths()[Integer.parseInt(date.substring(5,7))-1];
 //                    Log.d("monthString", monthString);
-                    date = " " + monthString.substring(0,3) + " " + date.substring(8,10);
+                    try {
+                        date = " " + monthString.substring(0,3) + " " + date.substring(8,10);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.d("Time", "Invalid Substring");
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -144,6 +234,13 @@ public class Utility {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         //should check null because in air plan mode it will be null
         return (netInfo != null && netInfo.isConnected());
+    }
+
+
+    public interface UploadDecision{
+        int UPLOAD_REPORT = 3;
+        int DONT_UPLOAD_REPORT = 4;
+
     }
 
 

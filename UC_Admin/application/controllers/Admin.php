@@ -125,7 +125,7 @@ class Admin extends CI_Controller {
 		$this->post_model->update_rating_change($post_id,$change);
 		
 		$data['success']=true;
-		$data['success_message']="Status and user rating updated successfully";
+		$data['success_message']="Status and user voteCount updated successfully";
 		$this->load->view('status_message',$data);
 	}
 	

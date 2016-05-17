@@ -4,6 +4,7 @@ package com.underconstruction.underconstruction;
  * userId hardcoded in new Report object instantiation
  */
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -46,7 +47,7 @@ public class DashboardFragment extends Fragment {
     private String resultOutput;
     byte[] imageByteArray;
     private static ListView lv;
-    private ResultListAdaptor rla;
+    private ResultListAdaptor adapter;
     private List<YourPosts> lst = new ArrayList<YourPosts>();
     private List<YourPosts> lst_online;
     private String[] problemCategory = {"Occupied Footpath", "Open Dustbin", "Exposed Manhole", "Dangerous Electric wire", "Waterlogging", "Risky Road Intersection", "No Street Light", "Crime Prone Area", "Broken Road", "Wrong Way Trafiic"};
@@ -57,39 +58,20 @@ public class DashboardFragment extends Fragment {
     JSONObject jsonPosts;
     DBHelper internalDb;
     Report theReportToBeSentToMainDB;
+    ImageView profileRefresh;
+    ArrayList<YourPosts> postArrayList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_dashboard);
-
-//        LineGraph li = (LineGraph)findViewById(R.id.graph);
-
-//        li.addLine(l);
-//
-//        li.setRangeY(0, 50);
-//        li.setLineToFill(0);
-
-//        lst.add(new YourPosts("27 Oct, 2015", "Gulshan", "Broken Road", "Near PQS", "Creates jam", -10, 2, 2, 5));
-//        lst.add(new YourPosts("9 Nov, 2015", "Motijheel", "Narrow Footpath", "In front of VNS", "Occupied by hawkers", 10, 3, 5, 1));
-//        lst.add(new YourPosts("24 Nov, 2015", "Azimpur", "Open Manhole", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
-//        lst.add(new YourPosts("24 Nov, 2015", "Kamlapur", "Crime Prone Area", "", "", 0, 0, 2, 2));
-//        lst.add(new YourPosts("24 Nov, 2015", "Mugda", "Crime Prone Area", "", "", 5, 1, 2, 2));
-//
-
-        rla = new ResultListAdaptor();
-//        lv = (ListView)findViewById(R.id.lvwDashboard);
-//        lv.setAdapter(rla);
-//        lv.setItemsCanFocus(false);
-
-//        rla.notifyDataSetChanged();
-
-
+        adapter = new ResultListAdaptor();
+        pd = new ProgressDialog(getActivity());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_dashboard, container, false);
+        profileRefresh = (ImageView) view.findViewById(R.id.btnRefreshDashboard);
 
         return view;
     }
@@ -99,10 +81,44 @@ public class DashboardFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         locationAtrributes = new ArrayList<String >();
         mResultReceiver = new AddressResultReceiver(new Handler());
-        bringDataFromInternalDb();
-        new FetchDashboardTask().execute();
+
+        populatePostListView();
+
+        profileRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.btnRefreshDashboard) {
+                    Log.d("Profile", "reload button clicked");
+                    new FetchDashboardTask().execute();
+                }
+            }
+        });
+
+        if(mListener.retrieveLatestProfilePosts() == null) {
+            new FetchDashboardTask().execute();
+        }
+        else {
+            postArrayList = mListener.retrieveLatestProfilePosts();
+        }
 
 
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     private void bringDataFromInternalDb() {
@@ -207,6 +223,8 @@ public class DashboardFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+        public void storeLatestProfilePosts(ArrayList<YourPosts> postsList);
+        public ArrayList<YourPosts> retrieveLatestProfilePosts();
     }
 
 
@@ -228,6 +246,10 @@ public class DashboardFragment extends Fragment {
 //                Log.d("curPost", curPost.toString());
                 lst.add(curPost);
             }
+
+            adapter.notifyDataSetChanged();
+            mListener.storeLatestProfilePosts(postArrayList);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -249,7 +271,8 @@ public class DashboardFragment extends Fragment {
 //        ArrayAdapter<YourPosts> adapter = new ResultListAdaptor();
 
         ListView list=(ListView)getView().findViewById(R.id.lvwDashboard);
-        list.setAdapter(rla);
+        list.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
         pd.hide();
 //        lv.setItemsCanFocus(false);
     }
@@ -464,7 +487,8 @@ public class DashboardFragment extends Fragment {
                 Log.d("Connection Error", "Probably couldn't connect to the internet");
                 return;
             }
-            pd = new ProgressDialog(getActivity());
+            Log.d("FetchProfilePostsTask", "profile reloaded");
+
             pd.setMessage("Please wait, loading data...");
             pd.setCancelable(false);
             pd.setInverseBackgroundForced(false);

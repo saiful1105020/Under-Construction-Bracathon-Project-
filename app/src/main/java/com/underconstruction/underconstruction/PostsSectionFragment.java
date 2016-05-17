@@ -2,6 +2,7 @@ package com.underconstruction.underconstruction;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -56,6 +57,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
     private ArrayList<Post> postArrayList = new ArrayList<Post>();
     private ListView customPostListView;
+    ArrayAdapter<Post> adapter;
 
 
     // TODO: Rename and change types of parameters
@@ -69,6 +71,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
     static GoogleApiClient mGoogleApiClient;
     static Location mLastLocation;
+    ImageView feedRefresh;
 
     /**
      * Use this factory method to create a new instance of
@@ -108,6 +111,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_posts_section, container, false);
+        feedRefresh = (ImageView) v.findViewById(R.id.btnRefreshPostSection);
         return v;
     }
 
@@ -115,10 +119,23 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-//        populatePostList(new JSONObject());
-//        populatePostListView();
-        getLatLong();
-//        testHomePage();
+        populatePostListView();
+
+        feedRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.btnRefreshPostSection) {
+                    getLatLong();
+                }
+            }
+        });
+
+        if(mListener.retrieveLatestFeed() == null) {
+            getLatLong();
+        }
+        else {
+            postArrayList = mListener.retrieveLatestFeed();
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -163,6 +180,8 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+        public void storeLatestFeed(ArrayList<Post> postsList);
+        public ArrayList<Post> retrieveLatestFeed();
     }
 
     private void populatePostList(JSONObject jsonPosts) {
@@ -205,16 +224,20 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
                 postArrayList.add(curPost);
             }
 
+            adapter.notifyDataSetChanged();
+            mListener.storeLatestFeed(postArrayList);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
     private void populatePostListView(){
-        ArrayAdapter<Post> adapter = new MyListAdapter();
+        adapter = new MyListAdapter();
 
         ListView list=(ListView)getView().findViewById(R.id.lvwPosts);
         list.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     private class MyListAdapter extends ArrayAdapter<Post>{
@@ -314,13 +337,13 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     public void testHomePage() {
         postArrayList.clear();
 
-        Post post1 = new Post(0, 2, "Gulshan", null, "BRAC University'r 3 goli pore", 1, "bishal gorto", 420, "Dec 4", 5, "Khan Shaheb", null);
+        Post post1 = new Post(1,0, 2, "Gulshan", null, "BRAC University'r 3 goli pore", 1, "bishal gorto", 420, "Dec 4", 5, "Khan Shaheb", null);
         postArrayList.add(post1);
 
-        Post post2 = new Post(0, 2, "Shantinagar", null, "Habibullah Bahar University'r 3 goli pore", 1, "majhari gorto, probably a majhari alien spaceship landed", 420, "Dec 4", 3, "Khan Shaheb", null);
+        Post post2 = new Post(1,0, 2, "Shantinagar", null, "Habibullah Bahar University'r 3 goli pore", 1, "majhari gorto, probably a majhari alien spaceship landed", 420, "Dec 4", 3, "Khan Shaheb", null);
         postArrayList.add(post2);
 
-        Post post3 = new Post(0, 2, "Bashundhara", null, "North South University'r 3 goli pore", 1, "chhoto gorto, probably a chhoto alien spaceship landed", 420, "Dec 4", 10, "Khan Shaheb", null);
+        Post post3 = new Post(1,0, 2, "Bashundhara", null, "North South University'r 3 goli pore", 1, "chhoto gorto, probably a chhoto alien spaceship landed", 420, "Dec 4", 10, "Khan Shaheb", null);
         postArrayList.add(post3);
 
         populatePostListView();
@@ -337,8 +360,10 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
             totalVote.setText("" + voteCount);
             totalVote.setTextColor(Color.RED);
         }
-        else
+        else {
             totalVote.setText("" + voteCount);
+            totalVote.setTextColor(Color.GRAY);
+        }
     }
 
 
@@ -371,8 +396,15 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     }
 
     private void handleUpvoteView(int index, ImageView voteUpView, ImageView voteDownView, TextView totalVote) {
+        Log.d("Upvoting", "Voter's id: " + Utility.CurrentUser.getId());
         Voter curVoter = new Voter(Utility.CurrentUser.getId());
         Post curPost = postArrayList.get(index);
+        Log.d("Upvoting", "Poster id: " + curPost.getUserId());
+
+//        if(Utility.CurrentUser.getUserId().equals(curPost.getUserId()))
+//            return;                                         //user cannot vote in his own post
+
+                                                              //Of course, he can! Ref: Facebook
 
         if(curPost.hasTheUserUpvoted(curVoter)) {           //if user has upvoted before... trying to upvote again
             //do nothing
@@ -416,60 +448,6 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
             new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "-1");
         }
     }
-
-//    private void handleVoteView(int index, ImageView voteUpView, ImageView voteDownView, TextView totalVote, int voteType) {
-//
-//        Voter curVoter = new Voter(Utility.CurrentUser.getId());
-//        Post curPost = postArrayList.get(index);
-//
-//        if(curPost.hasTheUserUpvoted(curVoter)) {              // if user has upvoted before...
-//
-//            if(voteType>0) {                                            // trying to upvote again
-//                if (curPost.hasTheUserDownvoted(curVoter)) {             // if user has downvoted before
-//                    curPost.removeVoter(curVoter, -1);                   // remove previous vote
-//                    voteDownView.setColorFilter(Color.parseColor(GREY));   // set voteDownView to default colour
-//                    curPost.addVoter(curVoter, 1);                                  // add new upvote
-//                    voteUpView.setColorFilter(Color.parseColor(BLUE));     // colour up voteUpView
-//                    showTotalVote(curPost, totalVote);
-//                    new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "1");
-//                }
-//
-//                else if(curPost.hasTheUserUpvoted(curVoter)) {             // user has upvoted before, yet trying to upvote
-//                    //do nothing
-//                }
-//
-//                else {                                                      // user has not ever voted this post
-//                    curPost.addVoter(curVoter, 1);                                  // add new upvote
-//                    voteUpView.setColorFilter(Color.parseColor(BLUE));     // colour up voteUpView
-//                    showTotalVote(curPost, totalVote);
-//                    new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "1");
-//                }
-//            }
-//
-//            else {                                                       //trying to downvote
-//                if (curPost.hasTheUserUpvoted(curVoter)) {             // if user has upvoted before
-//                    curPost.removeVoter(curVoter, 1);                   // remove previous vote
-//                    voteDownView.setColorFilter(Color.parseColor(RED));   // colour up voteDownView
-//                    curPost.addVoter(curVoter, -1);                                  // add new downvote
-//                    voteUpView.setColorFilter(Color.parseColor(GREY));     // set voteUpView to default colour
-//                    showTotalVote(curPost, totalVote);
-//                    Log.d("totalVote", totalVote.getText().toString());
-//                    new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "-1");
-//                }
-//
-//                else if(curPost.hasTheUserDownvoted(curVoter)) {             // user has downvoted before, yet trying to downvote
-//                    //do nothing
-//                }
-//
-//                else {                                                      // user has not ever voted this post
-//                    curPost.addVoter(curVoter, -1);                                  // add new downvote
-//                    voteUpView.setColorFilter(Color.parseColor(RED));     // colour up voteDownView
-//                    showTotalVote(curPost, totalVote);
-//                    new SubmitVoteTask().execute(Utility.CurrentUser.getUserId(), "" + curPost.getPostId(), "-1");
-//                }
-//            }
-//        }
-//    }
 
     class SubmitVoteTask extends AsyncTask<String, Void, String> {
 
@@ -555,11 +533,11 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
                 Log.d("Connection Error", "Probably couldn't connect to the internet");
                 return;
             }
-//            Home.removeIPEditText();
+
+            Log.d("FetchPostsTask", "feed reloaded");
 
             //jsonUpdatesField=jsonPosts;
             populatePostList(jsonPosts);
-            populatePostListView();
 
 
         }
@@ -599,5 +577,9 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     public void onConnectionSuspended(int i) {
 
     }
+
+//    public void onFeedRefreshButtonClick(View v) {
+//        getLatLong();
+//    }
 
 }
