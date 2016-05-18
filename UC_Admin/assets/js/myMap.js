@@ -43,7 +43,7 @@ function myMap(a, b ) {
 
       function initMap( ) {
         //var ar = <?php json_encode($r)?>;
-		var radioArray = <?php echo json_encode($mapData);?>;
+		
         var jArray = [];
         jArray[0] =23.8103; jArray[1] = 90.4125;
         jArray[2] = 22.3475; jArray[3] = 91.8123;
