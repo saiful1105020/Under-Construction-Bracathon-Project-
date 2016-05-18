@@ -5,7 +5,6 @@ package com.underconstruction.underconstruction;
  */
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -25,9 +24,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardFragment extends Fragment {
-    public static ProgressDialog pd;
+    //public static ProgressDialog pd;
     public String mAddressOutput;
     private AddressResultReceiver mResultReceiver;
     private ArrayList<String>locationAtrributes;
@@ -58,24 +59,44 @@ public class DashboardFragment extends Fragment {
     JSONObject jsonPosts;
     DBHelper internalDb;
     Report theReportToBeSentToMainDB;
-    ImageView profileRefresh;
+    ImageButton profileRefresh;
+    ProgressBar pbDash;
+    ListView lvwDash;
     ArrayList<YourPosts> postArrayList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new ResultListAdaptor();
-        pd = new ProgressDialog(getActivity());
+        //pd = new ProgressDialog(getActivity());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_dashboard, container, false);
-        profileRefresh = (ImageView) view.findViewById(R.id.btnRefreshDashboard);
-
+        profileRefresh = (ImageButton) view.findViewById(R.id.btnRefreshDashboard);
+        pbDash = (ProgressBar) view.findViewById(R.id.pbDashboard);
+        lvwDash = (ListView) view.findViewById(R.id.lvwDashboard);
         return view;
     }
 
+    //if refresh button is pressed, hide listview and show progressbar
+    void busy_sessions(boolean busy)
+    {
+        if (pbDash == null) return;
+        if (busy == true)
+        {
+            pbDash.setVisibility(View.VISIBLE);
+            lvwDash.setVisibility(View.GONE);
+            profileRefresh.setEnabled(false);
+        }
+        else
+        {
+            pbDash.setVisibility(View.GONE);
+            lvwDash.setVisibility(View.VISIBLE);
+            profileRefresh.setEnabled(true);
+        }
+    }
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -273,7 +294,7 @@ public class DashboardFragment extends Fragment {
         ListView list=(ListView)getView().findViewById(R.id.lvwDashboard);
         list.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        pd.hide();
+        //pd.hide();
 //        lv.setItemsCanFocus(false);
     }
 
@@ -335,7 +356,7 @@ public class DashboardFragment extends Fragment {
 
             Log.d("Timestamp", post_item.getTimeStamp());
             txtTimeStamp.setText(Utility.CurrentUser.parsePostTime(post_item.getTimeStamp()));
-            txtCatAtLoc.setText(problemCategory[Integer.valueOf(post_item.getCategory())] + " at " + post_item.getExactLocation());
+            txtCatAtLoc.setText(Utility.CategoryList.get(Integer.valueOf(post_item.getCategory())) + " at " + post_item.getExactLocation());
             if (!post_item.getLocationDescription().isEmpty() && !post_item.getLocationDescription().equals("null"))
                 txtLocation_desc.setText("(" + post_item.getLocationDescription() + ")");
             else
@@ -454,7 +475,7 @@ public class DashboardFragment extends Fragment {
         {
 //            progressLayout.setVisibility(View.VISIBLE);
 //            customDiscussionListView.setVisibility(View.GONE);
-
+            busy_sessions(true);
             super.onPreExecute();
         }
 
@@ -485,19 +506,20 @@ public class DashboardFragment extends Fragment {
             if(jsonPosts == null) {
 //                Utility.CurrentUser.showConnectionError(getActivity());
                 Log.d("Connection Error", "Probably couldn't connect to the internet");
+                busy_sessions(false);
                 return;
             }
             Log.d("FetchProfilePostsTask", "profile reloaded");
 
-            pd.setMessage("Please wait, loading data...");
-            pd.setCancelable(false);
-            pd.setInverseBackgroundForced(false);
-            pd.show();
+            //pd.setMessage("Please wait, loading data...");
+            //pd.setCancelable(false);
+            //pd.setInverseBackgroundForced(false);
+            //pd.show();
             //jsonUpdatesField=jsonPosts;
             populatePostList(jsonPosts);
-
-
             populatePostListView();
+            busy_sessions(false);
+            Log.d("Profile", "End of Async");
         }
     }
 
