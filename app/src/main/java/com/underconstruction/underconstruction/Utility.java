@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.text.DateFormat;
@@ -56,25 +57,118 @@ public class Utility {
 
     public static class CategoryList
     {
-        public static HashMap<String, Integer> categoryMap = new HashMap<String, Integer> ();
 
         public CategoryList() {
-            categoryMap.put("Others", -1);
+//            categoryMap.put("Others", -1);
         }
 
+        //Given a category name, returns its ID
+        public static HashMap<String, Integer> categoryMap = new HashMap<String, Integer> ();
+        //Given an ID, returns the category name
+        public static HashMap<Integer, String> IdMap = new HashMap<Integer, String> ();
+
+
+
+
+
+        /**
+         * Adds a new category name and id. It is used when category list is received from server
+         * @param name
+         * @param id
+         */
         public static void add(String name, int id)
         {
             categoryMap.put(name, id);
+            IdMap.put(id, name);
         }
-        public static ArrayList<String> getArrayList()
+
+
+
+        /**
+         *  Used when populating category list dynamically
+         * @return an arraylist of the names of category
+         */
+        public static ArrayList<String> getCategoryList()
         {
             ArrayList<String> temp = new ArrayList<String>();
             Object [] t = categoryMap.keySet().toArray();
             for (int i = 0 ; i< t.length; i++)
                 if (!(((String)t[i]).equals("Others")))
                     temp.add((String)t[i]);
-            temp.add("Others");
+            temp.add("Others"); //display Others as the last element in Category list
+            Log.d("getCategoryList()", temp.toString());
             return temp;
+        }
+
+
+        /**
+         * given a category id, returns its name
+         *  //f(id) = CategoryName
+         * @param id the id of the category
+         * @return the name of the category
+         */
+        public static String get(int id)
+        {
+            return IdMap.get(id);
+        }
+
+
+
+        /**
+         *  given a category name, returns its id
+         * f(CategoryName) = id
+         * @param cat the name of the category
+         * @return the id of the category
+         */
+        public static int get(String cat) {
+            return categoryMap.get(cat);
+        }
+
+
+        public void copyCategoryList(CategoryList cat) {
+            ArrayList<String> tempCategoryName = new ArrayList<String>();
+            tempCategoryName.addAll(cat.getCategoryList());
+
+            ArrayList<Integer> tempCategoryIds = new ArrayList<Integer>();
+            tempCategoryIds.addAll(cat.getCategoryIds());
+
+            for(int i=0; i<tempCategoryName.size(); i++) {
+                categoryMap.put(tempCategoryName.get(i), tempCategoryIds.get(i));
+            }
+        }
+
+//        public static ArrayList<String> getCategoryList()
+//        {
+//            ArrayList<String> temp = new ArrayList<String>();
+//            Object [] t = categoryMap.keySet().toArray();
+//            for (int i = 0 ; i< t.length; i++)
+//                if (!(((String)t[i]).equals("Others")))
+//                    temp.add((String)t[i]);
+//            temp.add("Others");
+//            return temp;
+//        }
+
+        public static ArrayList<Integer> getCategoryIds() {
+            ArrayList<Integer> temp = new ArrayList<Integer>();
+            ArrayList<String> categoryNames = new ArrayList<String>();
+            categoryNames.addAll(getCategoryList());
+            for (int i = 0 ; i< categoryNames.size(); i++) {
+                String categoryName = categoryNames.get(i);
+                temp.add(get(categoryName));
+            }
+
+            Log.d("getCategoryIds()", temp.toString());
+
+            return temp;
+        }
+
+        @Override
+        public String toString() {
+            ArrayList<String> tempCategoryName = new ArrayList<String>();
+            tempCategoryName.addAll(getCategoryList());
+            ArrayList<Integer> tempCategoryId = new ArrayList<Integer>();
+            tempCategoryId.addAll(getCategoryIds());
+            return (tempCategoryName.toString() + "\n" + tempCategoryId.toString());
         }
     }
 

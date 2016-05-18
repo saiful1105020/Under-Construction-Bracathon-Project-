@@ -1,13 +1,19 @@
 package com.underconstruction.underconstruction;
 
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import static android.app.ActivityManager.*;
 
 /**
  * Created by wasif on 4/17/16.
@@ -35,7 +41,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         //Toast.makeText(context, "Intent Detected.", Toast.LENGTH_LONG).show();
-        Log.d("braodcast receiver ", "called");
+        Log.d("broadcast receiver ", "called");
 
 //        mResultReceiver = new AddressResultReceiver(new Handler());
         this.context = context;
@@ -60,10 +66,14 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
              * Check if app is in foreground
              */
 
+            DBHelper dbHelper = new DBHelper(context);
+            int n = dbHelper.getDataForUser(Utility.CurrentUser.getUserId()).size();
 
-            Intent newIntent = new Intent(context, ReportAutoUploadActivity.class);
-            newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(newIntent);
+            if(!isAppIsInBackground(context) && n>0) {
+                Intent newIntent = new Intent(context, ReportAutoUploadActivity.class);
+                newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(newIntent);
+            }
 //            bringDataFromInternalDb();
 //            if(allTheReportsOfIntDb.size()>0){
 //                uploadTheReportToMainDatabase(0);
@@ -89,6 +99,30 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
     }
 
+    private boolean isAppIsInBackground(Context context) {
+        boolean isInBackground = true;
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+            List<ActivityManager.RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
+            for (RunningAppProcessInfo processInfo : runningProcesses) {
+                if (processInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    for (String activeProcess : processInfo.pkgList) {
+                        if (activeProcess.equals(context.getPackageName())) {
+                            isInBackground = false;
+                        }
+                    }
+                }
+            }
+        } else {
+            List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+            ComponentName componentInfo = taskInfo.get(0).topActivity;
+            if (componentInfo.getPackageName().equals(context.getPackageName())) {
+                isInBackground = false;
+            }
+        }
+
+        return isInBackground;
+    }
 
 
 }

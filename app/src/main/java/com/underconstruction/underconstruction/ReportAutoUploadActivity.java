@@ -139,6 +139,7 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //Log.d(TAG,"returned from intent");
+        DBHelper dbHelper = new DBHelper(getApplicationContext());
 
         if(requestCode == REQUEST_POST_SUGGESTION  && resultCode == RESULT_OK){
             int chosenOption = data.getIntExtra("uploadDecision",-1);
@@ -149,9 +150,14 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
             }
             else if(chosenOption == DONT_UPLOAD_REPORT){
                 Log.d("ReportAutoUpload", "dont upload");
+                String reportIdToBeDeleted = allTheReportsOfIntDb.get(theIndexOfTheReportToBeSent).getRecordID();
+
+                dbHelper.deleteRecord(reportIdToBeDeleted);
                 sendPostSuggestion(++theIndexOfTheReportToBeSent);
 //                goToHomeActivity();
             }
+
+            Log.d("Reports in db", dbHelper.getAllRecords().toString());
         }
     }
 

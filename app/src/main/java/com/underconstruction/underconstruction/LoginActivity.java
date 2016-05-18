@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,6 +42,8 @@ public class LoginActivity extends Activity {
     public TextView errorText;
     CheckBox chkSave;
     String email, password;
+    Context context;
+    DBHelper helper;
 
     @Override
     protected void onResume() {
@@ -90,6 +93,9 @@ public class LoginActivity extends Activity {
             }
         });
 
+        context = getApplicationContext();
+        helper = new DBHelper(context);
+
         btnLogin = (Button) findViewById(R.id.btnLoginLogin);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,6 +106,8 @@ public class LoginActivity extends Activity {
                     errorText.setText("Please enter email and password.");
                 else
                 {
+                    new UpdateCategoryListTask().execute();
+
                     if (!chkSave.isChecked())
                     {
                         savedUserName = savedPassword = "";
@@ -146,6 +154,64 @@ public class LoginActivity extends Activity {
             layoutWait.setVisibility(View.INVISIBLE);
         }
     }
+
+    class UpdateCategoryListTask extends AsyncTask<String, Void, String> {
+        private JSONObject jsonCategoryList;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(String... args) {
+
+            JSONParser jParser = new JSONParser();
+            // getting JSON string from URL
+            jsonCategoryList = jParser.makeHttpRequest("/getcategorylist", "GET", null);
+
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         **/
+        protected void onPostExecute (String file_url){
+            if(jsonCategoryList == null) {
+                //Utility.CurrentUser.showConnectionError(getApplicationContext());
+                Utility.CategoryList categoryList = new Utility.CategoryList();
+
+                categoryList.copyCategoryList(helper.getCategoryList());
+                return;
+            }
+
+            Log.d("categories received", jsonCategoryList.toString());
+            Utility.CategoryList categoryList = new Utility.CategoryList();
+
+            try {
+                JSONArray categories = jsonCategoryList.getJSONArray("catList");
+                int n = categories.length();
+                int curIndex = 1;                       //Skipping first category i.e. Others
+                while(curIndex<n) {
+                    JSONObject curObj = categories.getJSONObject(curIndex++);
+
+                    String categoryName = curObj.getString("name");
+                    int categoryId = curObj.getInt("categoryId");
+
+                    categoryList.add(categoryName, categoryId);
+                }
+
+                categoryList.add("Others", -1);
+
+                helper.insertCategory(categoryList);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
     class LoginTask extends AsyncTask<String, Void, String> {
 
         private JSONObject jsonSignUp, jsonLocations;
@@ -313,6 +379,7 @@ public class LoginActivity extends Activity {
         SharedPreferences pref = getApplicationContext().getSharedPreferences("LoginPref", 0); // 0 - for private mode
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean("Save", chkSave.isChecked());
+
         if (chkSave.isChecked())
         {
             editor.putString("Email", savedUserName);

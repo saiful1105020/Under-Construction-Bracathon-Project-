@@ -5,10 +5,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.provider.MediaStore;
@@ -71,7 +68,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
     private AddressResultReceiver mResultReceiver;
     private View view;
     private String resultOutput;
-    private int categorySelected = 1;
+    private int categorySelected;
     private String TAG = getClass().getSimpleName().toString();
 
 
@@ -100,17 +97,21 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
 
         //String[] values = new String[]{"Broken Road", "Manhole", "Risky Intersection", "Crime prone area", "Others"};
-        ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, Utility.CategoryList.getArrayList());
+        ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, Utility.CategoryList.getCategoryList());
         list.setAdapter(adapt);
         list.setItemChecked(0, true);
-        categorySelected = 0;
         Log.d("Category Selected", categorySelected + "");
 
+        final ArrayList<Integer> getCategoryIds = new ArrayList<Integer>();
+        getCategoryIds.addAll(Utility.CategoryList.getCategoryIds());
+
+        categorySelected = getCategoryIds.get(1);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                categorySelected = position;
-                Log.d("Category Selected", position + "");
+
+                categorySelected = getCategoryIds.get(position);
+                Log.d("Category Selected", categorySelected + "");
                 if (list.getItemAtPosition(position).equals("Others")) {
                     txtCateDesc.setVisibility(View.VISIBLE);
                     txtCateDesc.requestFocus();
