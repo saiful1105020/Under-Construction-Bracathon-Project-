@@ -278,15 +278,7 @@ class subAdmin extends CI_Controller {
 		//print_r($data);
 	}
 
-	public function addCategory()
-	{
-		$this->load->view('addCategory');
-	}
-
-	public function deleteCategory()
-	{
-		$this->load->view('deleteCategory');
-	}
+	
 
 	public function showMap()
 	{
