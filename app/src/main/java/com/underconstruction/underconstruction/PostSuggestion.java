@@ -21,28 +21,38 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class PostSuggestion extends AppCompatActivity implements  Utility.UploadDecision{
+/**
+ * This activity is invoked when the user wants to report something ans there are some similar posts already residing in the database.
+ * So, we show the user a list of the matching items. After seeing the list, the user may decide whether to upload the report or abort the task.
+ */
 
-    Button btnUpload, btnCancel;
+public class PostSuggestion extends AppCompatActivity implements  Utility.UploadDecision{
+    //If the user presses this button, the report will be uploaded to the main database
+    Button btnUpload;
+    // //If the user presses this button, the report will be discarded and not saved.
+    Button btnCancel;
+    //a custom listview to show all the matching posts
     ListView lvwPostSugg;
+    //an arraylist to store all the matching posts
     ArrayList<PostSuggestionItem> suggestionItems = new ArrayList<PostSuggestionItem>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_suggestion);
 
+        //instantiating the above mentioned variables
         btnUpload = (Button) findViewById(R.id.btnUploadSuggestionAnyway);
         btnCancel = (Button) findViewById(R.id.btnSkipUpload);
         lvwPostSugg = (ListView) findViewById(R.id.lvwPostSuggestion);
 
-        //populate Arraylist 'suggestionItems' Here, get from intent maybe?
 
+        // setting app behavior after user clicks the upload button
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Don't forget to delete from SQLite db
-                //write code for upload here
-                Log.d("Inside PostSuggestion", "upload clicked");
+
+                //The user wants to upload the report. So, the parent activity will be notified accordingly
                 Intent returnIntent = getIntent();
                 returnIntent.putExtra("uploadDecision", UPLOAD_REPORT);
                 if (getParent() == null) {
@@ -50,6 +60,8 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
                 }
                 else
                     getParent().setResult(AppCompatActivity.RESULT_OK, returnIntent);
+
+                //and then finish this activity
                 finish();
             }
         });
@@ -57,8 +69,8 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Don't forget to delete from SQLite db
-                Log.d("Inside PostSuggestion","dont upload clicked");
+                //THe user wants to discard the report. So notify the parent activity accordingly
+
                 Intent returnIntent = getIntent();
                 returnIntent.putExtra("uploadDecision", DONT_UPLOAD_REPORT);
                 setResult(RESULT_OK, returnIntent);
@@ -67,41 +79,52 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
             }
         });
 
+
+        // a jsonObject to hold all the post suggestions
         JSONObject jsonPostSuggestions;
+        //variable to hold number of posts
         int N=0;
 
         try {
+            //load the json object from the data received from the parent activity
             jsonPostSuggestions = new JSONObject(getIntent().getStringExtra("jsonPostSuggestions"));
+
             Log.d("PostSuggestion.java", jsonPostSuggestions.toString());
 
+            //build a json array of posts and get its length
             JSONArray postsJSONArray = jsonPostSuggestions.getJSONArray("posts");
             N=postsJSONArray.length();
 
+            //curIndex will be used to iterate through all the posts
             int curIndex=0;
+
+            //clear the arraylist holding posts
             suggestionItems.clear();
 
+            //now go through all the posts
             while(curIndex<N) {
+                //get the current post in json and increment the curIndex to look for the next object
                 JSONObject curObj = postsJSONArray.getJSONObject(curIndex++);
 
+                //build a new PostSuggestionItem from this json object
                 PostSuggestionItem postSuggestionItem = PostSuggestionItem.createPost(curObj);
-                suggestionItems.add(postSuggestionItem);
-                Log.d("PostSuggestionArrayList", suggestionItems.toString());
-                //ps_adapter.notifyDataSetChanged();
-//                    String uname =curObj.getString("userName");
-//                    s = s + uname + "\n";
 
-                //Log.d("posts near you", uname);
+                //and add it to the arraylist of posts
+                suggestionItems.add(postSuggestionItem);
+
+                Log.d("PostSuggestionArrayList", suggestionItems.toString());
+
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
 
+        //the adapter to hold the post suggestions
         PostSuggestionAdapter ps_adapter = new PostSuggestionAdapter();
         lvwPostSugg.setAdapter(ps_adapter);
 
-        //PostSuggestionTask ps = new PostSuggestionTask();
-        //ps.execute();
     }
 
 
@@ -127,12 +150,17 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * This class shows all the post suggestions in a listview
+     */
+
     class PostSuggestionAdapter extends ArrayAdapter<PostSuggestionItem>
     {
 
         public PostSuggestionAdapter() {
             super(getApplicationContext(), R.layout.activity_post_suggestion, suggestionItems);
         }
+
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
@@ -142,6 +170,7 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
 
             Log.d("PostSuggestionAdapter", "inside getView");
 
+            //extract number of votes the user has received and set sign appropriately
             int voteCount = Integer.valueOf(suggestionItems.get(position).voteCount);
             if(voteCount>0)
                 ((TextView) v.findViewById(R.id.lblSuggestionVoteCount)).setText("+" + voteCount);
@@ -149,6 +178,8 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
                 ((TextView) v.findViewById(R.id.lblSuggestionVoteCount)).setText(voteCount + "");
             else
                 ((TextView) v.findViewById(R.id.lblSuggestionVoteCount)).setText(voteCount + "");
+
+            //and then fill up all the items in the listview
 
             ((TextView) v.findViewById(R.id.lblSuggestionDate)).setText(Utility.CurrentUser.parsePostTime(suggestionItems.get(position).date));
             ((TextView) v.findViewById(R.id.lblSuggestionInformalLocation)).setText(suggestionItems.get(position).informalLocation);
