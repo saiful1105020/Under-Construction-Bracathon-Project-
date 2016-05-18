@@ -3,7 +3,11 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
+<<<<<<< HEAD:Database/brac_project (1).sql
 -- Generation Time: May 18, 2016 at 10:36 PM
+=======
+-- Generation Time: May 18, 2016 at 09:07 PM
+>>>>>>> baee4b83b714da98491b85a4c6493dfb7ef81931:Database/brac_project.sql
 -- Server version: 5.6.24
 -- PHP Version: 5.6.8
 
@@ -149,16 +153,24 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `time` datetime NOT NULL,
   `log_type` int(11) NOT NULL,
   `post_id` int(11) NOT NULL,
+<<<<<<< HEAD:Database/brac_project (1).sql
   `prev_status` int(11) DEFAULT NULL,
   `changed_status` int(11) NOT NULL,
   `cat_name` varchar(256) NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+=======
+  `prev_status` int(11) NOT NULL,
+  `changed_status` int(11) NOT NULL,
+  `cat_name` varchar(256) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+>>>>>>> baee4b83b714da98491b85a4c6493dfb7ef81931:Database/brac_project.sql
 
 --
 -- Dumping data for table `logs`
 --
 
 INSERT INTO `logs` (`log_id`, `user_id`, `cat_id`, `time`, `log_type`, `post_id`, `prev_status`, `changed_status`, `cat_name`) VALUES
+<<<<<<< HEAD:Database/brac_project (1).sql
 (1, 1, 2, '2015-12-06 02:00:00', 3, 2, 3, 1, 'Test'),
 (2, 1, 2, '2016-05-19 01:13:20', 3, 2, 3, 1, 'Test'),
 (3, 1, 2, '2016-05-19 01:38:05', 3, 2, NULL, 1, 'Test'),
@@ -175,6 +187,9 @@ INSERT INTO `logs` (`log_id`, `user_id`, `cat_id`, `time`, `log_type`, `post_id`
 (14, 1, -1, '2016-05-19 02:03:48', 9, -1, NULL, -1, ''),
 (15, 1, -1, '2016-05-19 02:09:06', 8, -1, NULL, -1, ''),
 (16, 1, 2, '2016-05-19 02:11:25', 10, -40, NULL, 1, 'Open Dustbean');
+=======
+(1, 1, 2, '2015-12-06 02:00:00', 3, 2, 3, 1, 'Test');
+>>>>>>> baee4b83b714da98491b85a4c6493dfb7ef81931:Database/brac_project.sql
 
 -- --------------------------------------------------------
 
@@ -482,7 +497,11 @@ ALTER TABLE `location`
 -- AUTO_INCREMENT for table `logs`
 --
 ALTER TABLE `logs`
+<<<<<<< HEAD:Database/brac_project (1).sql
   MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=17;
+=======
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+>>>>>>> baee4b83b714da98491b85a4c6493dfb7ef81931:Database/brac_project.sql
 --
 -- AUTO_INCREMENT for table `post`
 --
