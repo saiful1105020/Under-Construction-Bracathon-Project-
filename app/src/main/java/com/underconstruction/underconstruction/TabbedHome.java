@@ -16,6 +16,10 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is the main activity of the app. Holds the three main fragments : HomeFragment,DashBoardFragment,PostsFragemnt.
+ * THis is also used to initate the job of adding a report
+ */
 public class TabbedHome extends AppCompatActivity implements PostsSectionFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, DashboardFragment.OnFragmentInteractionListener {
 
     //A layout for arranging the fragments in TAB
