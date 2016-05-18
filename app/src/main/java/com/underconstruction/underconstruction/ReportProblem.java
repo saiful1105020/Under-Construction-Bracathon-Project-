@@ -2,7 +2,6 @@ package com.underconstruction.underconstruction;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -41,34 +40,42 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 public class ReportProblem extends AppCompatActivity implements Utility.UploadDecision, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    //Custom listview to show the dynamic category
     ListView list;
+    //
     TextView txtCateDesc;
 
+    //variable to open another activity to capture an image
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    //variable to open another activity to suggest a user similar post
     static final int REQUEST_POST_SUGGESTION = 2;
+    //variable to control the operation of camera
     static int camera = 0;
-    Button btnAddReport, btnSaveReport;
+    //a button to catch the addition of report
+    Button btnAddReport;
+    //an arraylist to store all the attributes of a location
     private ArrayList<String> locationAtrributes = new ArrayList<String>();
+    //a bitmap variable to store the captured image
     Bitmap imageBitmap;
+    //a byte array version of the previously mentioned bitmap.
     byte[] imageByteArray;
-    SQLiteDatabase tempDatabase;
-    HashSet<String> tagHashSet = new HashSet<String>();
+    //the imageview to show the image capturedd to user
     ImageView mImageView;
-    String mCurrentPhotoPath;
+    //GoogleApiCilent variable to use google api to get latitude and longitude
     GoogleApiClient mGoogleApiClient;
+    //the last location returned form the Google Locations API
     Location mLastLocation;
-    boolean mAddressRequested = true;
-    //private String mAddressOutput;
-    public String mAddressOutput;
+    //this variable is used to retrieve address(locality, street no) from a location(latitude, longitude)
     private AddressResultReceiver mResultReceiver;
-    private View view;
+    //an string representation of the address retrieved from Google API
     private String resultOutput;
+    //the problem category selected by the user, by default the first category is selected
     private int categorySelected;
+    //A TAG for debugging
     private String TAG = getClass().getSimpleName().toString();
 
 
@@ -78,19 +85,17 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         setContentView(R.layout.activity_report_problem);
 
 
-
+        //camera is opened if it is already not opened, otherwise finish the activity
         if (camera == 0) {
             dispatchTakePictureIntent();
             camera++;
         } else
             finish();
 
+        //all the necessary variables are instantiated. The meaning of the variables are described at the beginning of the class
         mResultReceiver = new AddressResultReceiver(new Handler());
-
         mImageView = (ImageView) findViewById(R.id.addReportImageImageView);
         btnAddReport = (Button) (findViewById(R.id.addReportNewReportButton));
-//        btnSaveReport=(Button)(findViewById(R.id.addReportSaveReportButton));
-
         list = (ListView) findViewById(R.id.listView);
         txtCateDesc = (TextView) findViewById(R.id.txtCategoryDesc);
 
@@ -111,14 +116,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
                 categorySelected = getCategoryIds.get(position);
                 Log.d("Category Selected", categorySelected + "");
-                if (list.getItemAtPosition(position).equals("Others")) {
-                    txtCateDesc.setVisibility(View.VISIBLE);
-                    txtCateDesc.requestFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(txtCateDesc, InputMethodManager.SHOW_IMPLICIT);
-                } else {
-                    txtCateDesc.setVisibility(View.GONE);
-                }
+
             }
         });
 
@@ -162,28 +160,119 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //Log.d(TAG,"returned from intent");
 
+        //  The task of capturing image has completed successfully
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
+            //extract data and set the bitmap appropriately
             imageBitmap = (Bitmap) extras.get("data");
+            //set the imageview to show image to the user
             mImageView.setImageBitmap(imageBitmap);
-            //FormatAndPopulateLocationTextView();
-            //setPic();
+
+            //so the image has been captured.And we will open the activity again. And we will close the camera and
+            //populate the category list so that the user can choose the appropriate category
             Intent intent = new Intent(this, ReportProblem.class);
             startActivity(intent);
-//            btnSaveReport.setClickable(true);
+            //and now we can report a problem
+
             btnAddReport.setClickable(true);
-        } else if (requestCode == REQUEST_POST_SUGGESTION && resultCode == RESULT_OK) {
+
+        }
+        //THe user was showed some posts from the database which were very similar to the report he posted.
+        //He can upload/ discard the report
+        else if (requestCode == REQUEST_POST_SUGGESTION && resultCode == RESULT_OK) {
             int chosenOption = data.getIntExtra("uploadDecision", -1);
             Log.d(TAG, chosenOption + "");
+            //THe user chose to upload the report
             if (chosenOption == UPLOAD_REPORT) {
+                //We will format the report and upload it in the main database
                 initiateTaskForPopulatingTheMainDB();
                 Log.d(TAG, "upload");
             } else if (chosenOption == DONT_UPLOAD_REPORT) {
+                //We will go to the default home activity
                 Log.d(TAG, "dont upload");
+
                 goToHomeActivity();
             }
+        }
+    }
+
+    /**
+     * THis method will be called when the user wants to upload the report
+     * @param v the view associated with the current context
+     */
+    public void onUploadNowButtonClick(View v) {
+        //We will fetch lat-long of the current location in a background thread.
+        new FetchLocation().execute();
+
+    }
+
+    /**
+     * THis background class will be used to determine the latitude and longitude of the current location
+     */
+    class FetchLocation extends AsyncTask<Report, Void, String> {
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(Report... args) {
+
+            buildGoogleApiClient();
+            return null;
+        }
+
+        protected void onPostExecute(String a) {
+        }
+    }
+
+    /**
+     * This method will open a connection with the google LocationServices to bring the current location
+     */
+
+    public synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
+        //This ia a asynchronous operation. It will call the onConnected method below when the location
+        //information return
+        mGoogleApiClient.connect();
+    }
+
+    /**
+     * This method will be called when mGoogleClient.connect() function returns
+     * @param connectionHint
+     */
+    @Override
+    public void onConnected(Bundle connectionHint) {
+
+        //Extract the last known location form Google LocationServices
+        try {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+        }catch(SecurityException e){
+            e.printStackTrace();
+        }
+
+        //We have got a null location
+        if (mLastLocation == null) {
+            //Toast.makeText(this, "Google client has returned null", Toast.LENGTH_LONG).show();
+        }//We have got a non-null location
+        else if (mLastLocation != null) {
+            // Toast.makeText(this,"Google client has returned",Toast.LENGTH_LONG).show();
+            // mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+            //mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+            //Toast.makeText(this, "Google client has returned not null", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_LONG).show();
+
+            //Now we will send the report to appropriate database
+            sendDataToAppropriateDatabase();
         }
     }
 
@@ -191,6 +280,38 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+
+    public void sendDataToAppropriateDatabase() {
+        // Only start the service to fetch the address if GoogleApiClient is
+        // connected.
+        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
+            Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
+            //THis post has to be inserted in the main database
+            if(Utility.isOnline(getApplicationContext())) {
+                //We will give the user a list of very similar posts from the main database
+                new PostSuggestionTask().execute();
+            }
+            //This post will be saved in the internal database.
+            else {
+
+                formatDataForSavingInTheInternalDB();
+                Log.d("Internet Connection", "absent");
+
+            }
+        }
+        else {
+            Toast.makeText(this, "Obtaining location failed. Please try after sometime", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+
 
     class AddReportTask extends AsyncTask<String, Void, String> {
 
@@ -270,108 +391,10 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         }
     }
 
-    class FetchLocation extends AsyncTask<Report, Void, String> {
-
-        private JSONObject jsonAddReport;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
 
 
-        protected String doInBackground(Report... args) {
-
-            buildGoogleApiClient();
-            return "";
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
-        protected void onPostExecute(String a) {
 
 
-            if (jsonAddReport == null)
-                Log.d("report_database", " null");
-            else Log.d("report_database", jsonAddReport.toString());
-
-        }
-    }
-
-    public void onUploadNowButtonClick(View v) {
-
-        new FetchLocation().execute();
-
-//        dispatchTakePictureIntent();
-
-    }
-
-    public synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        //Toast.makeText(this,"google map client",Toast.LENGTH_LONG).show();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        //Log.d("google map client", "returned");
-
-
-        try {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-        }catch(SecurityException e){
-            e.printStackTrace();
-        }
-
-        if (mLastLocation == null) {
-            Toast.makeText(this, "Google client has returned null", Toast.LENGTH_LONG).show();
-            //buildGoogleApiClient();
-        } else if (mLastLocation != null) {
-            // Toast.makeText(this,"Google client has returned",Toast.LENGTH_LONG).show();
-            // mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-            //mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-            Toast.makeText(this, "Google client has returned not null", Toast.LENGTH_LONG).show();
-            Toast.makeText(this, mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_LONG).show();
-
-            sendDataToAppropriateDatabase();
-        }
-    }
-
-    public void sendDataToAppropriateDatabase() {
-        // Only start the service to fetch the address if GoogleApiClient is
-        // connected.
-        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
-            Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
-            //THis post has to be inserted in the main database
-            if(Utility.isOnline(getApplicationContext())) {
-                //startIntentServiceForReverseGeoTagging();
-                new PostSuggestionTask().execute();
-            }
-            //This post will be saved in the internal database.
-            else {
-                //saveTheReportInDatabase(imageByteArray);
-                formatDataForSavingInTheInternalDB();
-                Log.d("Internet Connection", "absent");
-
-            }
-        }
-        else
-            Toast.makeText(this,"Obtaining location failed. Please try after sometime",Toast.LENGTH_LONG).show();
-
-        // If GoogleApiClient isn't connected, process the user's request by
-        // setting mAddressRequested to true. Later, when GoogleApiClient connects,
-        // launch the service to fetch the address. As far as the user is
-        // concerned, pressing the Fetch Address button
-        // immediately kicks off the process of getting the address.
-        //mAddressRequested = true;
-        //updateUIWidgets();
-    }
 
     protected void startIntentServiceForReverseGeoTagging() {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
@@ -384,10 +407,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
 
-    }
 
     class AddressResultReceiver extends ResultReceiver {
 
@@ -464,7 +484,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         new AddReportTask().execute();
 
     }
-
+    
 
     private void formatDataForSavingInTheInternalDB(){
 
@@ -541,6 +561,9 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         //sendStoredEntryToDatabase();
     }
 
+    /**
+     * The class will bring all the similar posts form the main db
+     */
     class PostSuggestionTask extends AsyncTask<String, Void, String> {
 
         private JSONObject jsonPostSuggestion;
@@ -561,46 +584,42 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
             params.add(new Pair("time", getCurrentTimestamp()));
             params.add(new Pair("cat", categorySelected + ""));
 
-            // getting JSON string from URL
-//            Log.d("PostSuggest", params.toString());
+           //Setting the response in json
             jsonPostSuggestion = jParser.makeHttpRequest("/getSuggestions", "GET", params);
-
 
             return null;
         }
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
+
         protected void onPostExecute (String file_url){
             if(jsonPostSuggestion == null) {
                 Log.d("OnPostExecute", "jsonPostSuggestion == null");
-                //Utility.CurrentUser.showConnectionError(getApplicationContext());
-//                txtRes.setText("Please check your internet connection");
                 return;
             }
+
+
             Log.d("PostSuggest", jsonPostSuggestion.toString());
-            String s = new String("");
+
             try {
+                //Building a json array for posts
                 JSONArray postsJSONArray = jsonPostSuggestion.getJSONArray("posts");
-                //postArrayList.clear();
 
-                int curIndex=0, N=postsJSONArray.length();
 
+                int N=postsJSONArray.length();
+
+                // No conflict with other posts
                 if (N==0) {
-                    // No conflict with other posts
+                    //so put in in main db
                     initiateTaskForPopulatingTheMainDB();
-                    //startIntentServiceForReverseGeoTagging();
-
                     return;
                 }
 
+                //start a new intent to show the user a list of similar posts and get his feedback whether to
+                //upload the report or not.
                 Intent intent = new Intent(getApplicationContext(), PostSuggestion.class);
                 intent.putExtra("jsonPostSuggestions", jsonPostSuggestion.toString());
                 startActivityForResult(intent, REQUEST_POST_SUGGESTION);
 
-
-//                txtRes.setText(s);
 
             } catch (JSONException e) {
                 e.printStackTrace();
