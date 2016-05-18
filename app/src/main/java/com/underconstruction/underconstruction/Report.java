@@ -16,6 +16,7 @@ public class Report implements Serializable{
     private String time;
     private String informalLocation;
 
+
     @Override
     public String toString() {
         return "Report{" +

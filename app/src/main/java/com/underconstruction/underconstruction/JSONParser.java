@@ -40,7 +40,7 @@ public class JSONParser {
 //        final String BASE_URL = "http://" + "172.20.62.63"r
 
 
-        final String BASE_URL = "http://" + "172.20.62.8" +                //Alternate Database
+        final String BASE_URL = "http://" + "172.20.62.7" +                //Alternate Database
                 "/hackThon/UC_Server/index.php/home";
 
 

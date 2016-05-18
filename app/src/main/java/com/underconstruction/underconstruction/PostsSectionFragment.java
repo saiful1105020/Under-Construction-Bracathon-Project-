@@ -50,7 +50,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    
+
     private static final String GREY = "#c0bfac";
     private static final String BLUE = "#16586E";
     private static final String RED = "#D90D10";
@@ -262,11 +262,15 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
             //fill the view
 
             TextView problemType = (TextView) itemView.findViewById(R.id.lblPostProblemType);
-            problemType.setText(Utility.HazardTags.getHazardTags()[currentPost.getCategory()]);
-
+            //problemType.setText(Utility.HazardTags.getHazardTags()[currentPost.getCategory()]);
+            problemType.setText(Utility.CategoryList.get(currentPost.getCategory()));
             TextView postTime = (TextView) itemView.findViewById(R.id.lblPostTime);
 //            String timeOfPost = Utility.CurrentUser.parsePostTime(currentPost.getTimeOfPost());
+            String x = "";
+            x = currentPost.getTimeOfPost();
             postTime.setText(Utility.CurrentUser.parsePostTime(currentPost.getTimeOfPost()));
+
+
 //            postTime.setText(currentPost.getTimeOfPost());
 
             TextView formalLocation = (TextView) itemView.findViewById(R.id.lblPostProblemLocation);
