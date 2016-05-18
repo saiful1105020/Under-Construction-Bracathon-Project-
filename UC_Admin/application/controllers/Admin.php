@@ -29,6 +29,7 @@ class Admin extends CI_Controller {
 		  
 		//load models
 		$this->load->model('admin_model');
+		$this->load->model('log_model');
 		$this->load->model('post_model');
 		//$data['current_nav']='home';
 		//$this->load->view('templates/header',$data);
@@ -40,9 +41,27 @@ class Admin extends CI_Controller {
 	*	[ADMIN HOME PAGE]
 	*/
 	
+	
+	
 	public function index()			
 	{
 		redirect('admin/search','refresh');
+	}
+	
+	public function insert_log_test()
+	{
+		$data = array();
+		
+		$data['user_id']=1;
+		$data['cat_id']=2;
+		$data['time']='2015-12-06 02:00:00';
+		$data['log_type']=3;
+		$data['post_id']=2;
+		$data['prev_status']=3;
+		$data['changed_status']=1;
+		$data['cat_name']="Test";
+		
+		$this->log_model->insert_log($data);
 	}
 	
 	public function search()
