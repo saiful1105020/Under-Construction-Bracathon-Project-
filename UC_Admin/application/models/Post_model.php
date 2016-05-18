@@ -242,6 +242,15 @@ class Post_model extends CI_Model
 		$result = $this->db->query($sql,array($id))->row_array();
 		return $result['name'];
 	}
+
+	public function get_category_id_from_name($name)
+	{
+		//echo $id.'---------';
+		
+		$sql = 'SELECT `categoryId` FROM category where `name` = ?';
+		$result = $this->db->query($sql,array($name))->row_array();
+		return $result['categoryId'];
+	}
 	
 	public function category_problem_count($cat_id)
 	{
@@ -345,6 +354,13 @@ class Post_model extends CI_Model
 	{
 		$sql = 'DELETE FROM `category` WHERE `categoryId` = ?';
 		$query = $this->db->query($sql,array($id));
+	}
+
+	public function getCategoryId($post_id)
+	{
+		$sql = "SELECT `category` from post where `post_id`=?";
+		$query = $this->db->query($sql, array($post_id))->row_array();
+		return $query['category'];
 	}
 }
 ?>

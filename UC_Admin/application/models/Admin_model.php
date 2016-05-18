@@ -186,6 +186,14 @@ class Admin_model extends CI_Model
 			STATUS : 	status = ?
 		*/
 	}
+
+	public function getAdminId($name)
+	{
+		$sql = "SELECT `admin_id` FROM `admin` WHERE `admin_name`=?";
+		$query = $this->db->query($sql,array($name))->row_array();
+		return $query['admin_id'];
+	}
+
 }
 
 ?>

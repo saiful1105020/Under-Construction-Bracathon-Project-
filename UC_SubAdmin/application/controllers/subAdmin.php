@@ -30,6 +30,7 @@ class subAdmin extends CI_Controller {
 		//load models
 		$this->load->model('subAdminModel');
 		$this->load->model('post_model');
+		$this->load->model('log_model');
 		//$data['current_nav']='home';
 		//$this->load->view('templates/header',$data);
 		
@@ -109,6 +110,18 @@ class subAdmin extends CI_Controller {
 		
 		
 		//CHANGE FLAG STATUS OF THE POST
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["subAdmin_id"];
+		$logData['cat_id']=$this->post_model->getCategoryId($post_id);
+		$logData['log_type']=10;
+		$logData['post_id']=$post_id;
+		$logData['changed_status']=$_POST['action'];
+		$logData['cat_name']=$this->post_model->get_category_name($logData['cat_id']);
+				
+		$this->log_model->insert_log($logData);
+
 		$this->post_model->update_flag_status($post_id,$action);
 		
 		
@@ -143,6 +156,17 @@ class subAdmin extends CI_Controller {
 	
 	public function logout()	
 	{
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["subAdmin_id"];
+		$logData['cat_id']=-1;
+		$logData['log_type']=9;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']='';
+				
+		$this->log_model->insert_log($logData);
+
 		$this->session->sess_destroy();	//!Stop Session 
 		
 		/**

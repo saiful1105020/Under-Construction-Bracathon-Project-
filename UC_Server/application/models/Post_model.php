@@ -399,5 +399,13 @@ class Post_model extends CI_Model
 		if($count>0) return 1;
 		else return 0;
 	}
+
+	public function maxPostID()
+	{
+		$sql = 'SELECT MAX(post_id) as biggest from post';
+		$query= $this->db->query($sql)->row_array();
+
+		return $query['biggest'];
+	}
 }
 ?>

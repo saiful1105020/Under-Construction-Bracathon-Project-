@@ -161,6 +161,18 @@ class Admin extends CI_Controller {
 		
 		$data['success']=true;
 		$data['success_message']="Status and user voteCount updated successfully";
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=$this->post_model->getCategoryId($post_id);
+		$logData['log_type']=4;
+		$logData['post_id']=$post_id;
+		$logData['changed_status']=$action;
+		$logData['cat_name']=$this->post_model->get_category_name($logData['cat_id']);
+		
+		$this->log_model->insert_log($logData);
+
 		$this->load->view('status_message',$data);
 	}
 	
@@ -170,6 +182,17 @@ class Admin extends CI_Controller {
 	
 	public function logout()	
 	{
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=-1;
+		$logData['log_type']=5;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']='';
+				
+		$this->log_model->insert_log($logData);
+
 		$this->session->sess_destroy();	//!Stop Session 
 		
 		/**
@@ -337,6 +360,18 @@ class Admin extends CI_Controller {
 		
 		$data['success']=true;
 		$data['success_message']='Category added successfully.';
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=$this->post_model->get_category_id_from_name($cat_name);
+		$logData['log_type']=6;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']=$cat_name;
+		
+		$this->log_model->insert_log($logData);
+
 		$this->load->view('status_message',$data);
 	}
 	
@@ -351,6 +386,18 @@ class Admin extends CI_Controller {
 		
 		$data['success']=true;
 		$data['success_message']='Category added successfully.';
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=$this->post_model->get_category_id_from_name($cat_name);
+		$logData['log_type']=6;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']=$cat_name;
+		
+		$this->log_model->insert_log($logData);
+
 		$this->load->view('status_message',$data);
 	}
 	
@@ -372,10 +419,23 @@ class Admin extends CI_Controller {
 	*/
 	public function deleteCategoryAction($id)
 	{
+		$cat_name = $this->post_model->get_category_name($id);
 		$this->post_model->delete_cat($id);
 		
 		$data['success']=true;
 		$data['success_message']='Category deleted successfully.';
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=-1;
+		$logData['log_type']=7;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']=$cat_name;
+		
+		$this->log_model->insert_log($logData);
+
 		$this->load->view('status_message',$data);
 	}
 

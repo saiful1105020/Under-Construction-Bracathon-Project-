@@ -21,6 +21,7 @@ class Home extends CI_Controller {
 		  
 		  // <Load Admin Model>
 		  $this->load->model('subAdminModel');
+		  $this->load->model('log_model');
      }
 	 
 	public function index()
@@ -58,6 +59,17 @@ class Home extends CI_Controller {
 			{
 				$loginInfo=$query->row_array();
 				$_SESSION["subAdminName"]=$loginInfo['name'];
+				$_SESSION["subAdmin_id"] = $this->subAdminModel->getAdminId($_SESSION["subAdminName"]);
+				$logData = array();
+		
+				$logData['user_id']=$_SESSION["subAdmin_id"];
+				$logData['cat_id']=-1;
+				$logData['log_type']=8;
+				$logData['post_id']=-1;
+				$logData['changed_status']=-1;
+				$logData['cat_name']='';
+				
+				$this->log_model->insert_log($logData);
 				
 				//Load User Admin Page
 				redirect('/subAdmin', 'refresh');

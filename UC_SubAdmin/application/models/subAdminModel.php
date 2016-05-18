@@ -191,6 +191,13 @@ class subAdminModel extends CI_Model
 			STATUS : 	status = ?
 		*/
 	}
+
+	public function getAdminId($name)
+	{
+		$sql = "SELECT `id` FROM `subadmin` WHERE `name`=?";
+		$query = $this->db->query($sql,array($name))->row_array();
+		return $query['id'];
+	}
 }
 
 ?>
