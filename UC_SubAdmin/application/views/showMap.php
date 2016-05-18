@@ -1,47 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    
+    <script type="text/javascript" src="<?php echo base_url("assets/js/jquery-1.11.2.min.js"); ?>"></script>
 
-    <script>
-        function initMap( ) {
-        var jArray = [];
-        jArray[0] =23.8103; jArray[1] = 90.4125;
-        jArray[2] = 22.3475; jArray[3] = 91.8123;
-        jArray[4] = 24.9045; jArray[5] = 91.8611;
-        jArray[6] = 24.3636; jArray[7] = 88.6241;
-        jArray[8] = 22.7029; jArray[9] = 90.3466;
-        jArray[10] = 25.7439 ; jArray[11] = 89.2572;
-        jArray[12] = 22.8456; jArray[13] = 89.5403;
-          var myLatLng = {lat: jArray[0] , lng: jArray[1] };
+    <script type="text/javascript" src="<?php echo base_url("assets/js/bootstrap.js"); ?>"></script>
 
-          var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 8,
-            center: myLatLng
-          });
-          var y=1;
-          var z='vehicle'+y;
-          
-          var x=document.getElementById(z).checked;
-          console.log(x);
-        for(var i=0;i<6;i++)
+    <script type="text/javascript">
+     function initMyMap( ) {
+        
+        var mapArray = <?php echo json_encode($mapData);?>;
+        var radioArray = [];
+        var selectArray = [];
+        var index=0;
+        for(var j=0;j<mapArray.length;j++)
         {
-          myLatLng = {lat: jArray[i*2] , lng: jArray[i*2+1] };
-
-          // var map = new google.maps.Map(document.getElementById('map'), {
-          //   zoom: 10,
-          //   center: myLatLng
-          // });
-
-          if(x)
-          {
-            var marker = new google.maps.Marker({
-              position: myLatLng,
-              map: map,
-              title: ''
-            }); 
-          }
+            radioArray[j] = "cat"+mapArray[j]['id'];
+            selectArray[j] = document.getElementById(radioArray[j]).checked;
+            if(selectArray[j])
+              index = mapArray[j]['id'];
         }
-      }
-    </script>
+        if(index==-1)
+          index=0;
 
-    <br><br>
+        var latArray = [];
+        var lonArray = [];
+       var locLength = mapArray[index]['locations'].length;
+        for(var p=0; p<locLength; p++)
+        {
+          latArray[p] =  parseFloat(mapArray[index]['locations'][p]['lat']);
+          lonArray[p] = parseFloat(mapArray[index]['locations'][p]['lon']);
+        }
+        console.log(latArray);
+        var myLatLng = {lat: 23.8103 , lng: 90.4125 };
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 8,
+          center: myLatLng
+        });
+        if(selectArray[index]){
+			for(var i=0;i<locLength;i++)
+			{
+			  myLatLng = {lat: latArray[i] , lng: lonArray[i] };
+
+			  var marker = new google.maps.Marker({
+				position: myLatLng,
+				map: map,
+				title: ''
+			  }); 
+			}
+		}
+      }
+      </script>
+      </head>
+
+    <body>
+
+
     <h2 style="text-align:center"><b>Show Problems in Map</b></h2>  
 
    <div class="row" class="col-md-4">
@@ -53,16 +67,16 @@
                 </tr>
             </thead>
             <tbody>
+		
                 <tr>
                     <td></td>
-                    <td><input type="checkbox" id="vehicle" value="1"> Broken Road<br></td>
-                    <td><input type="checkbox" id="vehicle1" value="1"> Broken Road<br></td>
-                    <td><input type="checkbox" id="vehicle2" value="1"> Broken Road<br></td>
-                    <td><input type="checkbox" id="vehicle3" value="1"> Broken Road<br></td>
-                    <td><input type="checkbox" id="vehicle4" value="1"> Broken Road<br></td>
-                    <td><input type="checkbox" id="vehicle5" value="1"> Broken Road<br></td>
-
-
+					<?php 
+						foreach($mapData as $e)
+						{
+							echo '<td><input type="radio" name="showCat" id="cat'.$e['id'].'" value="'.$e['id'].'"> ' . $e['name'].'<br></td>';
+						}
+					?>
+					
 
                 </tr>
                 
@@ -72,7 +86,7 @@
     <div class="row">
         <div class="col-md-5"></div>
         <div class="col-md-5">
-            <button class="btn btn-danger" type="submit" onclick="initMap()">Show On Map</button>
+            <button class="btn btn-danger" type="submit" onclick="initMyMap()">Show On Map</button>
         </div>
         <div class="col-md-2"></div>
     </div>
@@ -84,7 +98,7 @@
         
 
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4LGcxa0bb_eUxxLYVv1sO6NRZ6UbPGsc&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4LGcxa0bb_eUxxLYVv1sO6NRZ6UbPGsc&callback=initMyMap">
     </script>
   </body>
 </html>

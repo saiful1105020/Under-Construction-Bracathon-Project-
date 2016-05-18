@@ -1,8 +1,6 @@
 package com.underconstruction.underconstruction;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -17,7 +15,6 @@ import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -41,34 +38,42 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 public class ReportProblem extends AppCompatActivity implements Utility.UploadDecision, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    //Custom listview to show the dynamic category
     ListView list;
+    //
     TextView txtCateDesc;
 
+    //variable to open another activity to capture an image
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    //variable to open another activity to suggest a user similar post
     static final int REQUEST_POST_SUGGESTION = 2;
+    //variable to control the operation of camera
     static int camera = 0;
-    Button btnAddReport, btnSaveReport;
+    //a button to catch the addition of report
+    Button btnAddReport;
+    //an arraylist to store all the attributes of a location
     private ArrayList<String> locationAtrributes = new ArrayList<String>();
+    //a bitmap variable to store the captured image
     Bitmap imageBitmap;
+    //a byte array version of the previously mentioned bitmap.
     byte[] imageByteArray;
-    SQLiteDatabase tempDatabase;
-    HashSet<String> tagHashSet = new HashSet<String>();
+    //the imageview to show the image capturedd to user
     ImageView mImageView;
-    String mCurrentPhotoPath;
+    //GoogleApiCilent variable to use google api to get latitude and longitude
     GoogleApiClient mGoogleApiClient;
+    //the last location returned form the Google Locations API
     Location mLastLocation;
-    boolean mAddressRequested = true;
-    //private String mAddressOutput;
-    public String mAddressOutput;
+    //this variable is used to retrieve address(locality, street no) from a location(latitude, longitude)
     private AddressResultReceiver mResultReceiver;
-    private View view;
+    //an string representation of the address retrieved from Google API
     private String resultOutput;
+    //the problem category selected by the user, by default the first category is selected
     private int categorySelected = 1;
+    //A TAG for debugging
     private String TAG = getClass().getSimpleName().toString();
 
 
@@ -78,35 +83,38 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         setContentView(R.layout.activity_report_problem);
 
 
-
+        //camera is opened if it is already not opened, otherwise finish the activity
         if (camera == 0) {
             dispatchTakePictureIntent();
             camera++;
         } else
             finish();
 
+        //all the necessary variables are instantiated. The meaning of the variables are described at the beginning of the class
         mResultReceiver = new AddressResultReceiver(new Handler());
-
         mImageView = (ImageView) findViewById(R.id.addReportImageImageView);
         btnAddReport = (Button) (findViewById(R.id.addReportNewReportButton));
-//        btnSaveReport=(Button)(findViewById(R.id.addReportSaveReportButton));
-
         list = (ListView) findViewById(R.id.listView);
         txtCateDesc = (TextView) findViewById(R.id.txtCategoryDesc);
 
 
-        //String[] values = new String[]{"Broken Road", "Manhole", "Risky Intersection", "Crime prone area", "Others"};
+        //An adapter to show the custom listview
         ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, Utility.CategoryList.getArrayList());
         list.setAdapter(adapt);
         list.setItemChecked(0, true);
         categorySelected = 0;
-        Log.d("Category Selected", categorySelected + "");
+        //Log.d("Category Selected", categorySelected + "");
 
+        //to capture which category the user has selected
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //to select the user defined category
                 categorySelected = position;
                 Log.d("Category Selected", position + "");
+
+                //the code inside if-else is not functional now.They may be used in future
+                /*
                 if (list.getItemAtPosition(position).equals("Others")) {
                     txtCateDesc.setVisibility(View.VISIBLE);
                     txtCateDesc.requestFocus();
@@ -115,6 +123,8 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
                 } else {
                     txtCateDesc.setVisibility(View.GONE);
                 }
+
+                */
             }
         });
 
@@ -158,28 +168,119 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //Log.d(TAG,"returned from intent");
 
+        //  The task of capturing image has completed successfully
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
+            //extract data and set the bitmap appropriately
             imageBitmap = (Bitmap) extras.get("data");
+            //set the imageview to show image to the user
             mImageView.setImageBitmap(imageBitmap);
-            //FormatAndPopulateLocationTextView();
-            //setPic();
+
+            //so the image has been captured.And we will open the activity again. And we will close the camera and
+            //populate the category list so that the user can choose the appropriate category
             Intent intent = new Intent(this, ReportProblem.class);
             startActivity(intent);
-//            btnSaveReport.setClickable(true);
+            //and now we can report a problem
+
             btnAddReport.setClickable(true);
-        } else if (requestCode == REQUEST_POST_SUGGESTION && resultCode == RESULT_OK) {
+
+        }
+        //THe user was showed some posts from the database which were very similar to the report he posted.
+        //He can upload/ discard the report
+        else if (requestCode == REQUEST_POST_SUGGESTION && resultCode == RESULT_OK) {
             int chosenOption = data.getIntExtra("uploadDecision", -1);
             Log.d(TAG, chosenOption + "");
+            //THe user chose to upload the report
             if (chosenOption == UPLOAD_REPORT) {
+                //We will format the report and upload it in the main database
                 initiateTaskForPopulatingTheMainDB();
                 Log.d(TAG, "upload");
             } else if (chosenOption == DONT_UPLOAD_REPORT) {
+                //We will go to the default home activity
                 Log.d(TAG, "dont upload");
+
                 goToHomeActivity();
             }
+        }
+    }
+
+    /**
+     * THis method will be called when the user wants to upload the report
+     * @param v the view associated with the current context
+     */
+    public void onUploadNowButtonClick(View v) {
+        //We will fetch lat-long of the current location in a background thread.
+        new FetchLocation().execute();
+
+    }
+
+    /**
+     * THis background class will be used to determine the latitude and longitude of the current location
+     */
+    class FetchLocation extends AsyncTask<Report, Void, String> {
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(Report... args) {
+
+            buildGoogleApiClient();
+            return null;
+        }
+
+        protected void onPostExecute(String a) {
+        }
+    }
+
+    /**
+     * This method will open a connection with the google LocationServices to bring the current location
+     */
+
+    public synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
+        //This ia a asynchronous operation. It will call the onConnected method below when the location
+        //information return
+        mGoogleApiClient.connect();
+    }
+
+    /**
+     * This method will be called when mGoogleClient.connect() function returns
+     * @param connectionHint
+     */
+    @Override
+    public void onConnected(Bundle connectionHint) {
+
+        //Extract the last known location form Google LocationServices
+        try {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+        }catch(SecurityException e){
+            e.printStackTrace();
+        }
+
+        //We have got a null location
+        if (mLastLocation == null) {
+            //Toast.makeText(this, "Google client has returned null", Toast.LENGTH_LONG).show();
+        }//We have got a non-null location
+        else if (mLastLocation != null) {
+            // Toast.makeText(this,"Google client has returned",Toast.LENGTH_LONG).show();
+            // mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+            //mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+            //Toast.makeText(this, "Google client has returned not null", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_LONG).show();
+
+            //Now we will send the report to appropriate database
+            sendDataToAppropriateDatabase();
         }
     }
 
@@ -188,8 +289,43 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
     }
 
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+
+    public void sendDataToAppropriateDatabase() {
+        // Only start the service to fetch the address if GoogleApiClient is
+        // connected.
+        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
+            Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
+            //THis post has to be inserted in the main database
+            if(Utility.isOnline(getApplicationContext())) {
+                //We will give the user a list of very similar posts from the main database
+                new PostSuggestionTask().execute();
+            }
+            //This post will be saved in the internal database.
+            else {
+
+                formatDataForSavingInTheInternalDB();
+                Log.d("Internet Connection", "absent");
+
+            }
+        }
+        else {
+            Toast.makeText(this, "Obtaining location failed. Please try after sometime", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+
+    /**
+     * Adds the report to the main database
+     */
     class AddReportTask extends AsyncTask<String, Void, String> {
 
+        //this object holds the json response form the database
         private JSONObject jsonAddReport;
 
         @Override
@@ -204,18 +340,12 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
 
-            /*params.add(new Pair("fromLocationId", fromLocationId));
-            params.add(new Pair("toLocationId", toLocationId));
-            params.add(new Pair("estTimeToCross", estimatedTime));
-            params.add(new Pair("situation", situation));
-            params.add(new Pair("description", description));
-            params.add(new Pair("timeOfSituation", timestamp));
-            params.add(new Pair("updaterId", Utility.CurrentUser.getId()));
-            params.add(new Pair("requestId", requestId));*/
+            //building up all the parameters
             for (int i = 0; i < locationAtrributes.size(); i++) {
 
                 String tagAndValueString = locationAtrributes.get(i);
 
+                //time has be handles differently as there are multiple :
                 String tag = tagAndValueString.split(":")[0];
                 Log.d("timest: ", tagAndValueString);
                 String value;
@@ -227,6 +357,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
                     value = tagAndValueString.substring(tagAndValueString.indexOf(":") + 1);
                 }
 
+                //some tag names are changes to maintain uniformity with the main database
                 if (tag.equals("street_number"))
                     tag = "streetNo";
                 else if (tag.equals("sublocality_level_1"))
@@ -235,26 +366,21 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
                 Log.d("string_test", tag + " " + value);
             }
+            //the image byte array was encoded in Base64 for efficiency
             String encodedString = Base64.encodeToString(imageByteArray, 0);
             params.add(new Pair("image", encodedString));
-//            params.add(new Pair("userName:", Utility.CurrentUser.getUsername()));
+
+            //teh ide of the user
             params.add(new Pair("userId", Utility.CurrentUser.getUserId()));
-            Log.d("image size", imageByteArray.length + "");
+
 
             // getting JSON string from URL
             jsonAddReport = jParser.makeHttpRequest("/insertPost", "POST", params);
-//            jsonLocations = jParser.makeHttpRequest("/locations", "GET", null);
 
-
-            // Check your log cat for JSON reponse
-//            Log.e("All info: ", jsonLogin.toString());
             return null;
 
         }
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
         protected void onPostExecute(String a) {
 
 
@@ -266,124 +392,28 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         }
     }
 
-    class FetchLocation extends AsyncTask<Report, Void, String> {
 
-        private JSONObject jsonAddReport;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-
-        protected String doInBackground(Report... args) {
-
-            buildGoogleApiClient();
-            return "";
-        }
-
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
-        protected void onPostExecute(String a) {
-
-
-            if (jsonAddReport == null)
-                Log.d("report_database", " null");
-            else Log.d("report_database", jsonAddReport.toString());
-
-        }
-    }
-
-    public void onUploadNowButtonClick(View v) {
-
-        new FetchLocation().execute();
-
-//        dispatchTakePictureIntent();
-
-    }
-
-    public synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-        //Toast.makeText(this,"google map client",Toast.LENGTH_LONG).show();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        //Log.d("google map client", "returned");
-
-
-        try {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-        }catch(SecurityException e){
-            e.printStackTrace();
-        }
-
-        if (mLastLocation == null) {
-            Toast.makeText(this, "Google client has returned null", Toast.LENGTH_LONG).show();
-            //buildGoogleApiClient();
-        } else if (mLastLocation != null) {
-            // Toast.makeText(this,"Google client has returned",Toast.LENGTH_LONG).show();
-            // mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-            //mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-            Toast.makeText(this, "Google client has returned not null", Toast.LENGTH_LONG).show();
-            Toast.makeText(this, mLastLocation.getLatitude() + " " + mLastLocation.getLongitude(), Toast.LENGTH_LONG).show();
-
-            sendDataToAppropriateDatabase();
-        }
-    }
-
-    public void sendDataToAppropriateDatabase() {
-        // Only start the service to fetch the address if GoogleApiClient is
-        // connected.
-        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
-            Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
-            //THis post has to be inserted in the main database
-            if(Utility.isOnline(getApplicationContext())) {
-                //startIntentServiceForReverseGeoTagging();
-                new PostSuggestionTask().execute();
-            }
-            //This post will be saved in the internal database.
-            else {
-                //saveTheReportInDatabase(imageByteArray);
-                formatDataForSavingInTheInternalDB();
-                Log.d("Internet Connection", "absent");
-
-            }
-        }
-        else
-            Toast.makeText(this,"Obtaining location failed. Please try after sometime",Toast.LENGTH_LONG).show();
-
-        // If GoogleApiClient isn't connected, process the user's request by
-        // setting mAddressRequested to true. Later, when GoogleApiClient connects,
-        // launch the service to fetch the address. As far as the user is
-        // concerned, pressing the Fetch Address button
-        // immediately kicks off the process of getting the address.
-        //mAddressRequested = true;
-        //updateUIWidgets();
-    }
+    /**
+     * Starts a service for bringing in the address of a location
+     */
 
     protected void startIntentServiceForReverseGeoTagging() {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, mResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
-//        Toast.makeText(this,"Just before calling intent service",Toast.LENGTH_LONG).show();
-        //Log.d("inside service",mLastLocation.getLatitude()+" "+mLastLocation.getLongitude());
+
+        /*
+        This is a asynchronous service.It will call the method onReceieveResult in the class AddressResultReceiver when it completes.
+         */
         this.startService(intent);
 
 
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
 
-    }
+    /**
+     * This class will receive the result returned by the FetchAddressIntentService
+     */
 
     class AddressResultReceiver extends ResultReceiver {
 
@@ -399,16 +429,15 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
             // or an error message sent from the intent service.
             resultOutput= resultData.getString(Constants.RESULT_DATA_KEY);
             Log.d("returned to destination","true");
-            // Log.d("address location", resultOutput);
-            //displayAddressOutput();
 
             // Show a toast message if an address was found.
             Log.d("result code",resultCode+"");
+
+            //the address was received successfully
             if (resultCode == Constants.SUCCESS_RESULT) {
-                //showToast(getString(R.string.address_found));
-                //Toast.makeText(AddReport.class,resultOutput,Toast.LENGTH_LONG).show();
-                //Toast.makeText(this,resultOutput,Toast.LENGTH_LONG).show();
+
                 Log.d("address location", resultOutput);
+                //format the data and set it to main db
                 formatAndSendDataToMainDB();
             }
 
@@ -416,66 +445,71 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
     }
 
 
+    /**
+     * Formats data to send to the main db
+     */
+
     private void formatAndSendDataToMainDB() {
         Log.d("result_output",resultOutput);
+
+        //The resultOutput has the attributes separated by a ~
         String[] locationPairs=resultOutput.split("~" +
                 "");
 
+        //add all the parts of location like localiy,sublocality
         for(int i=0;i<locationPairs.length;i++){
             locationAtrributes.add(locationPairs[i]);
         }
 
+
+        //adding all the attributes.The meanings are very similar to the formatDataForSavingInTheInternalDB()
+
         locationAtrributes.add("latitude:"+mLastLocation.getLatitude()+"");
         locationAtrributes.add("longitude:" + mLastLocation.getLongitude());
+
         locationAtrributes.add("category:"+categorySelected);
         locationAtrributes.add("time:" + getCurrentTimestamp());
-        Log.d("time from normal report", getCurrentTimestamp());
+
+
         String informalLocation=((EditText)findViewById(R.id.addInformalLocationEditText)).getText().toString();
         locationAtrributes.add("informalLocation:" + informalLocation);
         String informalDescription=((EditText)findViewById(R.id.addInformalDescEditText)).getText().toString();
         locationAtrributes.add("problemDescription:" + informalDescription);
-        //locationAtrributes.add("userName:" + "Onix");
+
 
         imageByteArray=convertBitmapIntoByteArray(imageBitmap);
-        //Log.d("byteArray", new String(imageByteArray));
-        //locationAtrributes.add("image:"+new String(imageByteArray));
 
 
-
-        //Log.d("Formatted arraylist", locationAtrributes.toString());
-//        TextView locationTV=(TextView)findViewById(R.id.addReportLocationTextView);
-        String resultToShow=new String(resultOutput);
-
-        resultToShow=resultToShow.replaceAll("~",",");
-        Log.d("address",resultToShow+"");
-//        locationTV.setText(resultToShow);
-//        if(whichButtonIsPressed==calledFromInsertReport){
-//            new AddReportTask().execute();
-//        }
-//        else {
-//            //Log.d("storage", "internal storage");
-//            //formatDataForSavingInTheInternalDB();
-//        }
-
+        //now add the report to the main database
         new AddReportTask().execute();
 
     }
 
 
+    /**
+     * Formats data for saving in the sqlite db
+     */
     private void formatDataForSavingInTheInternalDB(){
 
         locationAtrributes.clear();
+        //adding lat,lon attributes from mLocation
         locationAtrributes.add("latitude:"+mLastLocation.getLatitude()+"");
         locationAtrributes.add("longitude:" + mLastLocation.getLongitude());
+        //adding the selected category
         locationAtrributes.add("category:"+categorySelected);
+        //adding the current time in a suitable format
         locationAtrributes.add("time:" + getCurrentTimestamp());
+
+        //adding informal location and informal description from user
         String informalLocation=((EditText)findViewById(R.id.addInformalLocationEditText)).getText().toString();
         locationAtrributes.add("informalLocation:" + informalLocation);
         String informalDescription=((EditText)findViewById(R.id.addInformalDescEditText)).getText().toString();
         locationAtrributes.add("problemDescription:" + informalDescription);
-        //locationAtrributes.add("userName:" + "Onix");
-        //Log.d("before saving in the internal database: ",locationAtrributes.toString());
+
+        //converting the bitmap into byte array for easily saving in sqlite
         imageByteArray=convertBitmapIntoByteArray(imageBitmap);
+
+        //saving the report in the sqlite
         saveTheReportInDatabase(imageByteArray);
     }
 
@@ -490,53 +524,47 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
     }
 
+    /**
+     *
+     * @return the current time in string format
+     */
     private String getCurrentTimestamp(){
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
-        //DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+
         Date date = new Date();
-//            dateFormat.format(date);
+
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        //cal.add(Calendar.MINUTE, -1 * timeToSubtract);
-        Date newDate = cal.getTime();
-        //Log.d("timestamp", dateFormat.format(newDate));
 
+        Date newDate = cal.getTime();
         String timestamp = dateFormat.format(newDate);
         Log.d("timestamp: ", "" + timestamp);
         return timestamp;
     }
 
+    /**
+     * Saves the report in the sqlite internal db
+     * @param imageByteArray the image captured by the user in byte array format
+     */
     private void saveTheReportInDatabase(byte[] imageByteArray) {
-        //tempDatabase = openOrCreateDatabase("tempReport",MODE_PRIVATE,null);
-        //tempDatabase.execSQL("CREATE TABLE IF NOT EXISTS tempTable(userName VARCHAR,Password VARCHAR);");
-        //mydatabase.execSQL("INSERT INTO TutorialsPoint VALUES('admin','admin');");
-        //Log.d("before inserting in database:", locationAtrributes.toString());
 
-        // deleteWholeDatabase();
         DBHelper help=new DBHelper(this);
         Log.d("before new insertion : ",help.getAllRecords().toString());
+
+        //inserting the report in sqlite database
         help.insertRecord(locationAtrributes, imageByteArray);
+
         Log.d("after new insertion : ", help.getAllRecords().toString());
 
+        //after inserting, go to the hoem activity
         goToHomeActivity();
 
-        //testDelete();
-        //fetchSavedDataOfaSingleUser("1");
-        /*
-        Log.d("before insertion : ",help.getAllRecords().toString());
-        help.insertRecord(locationAtrributes, arr);
-        Log.d("after insertion : ", help.getAllRecords().toString());
-        Log.d("numberInserted: ", "" + help.numberOfRows());
-        Toast.makeText(this,help.numberOfRows()+"",Toast.LENGTH_LONG).show();
-        */
-        //getUserRecords("Onix");
-        //help.deleteRecord(1);
-        //getUserRecords("Onix");
-        //help.getData()
-        //sendStoredEntryToDatabase();
     }
 
+    /**
+     * The class will bring all the similar posts form the main db
+     */
     class PostSuggestionTask extends AsyncTask<String, Void, String> {
 
         private JSONObject jsonPostSuggestion;
@@ -557,46 +585,44 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
             params.add(new Pair("time", getCurrentTimestamp()));
             params.add(new Pair("cat", categorySelected + ""));
 
-            // getting JSON string from URL
-//            Log.d("PostSuggest", params.toString());
+           //Getting the response in json
             jsonPostSuggestion = jParser.makeHttpRequest("/getSuggestions", "GET", params);
-
 
             return null;
         }
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
+
         protected void onPostExecute (String file_url){
             if(jsonPostSuggestion == null) {
                 Log.d("OnPostExecute", "jsonPostSuggestion == null");
-                //Utility.CurrentUser.showConnectionError(getApplicationContext());
-//                txtRes.setText("Please check your internet connection");
                 return;
             }
+
+
             Log.d("PostSuggest", jsonPostSuggestion.toString());
-            String s = new String("");
+
             try {
+                //Building a json array for posts
                 JSONArray postsJSONArray = jsonPostSuggestion.getJSONArray("posts");
-                //postArrayList.clear();
 
-                int curIndex=0, N=postsJSONArray.length();
 
+                int N=postsJSONArray.length();
+
+                // No conflict with other posts
                 if (N==0) {
-                    // No conflict with other posts
+                    //so put in in main db
                     initiateTaskForPopulatingTheMainDB();
-                    //startIntentServiceForReverseGeoTagging();
-
                     return;
                 }
 
+                //start a new intent to show the user a list of similar posts and get his feedback whether to
+                //upload the report or not.
                 Intent intent = new Intent(getApplicationContext(), PostSuggestion.class);
                 intent.putExtra("jsonPostSuggestions", jsonPostSuggestion.toString());
+
+                //the activity created will return a result. Check in onActivityResult
                 startActivityForResult(intent, REQUEST_POST_SUGGESTION);
 
-
-//                txtRes.setText(s);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -605,17 +631,32 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         }
     }
 
+    /**
+     * Will initiate the job of inserting the post in main database given that the user has given permission or there is no
+     * conflict with the posts already in database
+     */
+
+
     private void initiateTaskForPopulatingTheMainDB() {
-        new StartReverseGeoTaggingTask().execute();         //first start the task of fetching address in a background thread
-        goToHomeActivity();                                 //return to Homepage
+        //first start the task of fetching address in a background thread.And it will take care of the rest
+        new StartReverseGeoTaggingTask().execute();
+        //return to Homepage
+        goToHomeActivity();
     }
 
+    /**
+     * Returns to the Main Home Activity of the app
+     */
     private void goToHomeActivity() {
         Intent intent = new Intent(this, TabbedHome.class);
         startActivity(intent);
     }
 
 
+    /**
+     * Starts the task of fetching address of a location provided that we have got a valid
+     * location with lat,long from google LocationServices.
+     */
     class StartReverseGeoTaggingTask extends AsyncTask<Void, Void, String> {
 
 
@@ -627,17 +668,12 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
         protected String doInBackground(Void... args) {
 
+            // ANd we finally begin the task of bringing in address of the location
             startIntentServiceForReverseGeoTagging();
             return null;
         }
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
         protected void onPostExecute (String a){
-
-
-
         }
     }
 

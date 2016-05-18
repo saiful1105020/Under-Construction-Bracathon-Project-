@@ -37,17 +37,18 @@
           zoom: 8,
           center: myLatLng
         });
-        
-        for(var i=0;i<locLength;i++)
-        {
-          myLatLng = {lat: latArray[i] , lng: lonArray[i] };
+        if(selectArray[index]){
+			for(var i=0;i<locLength;i++)
+			{
+			  myLatLng = {lat: latArray[i] , lng: lonArray[i] };
 
-          var marker = new google.maps.Marker({
-            position: myLatLng,
-            map: map,
-            title: ''
-          }); 
-        }
+			  var marker = new google.maps.Marker({
+				position: myLatLng,
+				map: map,
+				title: ''
+			  }); 
+			}
+		}
       }
       </script>
       </head>
@@ -55,8 +56,6 @@
     <body>
 
 
-
-    <br><br>
     <h2 style="text-align:center"><b>Show Problems in Map</b></h2>  
 
    <div class="row" class="col-md-4">

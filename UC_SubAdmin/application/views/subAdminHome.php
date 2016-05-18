@@ -19,6 +19,7 @@
                     ?>
                 </select>
             </div>
+			<div class="col-md-1"></div>
             <div class="col-md-2">
                 <h3 style="text-align: center"><span class="label label-danger">Category</span></h3>
                 <select class="form-control" name="category_select">
@@ -35,6 +36,7 @@
                     <option value="9"> Wrong Way Traffic </option>
                 </select>
             </div>
+			<div class="col-md-1"></div>
             <div class="col-md-2">
                 <h3 style="text-align: center"><span class="label label-danger">Duration</span></h3>
                     <select class="form-control" name="duration_select">
@@ -45,17 +47,7 @@
                     </select>
                 
             </div>
-            <div class="col-md-2">
-                <h3 style="text-align: center"><span class="label label-danger">Status</span></h3>
-                    <select class="form-control" name="status_select">
-                        <option value="ANY">ANY</option>
-                        <option value="0"> Pending </option>
-                        <option value="1"> Verified </option>
-                        <option value="2"> Rejected </option>
-                        <option value="3"> Solved </option>
-                    </select>
-               
-            </div>
+            
             <div class="col-md-1"></div>
             <div class="col-md-2">
                 <h3 style="visibility: hidden">.</h3>
@@ -75,14 +67,15 @@
                     <th>Description</th>
                     <th>User Name</th>
                     <th>Location</th>
-                    <th>Status</th>
+                    <th>Action</th>
                     <th>Update</th>
                 </thead>
                 <tbody>';
                 $counter=1;
                     foreach($posts as $p)
                     {
-                        
+                        //if($p['flag']==0) continue;
+						
                     echo '<tr>
                         <form action="take_action/'.$p['post_id'].'" method="POST">
                             <td><b>'.$counter.'</b></td>';
@@ -106,7 +99,7 @@
                                 <li><b>Description:</b> '.$p['text'].' </li>
                                 <li><b>Votes:</b> &nbsp;&nbsp;&nbsp;&nbsp;&uarr; <font color="blue">'.$p['up_votes'].'</font> &nbsp;&nbsp;&nbsp;&nbsp; &darr; <font color="red">'.$p['down_votes'].'</font></li>
                                 <li><b>Time: </b>'.$p['time'].'</li>
-                                <li><a><b>View Comments</b></a></li>
+               
                             </ul>
                         </td>
                         <td>
@@ -117,45 +110,29 @@
                                 <li><b>Road : </b> '.$p['location']['route'].'</li>
                                 <li><b>NeighbourHood:</b> '.$p['location']['neighbourhood'].'</li>
                                 <li><b>Locality:</b> '.$p['location']['locality'].'</li>
-                                <li><a><b>View in Map</b></a></li>
+                                <li><a href="showALocation/'.$p['post_id'].'"><b>View in Map</b></a></li>
                             </ul>
                         </td>
                         <td>
                             <select class="form-control" name="action">';
-                            if($p['status']==0)
+							
+							/**
+								status = flag = 0: unflagged
+								1: flagged
+							*/
+							
+								if($p['flag']==0)
                                 {
                                     echo '
-                                    <option value="0" selected>PENDING</option>
-                                    <option value="1">VERIFIED</option>
-                                    <option value="2">REJECTED</option>
-                                    <option value="3">SOLVED</option>';
+                                    <option value="1">FLAG AS INAPPROPRIATE</option>';
                                 }
-                                else if($p['status']==1)
+                                else if($p['flag']==1)
                                 {
                                     echo '
-                                    <option value="0">PENDING</option>
-                                    <option value="1" selected>VERIFIED</option>
-                                    <option value="2">REJECTED</option>
-                                    <option value="3">SOLVED</option>';
-                                }
-                                else if($p['status']==2)
-                                {
-                                    echo '
-                                    <option value="0" selected>PENDING</option>
-                                    <option value="1">VERIFIED</option>
-                                    <option value="2" selected>REJECTED</option>
-                                    <option value="3">SOLVED</option>';
-                                }
-                                else
-                                {
-                                    echo'
-                                    <option value="4" selected>SOLVED </option>
-                                    <option value="0">PENDING</option>
-                                    <option value="1">VERIFIED</option>
-                                    <option value="2">REJECTED</option>';
-                                }
+                                    <option value="0">UNFLAG</option>';
                                     
-                                echo '</select>
+                                }
+                                echo'
                         </td>
                         <td>
                             <button type="Submit" class="btn btn-primary">Update</button>
