@@ -32,6 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Class to maintain login credential
+ *
+ */
 public class LoginActivity extends Activity {
 
     String savedUserName, savedPassword;
@@ -44,6 +48,7 @@ public class LoginActivity extends Activity {
 
     @Override
     protected void onResume() {
+        //Check what language is currently set
         Log.d("Resume", "Language set " + Utility.Settings.get_language(getApplicationContext()));
 
         //Utility.Settings.set_app_language(Utility.Settings.get_language(getApplicationContext()), getApplicationContext());
