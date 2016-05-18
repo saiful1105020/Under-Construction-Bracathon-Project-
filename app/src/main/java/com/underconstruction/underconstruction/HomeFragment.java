@@ -380,7 +380,9 @@ public class HomeFragment extends Fragment {
 
         l.setColor(Color.parseColor("#FFBB33"));
 
+        //then build the fraph
         LineGraph li = (LineGraph)getView().findViewById(R.id.graph);
+        //and add the line to the graph
         li.addLine(l);
         li.setRangeY(min-2, max+2);
         li.setLineToFill(0);
