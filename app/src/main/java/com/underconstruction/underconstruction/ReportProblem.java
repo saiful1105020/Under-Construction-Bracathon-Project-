@@ -127,6 +127,12 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
             }
         });
 
+        mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchTakePictureIntent();
+            }
+        });
     }
 
     @Override
@@ -472,7 +478,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         String resultToShow=new String(resultOutput);
 
         resultToShow=resultToShow.replaceAll("~",",");
-        Log.d("finally outputed address",resultToShow+"");
+        Log.d("address",resultToShow+"");
 //        locationTV.setText(resultToShow);
 //        if(whichButtonIsPressed==calledFromInsertReport){
 //            new AddReportTask().execute();
