@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Please select a category"
+            android:text="@string/category_select"
             android:id="@+id/textView" />
 
         <ListView
@@ -59,7 +59,7 @@
             android:id="@+id/addInformalLocationEditText"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
-            android:hint="Address (Optional)" />
+            android:hint="@string/address" />
 
         <EditText
             android:layout_width="match_parent"
@@ -67,7 +67,7 @@
             android:id="@+id/addInformalDescEditText"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
-            android:hint="Problem Description (Optional)" />
+            android:hint="@string/problem_desc" />
 
     </RadioGroup>
 
@@ -86,7 +86,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload now"
+            android:text="@string/upload_now_btn"
             android:id="@+id/addReportNewReportButton"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"

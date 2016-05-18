@@ -1,8 +1,11 @@
 package com.underconstruction.underconstruction;
 
 import android.app.Activity;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -87,13 +90,35 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-//        btnSettings.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View v = inflater.inflate(R.layout.fragment_home, container, false);
+        btnSettings = (ImageButton)v.findViewById(R.id.btnSettings);
+        btnLogout = (ImageButton)v.findViewById(R.id.btnLogout);
+
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent k = new Intent(getContext(), SettingsActivity.class);
+                startActivity(k);
+            }
+        });
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Disable autologin and clear login history
+                SharedPreferences pref = getActivity().getApplicationContext().getSharedPreferences("LoginPref", 0); // 0 - for private mode
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("Save", false);
+                editor.commit();
+
+                //signOut
+                getActivity().finish();
+                Intent k = new Intent(getContext(), LoginActivity.class);
+                startActivity(k);
+            }
+        });
+
+        return v;
+
     }
 
     @Override
@@ -106,7 +131,19 @@ public class HomeFragment extends Fragment {
         Line l = new Line();
         l.setColor(Color.parseColor("#FFBB33"));
         Log.d("onActivityCreated", "yes");
-        new FetchRatingTask().execute();
+        if(mListener.getUserRating()== null){
+            Log.d("HomeFragment.java","Fetching rating for the first time");
+            new FetchRatingTask().execute();
+        }
+        else{
+
+            Log.d("HomeFragment.java","using previously fetched rating");
+            UserRating userRating  = mListener.getUserRating();
+            populateRatingGraph(userRating);
+            populateUserRating(userRating);
+
+        }
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -146,6 +183,9 @@ public class HomeFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+
+        public UserRating getUserRating();
+        public void setUserRating(UserRating userRating);
     }
 
     class FetchRatingTask extends AsyncTask<String, Void, String> {
@@ -188,78 +228,83 @@ public class HomeFragment extends Fragment {
                 Log.d("Connection Error", "Probably couldn't connect to the internet");
                 return;
             }
-            //jsonUpdatesField=jsonPosts;
-            populateRatingGraph(jsonRating);
-            populateUserRating(jsonRating);
+
+
+            formatRatingFields(jsonRating);
 
         }
 
+        private void formatRatingFields(JSONObject jsonRating) {
+            JSONArray ratingJSONArray = new JSONArray();
+            int userR = 0;
+            try {
+                ratingJSONArray = jsonRating.getJSONArray("rating");
+                userR = jsonRating.getInt("userRating");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            int curIndex = 0, N = ratingJSONArray.length();
+
+
+            int max, min, rating = 0;
+
+            //ArrayList<RatingGraphItem> graphItems = new ArrayList<RatingGraphItem>();
+            int currentRating = userR;
+            min = max = userR;
+
+            Stack<RatingGraphItem> graphItemStack = new Stack<>();
+            graphItemStack.push(new RatingGraphItem(currentRating, ""));
+            Log.d("HomeFragment","json array len "+N);
+            while (curIndex < N) {
+                try {
+                    JSONObject curObj = ratingJSONArray.getJSONObject(curIndex);
+                    int ratingChange = curObj.getInt("ratingChange");
+
+                    currentRating -= ratingChange;
+                    Log.d("RatingItems Loop", currentRating + " :" + N);
+                    if (currentRating > max) max = currentRating;
+                    if (currentRating < min) min = currentRating;
+
+                    graphItemStack.push(new RatingGraphItem(currentRating, curObj.getString("time")));
+
+                    curIndex++;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            UserRating newUserRating = new UserRating(graphItemStack, userR, max, min);
+            mListener.setUserRating(newUserRating);
+            populateRatingGraph(newUserRating);
+            populateUserRating(newUserRating);
+        }
     }
 
-    void populateUserRating(JSONObject jsonPosts) {
-        try {
+
+
+
+    void populateUserRating(UserRating userRating) {
+
             //JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("userRating");
-            int userR = jsonPosts.getInt("userRating");
+            int userR = userRating.getUserRatingPoint();
             TextView lblUsrt = (TextView)getView().findViewById(R.id.lblDashboardCurrentRating);
             lblUsrt.setText("Your current rating is " + userR);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
-    void populateRatingGraph(JSONObject jsonPosts) {
-        JSONArray ratingJSONArray = new JSONArray();
-        int userR = 0;
-        try {
-            ratingJSONArray = jsonPosts.getJSONArray("rating");
-            userR = jsonPosts.getInt("userRating");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        int curIndex=0, N=ratingJSONArray.length();
-
+    void populateRatingGraph(UserRating userRating) {
+        Stack<RatingGraphItem> graphItemStack = userRating.getAllRatingGraphItems();
+        //to keep similarity with the json items
+        int N =graphItemStack.size() -1 ;
+        Log.d("HomeFragment","stack len "+N);
+        int max = userRating.getMaxRating();
+        int min = userRating.getMinRating();
         Line l = new Line();
 
-        int max, min, rating=0;
-
-        //ArrayList<RatingGraphItem> graphItems = new ArrayList<RatingGraphItem>();
-        int currentRating = userR;
-        min = max = userR;
-
-        Stack<RatingGraphItem> graphItemStack = new Stack<>();
-        graphItemStack.push(new RatingGraphItem(currentRating, ""));
-        while(curIndex<N) {
-            try{
-                JSONObject curObj = ratingJSONArray.getJSONObject(curIndex);
-                int ratingChange = curObj.getInt("ratingChange");
-
-                if (ratingChange >max) max = ratingChange;
-                if (ratingChange <min) min = ratingChange;
-                currentRating -=ratingChange;
-                Log.d("RatingItems Loop", currentRating + " :" + N);
-                if (currentRating >max) max = currentRating;
-                if (currentRating <min) min = currentRating;
-
-                graphItemStack.push(new RatingGraphItem(currentRating, curObj.getString("time")));
-
-                //rating += ratingChange;
-                //if(rating>max) max=rating;
-                //if(rating<min) min=rating;
-
-                /*
-                LinePoint p = new LinePoint();
-                p.setX(curIndex);
-                p.setY(ratingChange);
-                p.setLabel_string(curObj.getString("time"));
-                l.addPoint(p);*/
-
-                curIndex++;
-            }catch(JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        //Queue<RatingGraphItem> saveQueue = new LinkedList<RatingGraphItem>();
+        Stack<RatingGraphItem> savedCopy = new Stack<RatingGraphItem>();
+        savedCopy.addAll(graphItemStack);
 
 
         for (int i = 0; i< N; i++)
@@ -275,6 +320,8 @@ public class HomeFragment extends Fragment {
 
         }
 
+        userRating.setAllRatingGraphItems(savedCopy);
+
         l.setColor(Color.parseColor("#FFBB33"));
 
         LineGraph li = (LineGraph)getView().findViewById(R.id.graph);
@@ -284,22 +331,7 @@ public class HomeFragment extends Fragment {
         li.setRangeY(min-2, max+2);
         li.setLineToFill(0);
     }
-    class RatingGraphItem
-    {
-        int rating;
-        String label;
 
-        public RatingGraphItem(int rating, String label) {
-            this.rating = rating;
-            this.label = label;
-        }
 
-        @Override
-        public String toString() {
-            return "RatingGraphItem{" +
-                    "rating=" + rating +
-                    ", label='" + label + '\'' +
-                    '}';
-        }
-    }
+
 }

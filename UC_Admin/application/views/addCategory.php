@@ -13,56 +13,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Category</td>
-                        <td>add</td>
-                        <td><button type="button" class="btn btn-primary btn-md">Approve</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td>add</td>
-                        <td><button type="button" class="btn btn-primary btn-md">Approve</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td>add</td>
-                        <td><button type="button" class="btn btn-primary btn-md">Approve</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td>add</td>
-                        <td><button type="button" class="btn btn-primary btn-md">Approve</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td>add</td>
-                        <td><button type="button" class="btn btn-primary btn-md">Approve</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td>add</td>
-                        <td><button type="button" class="btn btn-primary btn-md">Approve</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td>add</td>
-                        <td><button type="button" class="btn btn-primary btn-md">Approve</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td>add</td>
-                        <td><button type="button" class="btn btn-primary btn-md">Approve</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td>add</td>
-                        <td><button type="button" class="btn btn-primary btn-md">Approve</button></td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                        <td>add</td>
-                        <td><button type="button" class="btn btn-primary btn-md">Approve</button></td>
-                    </tr>
+				<?php foreach($catData as $c){
+                    echo'<tr>
+					<form action="addCategoryAction/'.$c['id'].'" method="POST">
+                        <td>'.$c['name'].'</td>
+                        <td>'.$c['count'].'</td>
+                        <td> <button type="submit" class="btn btn-primary btn-md">Approve</button></td>
+					</form>
+                    </tr>';
+					}
+					?>
                 </tbody>
             </table>
         </div>
@@ -75,39 +35,13 @@
                     </tr>
                 </thead>
                 <tbody>
+				<?php foreach($existingCat as $e){
+				echo'
                     <tr>
-                        <td>Category</td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                    </tr>
-
-                    <tr>
-                        <td>Category</td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                    </tr>
-
-                    <tr>
-                        <td>Category</td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                    </tr>
-                    <tr>
-                        <td>Category</td>
-                    </tr>
-
+                        <td>'.$e['name'].'</td>
+                    </tr>';
+					}
+				?>
                 </tbody>
             </table>
         </div>
@@ -117,10 +51,12 @@
 
     <h2>
         <div class="container-fluid">
-            <div class="col-md-2"></div>
-            <div class="col-md-3"><span class="label label-default">Category Name: </span></div>
-            <div class="col-md-4"><input type="text" class="form-control" placeholder="enter new category name" name="newCat"></div>
-            <div class="col-md-3"><button type="button" class="btn btn-success btn-md">Submit</button></div>
+			<form action="addNewCategory" method="POST">
+				<div class="col-md-2"></div>
+				<div class="col-md-3"><span class="label label-default">Category Name: </span></div>
+				<div class="col-md-4"><input type="text" class="form-control" placeholder="enter new category name" name="newCat"></div>
+				<div class="col-md-3"><button type="submit" class="btn btn-success btn-md">Submit</button></div>
+			</form>
         </div>
     </h2>
     

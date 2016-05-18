@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Settings"
+        android:text="@string/settings"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:id="@+id/textView12" />
@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Language"
+            android:text="@string/language"
             android:id="@+id/textView13" />
 
         <RadioGroup

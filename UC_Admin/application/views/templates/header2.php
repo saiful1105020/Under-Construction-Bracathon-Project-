@@ -43,10 +43,12 @@
             <li><a href="<?php echo site_url('admin/addCategory');?>">Add Category</a></li>
             <li><a href="<?php echo site_url('admin/deleteCategory');?>">Delete Category</a></li>
             <li><a href="<?php echo site_url('admin/showMap');?>">Show Map</a></li>
-            <li><a href="<?php echo site_url('admin/profile');?>">Profile</a></li>
+            <!--<li><a href="<?php echo site_url('admin/profile');?>">Profile</a></li>-->
             <li><a href="<?php echo site_url('admin/logout'); ?>" class="glyphicon glyphicon-log-out"> LogOut</a></li>
           </ul>
           
         </div>
       </div>
     </nav>
+	
+	<br><br><br>

@@ -16,12 +16,12 @@ public class Report implements Serializable{
     private String time;
     private String informalLocation;
 
+
     @Override
     public String toString() {
         return "Report{" +
                 "category='" + category + '\'' +
                 ", recordID='" + recordID + '\'' +
-//                ", image=" + Arrays.toString(image) +
                 ", time='" + time + '\'' +
                 ", informalLocation='" + informalLocation + '\'' +
                 ", userId='" + userId + '\'' +

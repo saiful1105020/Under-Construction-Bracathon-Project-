@@ -4,6 +4,10 @@ package com.underconstruction.underconstruction;
  * Created by wasif on 12/4/15.
  */
 
+/**
+ * This class has not been used in this project. We have kept it here for future usage
+ */
+
         import android.location.Address;
         import android.util.Log;
 

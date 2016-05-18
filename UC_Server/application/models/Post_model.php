@@ -143,7 +143,7 @@ class Post_model extends CI_Model
 				FROM `user` u,`post` p, `location` l 
 				WHERE u.user_id = p.user_id AND l.location_id = p.actual_location_id AND p.category = ? 
 				AND abs(l.`lat` - ?) <= 0.0004 AND abs(l.`lon` - ?) <=0.0004
-				AND datediff(p.time,?)<=7 AND p.status =0';
+				AND abs(datediff(p.`time`,?)) <=7 AND p.status =0';
 				
 		$result = $this->db->query($sql,array($cat,$lat,$lon,$time))->result_array();
 		
