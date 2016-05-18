@@ -4,13 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.provider.Settings;
-import android.text.Layout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -24,14 +21,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
+/**
+ * Class to maintain login credential
+ *
+ */
 public class LoginActivity extends Activity {
 
     String savedUserName, savedPassword;
@@ -44,6 +43,7 @@ public class LoginActivity extends Activity {
 
     @Override
     protected void onResume() {
+        //Check what language is currently set
         Log.d("Resume", "Language set " + Utility.Settings.get_language(getApplicationContext()));
 
         //Utility.Settings.set_app_language(Utility.Settings.get_language(getApplicationContext()), getApplicationContext());
@@ -224,12 +224,6 @@ public class LoginActivity extends Activity {
                 }
                 saveInstance();
                 finish();
-                //String[] values = new String[]{"Broken Road", "Manhole", "Risky Intersection", "Crime prone area", "Others"};
-                Utility.CategoryList.add("~Broken Road", 1);
-                Utility.CategoryList.add("~Manhole", 2);
-                Utility.CategoryList.add("~Risky Intersection", 3);
-                Utility.CategoryList.add("~Crime prone area", 4);
-                //Utility.CategoryList.add("Others", -1); No Need, auto added
 
                 /**
                  * Bypassing without linking login user id to home page received // or maybe i don't need to :/

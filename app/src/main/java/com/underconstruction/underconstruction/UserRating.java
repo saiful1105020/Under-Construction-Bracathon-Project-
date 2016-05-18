@@ -4,13 +4,27 @@ import java.util.Stack;
 
 /**
  * Created by wasif on 5/17/16.
+ * THis class holds all the necessary data and methods for showing user rating point and graph.Is used by the
  */
 public class UserRating {
 
+    //an stack containing items to draw the rating graph
     private Stack<RatingGraphItem> allRatingGraphItems;
+    //the current rating point of the user
     private int userRatingPoint;
+    //the max rating achieved
     private int maxRating;
+    //the min rating
     private int minRating;
+
+
+    public UserRating(Stack<RatingGraphItem> allRatingGraphItems, int userRatingPoint, int maxRating, int minRating) {
+
+        this.allRatingGraphItems = allRatingGraphItems;
+        this.userRatingPoint = userRatingPoint;
+        this.maxRating = maxRating;
+        this.minRating = minRating;
+    }
 
     @Override
     public String toString() {
@@ -45,6 +59,8 @@ public class UserRating {
         return result;
     }
 
+    //All the getters, setters have the usual meaning
+
     public int getMaxRating() {
 
         return maxRating;
@@ -62,18 +78,8 @@ public class UserRating {
         this.minRating = minRating;
     }
 
-    public UserRating(Stack<RatingGraphItem> allRatingGraphItems, int userRatingPoint, int maxRating, int minRating) {
 
-        this.allRatingGraphItems = allRatingGraphItems;
-        this.userRatingPoint = userRatingPoint;
-        this.maxRating = maxRating;
-        this.minRating = minRating;
-    }
 
-    public UserRating(Stack<RatingGraphItem> allRatingGraphItems, int userRatingPoint) {
-        this.allRatingGraphItems = allRatingGraphItems;
-        this.userRatingPoint = userRatingPoint;
-    }
 
     public Stack<RatingGraphItem> getAllRatingGraphItems() {
 
