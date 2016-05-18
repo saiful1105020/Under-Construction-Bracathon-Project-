@@ -245,7 +245,7 @@ class Post_model extends CI_Model
 	public function get_category_name($id)
 	{
 		$sql = 'SELECT `name` FROM category where `categoryId` = ?';
-		$result = $this->db->query($sql,$id)->row_array();
+		$result = $this->db->query($sql,array($id))->row_array();
 		return $result['name'];
 	}
 	

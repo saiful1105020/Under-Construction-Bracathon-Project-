@@ -52,11 +52,18 @@ class Admin extends CI_Controller {
 			$data['is_set']=false;
 			$data['n_loc']=$this->admin_model->get_all_locations();
 			
+			$data['catData'] = $this->post_model->get_all_categories();
+			
+			//echo '<br><br><br>';
+			//print_r($data['catData']);
+			
+			
 			$this->load->view('adminhome',$data);
 		}
 		else
 		{
 			$data['n_loc']=$this->admin_model->get_all_locations();
+			$data['catData'] = $this->post_model->get_all_categories();
 			
 			$search_key=array();
 			
@@ -78,12 +85,21 @@ class Admin extends CI_Controller {
 			$data['posts']=array();
 			foreach($posts as $p)
 			{
+				//echo '<br><br><br>';
+				//echo $p['category'];
+				
 				$post=$p;
 				$temp=$this->post_model->get_vote_count($p['post_id']);
 				$post['up_votes']=$temp['upvotes'];
 				$post['down_votes']=$temp['downvotes'];
 				$post['user_name']=$this->post_model->get_user_name($p['user_id']);
 				$post['user_rating']=$this->post_model->get_current_rating($p['user_id']);
+				
+				//echo '<br><br><br>'.$p['category'];
+				
+				//if(!($p['category']>=-1)) echo 'ERROR';
+				
+				$post['cat_name'] = $this->post_model->get_category_name($p['category']);
 				
 				$post['location']=$this->post_model->get_location($p['actual_location_id']);
 				
@@ -367,5 +383,17 @@ class Admin extends CI_Controller {
 		//unset($data['existingCat'][0]);
 		
 		$this->load->view('showMap',$data);
+	}
+	
+	public function showALocation($id)
+	{
+		//$location['lat'] = 87.091;
+		//$location['lon'] = 90.098;
+		$data['location'] = $this->post_model->get_post_location($id);
+		
+		//echo '<br><br><br>';
+		//print_r($data['location']);
+		
+		$this->load->view('showALocation',$data);
 	}
 }

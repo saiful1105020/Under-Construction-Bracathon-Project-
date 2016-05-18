@@ -51,13 +51,16 @@ class subAdmin extends CI_Controller {
 		{
 			$data['is_set']=false;
 			$data['n_loc']=$this->subAdminModel->get_all_locations();
+			$data['catData'] = $this->post_model->get_all_categories();
+
 			
 			$this->load->view('subAdminHome',$data);
 		}
 		else
 		{
 			$data['n_loc']=$this->subAdminModel->get_all_locations();
-			
+			$data['catData'] = $this->post_model->get_all_categories();
+
 			$search_key=array();
 			
 			if(isset($_POST['location_select'])) $search_key['location']=$_POST['location_select'];
@@ -85,7 +88,10 @@ class subAdmin extends CI_Controller {
 				$post['user_name']=$this->post_model->get_user_name($p['user_id']);
 				$post['user_rating']=$this->post_model->get_current_rating($post['user_id']);
 				
+				$post['cat_name'] = $this->post_model->get_category_name($p['category']);
+
 				$post['location']=$this->post_model->get_location($p['actual_location_id']);
+				
 				
 				array_push($data['posts'],$post);
 			}
@@ -311,8 +317,8 @@ class subAdmin extends CI_Controller {
 	*/
 	public function showALocation($id)
 	{
-		$location['lat'] = 87.091;
-		$location['lon'] = 90.098;
+		//$location['lat'] = 87.091;
+		//$location['lon'] = 90.098;
 		$data['location'] = $this->post_model->get_post_location($id);
 		
 		//echo '<br><br><br>';

@@ -24,16 +24,13 @@
                 <h3 style="text-align: center"><span class="label label-danger">Category</span></h3>
                 <select class="form-control" name="category_select">
                     <option value="ANY">ANY</option>
-                    <option value="0"> Occupied Footpath </option>
-                    <option value="1"> Open Dustbin </option>
-                    <option value="2"> Open Manhole </option>
-                    <option value="3"> Electric Wires </option>
-                    <option value="4"> Waterlogging </option>
-                    <option value="5"> Risky Intersection </option>
-                    <option value="6"> No Street Light </option>
-                    <option value="7"> Crime Prone Area </option>
-                    <option value="8"> Broken Road </option>
-                    <option value="9"> Wrong Way Traffic </option>
+                    <?php
+                        foreach($catData as $c)
+                        {
+                            echo '<option value="'.$c['categoryId'].'"> '.$c['name'].' </option>';
+                        }
+                    ?>
+
                 </select>
             </div>
 			<div class="col-md-1"></div>
@@ -81,17 +78,8 @@
                             <td><b>'.$counter.'</b></td>';
                             echo '<td><img src="data:image/jpeg;base64,' . base64_encode($p['image']) . '" width="260" height="80" class="img-responsive" alt="Responsive image"></td>';
                         //<td><img src="my.png" class="img-responsive" alt="Responsive image" class="img-thumbnail" class="img-thumbnail" alt="Cinque Terre" width="260" height="180"></td>
-                            if($p['category']==0) $category=" Occupied Footpath ";
-                            else if($p['category']==1) $category=" Open Dustbin ";
-                            else if($p['category']==2) $category=" Open Manhole ";
-                            else if($p['category']==3) $category=" Cluttered Electric Wires ";
-                            else if($p['category']==4) $category=" Waterlogging ";
-                            else if($p['category']==5) $category=" Risky Intersection ";
-                            else if($p['category']==6) $category=" No Street Light ";
-                            else if($p['category']==7) $category=" Crime Prone Area ";
-                            else if($p['category']==8) $category=" Damaged Road ";
-                            else if($p['category']==9) $category=" Wrong Way Traffic ";
-                            else $category=" Category Not Found ";
+                            $category = $p['cat_name'];
+
                         echo '<td>
                             <ul>
                                 <li><b>Category:</b> '.$category.' </li>
