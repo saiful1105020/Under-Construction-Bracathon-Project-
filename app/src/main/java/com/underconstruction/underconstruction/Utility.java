@@ -129,7 +129,11 @@ public class Utility {
          */
         public static String get(int id)
         {
-            return IdMap.get(id);
+            String s = IdMap.get(id);
+            if (s == null)
+                return "Unknown Category (" + id + ")";
+            else
+                return s;
         }
 
 
@@ -192,48 +196,52 @@ public class Utility {
          * @return time in user readable format
          */
         public static String parsePostTime (String dbString) {
+
             int hr = Integer.parseInt("" + dbString.charAt(11) + dbString.charAt(12));
             String min = "" +  dbString.charAt(14) + dbString.charAt(15);
             String timeOfDay;
-            if(hr>12) {
-                hr = hr%12;
-                timeOfDay = "pm";
-            }
-            else if(hr == 12) timeOfDay = "pm";
-            else timeOfDay = "am";
+            String timeOfUpdate = "";
+            try
+            {
+                if(hr>12) {
+                    hr = hr%12;
+                    timeOfDay = "pm";
+                }
+                else if(hr == 12) timeOfDay = "pm";
+                else timeOfDay = "am";
 
-            if(hr == 0) hr = 12;
+                if(hr == 0) hr = 12;
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date());
-            String today = dateFormat.format(cal.getTime());
-            String date = dbString.substring(0, 10);
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(new Date());
+                String today = dateFormat.format(cal.getTime());
+                String date = dbString.substring(0, 10);
 
-            if (today.equals(date)) {
-                date = " Today";
-            }
-            else {
-                cal.add(Calendar.DAY_OF_MONTH, -1);
-                String yesterday = dateFormat.format((cal.getTime()));
-//                Log.d("yesterday", yesterday);
-                if (yesterday.equals(date)) {
-                    date = " Yesterday";
-                } else {
-                    String monthString = new DateFormatSymbols().getMonths()[Integer.parseInt(date.substring(5,7))-1];
-//                    Log.d("monthString", monthString);
-                    try {
+                if (today.equals(date)) {
+                    date = " Today";
+                }
+                else {
+                    cal.add(Calendar.DAY_OF_MONTH, -1);
+                    String yesterday = dateFormat.format((cal.getTime()));
+                    Log.d("yesterday", yesterday);
+                    if (yesterday.equals(date)) {
+                        date = " Yesterday";
+                    } else {
+                        String monthString = new DateFormatSymbols().getMonths()[Integer.parseInt(date.substring(5,7))-1];
+                        Log.d("monthString", monthString);
+
                         date = " " + monthString.substring(0,3) + " " + date.substring(8,10);
                     }
-                    catch (Exception e)
-                    {
-                        Log.d("Time", "Invalid Substring");
-                        e.printStackTrace();
-                    }
                 }
+
+                timeOfUpdate = hr + ":" + min + timeOfDay + date;
+            }
+            catch (Exception e)
+            {
+                timeOfUpdate = dbString;
             }
 
-            String timeOfUpdate = hr + ":" + min + timeOfDay + date;
             return timeOfUpdate;
         }
 
