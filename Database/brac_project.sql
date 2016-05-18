@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: May 18, 2016 at 08:19 PM
+-- Generation Time: May 18, 2016 at 09:07 PM
 -- Server version: 5.6.24
 -- PHP Version: 5.6.8
 
@@ -134,6 +134,31 @@ INSERT INTO `location` (`location_id`, `lat`, `lon`, `street_number`, `route`, `
 (13, 25.7804, 94.4101, '', 'Bir Uttam AK Khandakar Road', 'Mohakhali', 'Gulshan', 'Dhaka'),
 (14, 23.7852, 90.4131, '14', 'Road No 32', 'Gulshan 1', 'Gulshan', 'Dhaka'),
 (15, 23.7265, 90.388, '', 'BUET New Academic Building Road', 'Azimpur', 'Lalbagh', 'Dhaka');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `logs`
+--
+
+CREATE TABLE IF NOT EXISTS `logs` (
+  `log_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `cat_id` int(11) NOT NULL,
+  `time` datetime NOT NULL,
+  `log_type` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
+  `prev_status` int(11) NOT NULL,
+  `changed_status` int(11) NOT NULL,
+  `cat_name` varchar(256) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `logs`
+--
+
+INSERT INTO `logs` (`log_id`, `user_id`, `cat_id`, `time`, `log_type`, `post_id`, `prev_status`, `changed_status`, `cat_name`) VALUES
+(1, 1, 2, '2015-12-06 02:00:00', 3, 2, 3, 1, 'Test');
 
 -- --------------------------------------------------------
 
@@ -378,6 +403,12 @@ ALTER TABLE `location`
   ADD PRIMARY KEY (`location_id`);
 
 --
+-- Indexes for table `logs`
+--
+ALTER TABLE `logs`
+  ADD PRIMARY KEY (`log_id`);
+
+--
 -- Indexes for table `post`
 --
 ALTER TABLE `post`
@@ -431,6 +462,11 @@ ALTER TABLE `comment`
 --
 ALTER TABLE `location`
   MODIFY `location_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=16;
+--
+-- AUTO_INCREMENT for table `logs`
+--
+ALTER TABLE `logs`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `post`
 --
