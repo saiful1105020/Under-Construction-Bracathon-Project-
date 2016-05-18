@@ -38,15 +38,16 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="<?php echo site_url('admin'); ?>" class="glyphicon glyphicon-home"> Home</a></li>
-            <li><a href="<?php echo site_url('admin/showBarGraph');?>">Show Bar Graph</a></li>
-            <li><a href="<?php echo site_url('admin/addCategory');?>">Add Category</a></li>
-            <li><a href="<?php echo site_url('admin/deleteCategory');?>">Delete Category</a></li>
-            <li><a href="<?php echo site_url('admin/showMap');?>">Show Map</a></li>
-            <li><a href="<?php echo site_url('admin/profile');?>">Profile</a></li>
-            <li><a href="<?php echo site_url('admin/logout'); ?>" class="glyphicon glyphicon-log-out"> LogOut</a></li>
+            <li><a href="<?php echo site_url('subAdmin'); ?>" class="glyphicon glyphicon-home"> Home</a></li>
+            <li><a href="<?php echo site_url('subAdmin/showBarGraph');?>">Show Bar Graph</a></li>
+            
+            <li><a href="<?php echo site_url('subAdmin/showMap');?>">Show Map</a></li>
+            
+            <li><a href="<?php echo site_url('subAdmin/logout'); ?>" class="glyphicon glyphicon-log-out"> LogOut</a></li>
           </ul>
           
         </div>
       </div>
     </nav>
+	
+	<br><br><br>

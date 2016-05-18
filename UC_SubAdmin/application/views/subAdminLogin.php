@@ -7,7 +7,7 @@
 	
 	<link rel="stylesheet" href="<?php echo base_url("assets/css/bootstrap.min.css"); ?>" />
 	<link rel="stylesheet" href="<?php echo base_url("assets/css/bootstrap-theme.min.css"); ?>" />
-    <title>Admin Login</title>
+    <title>Sub-Admin Login</title>
     
     
     
@@ -239,9 +239,9 @@ body{
 			<div>Under<span>Construction</span></div>
 			</div>
 			
-			<div class="header1">Admin</div>
+			<div class="header1">Sub-Admin</div>
 			
-			<h4>Welcome back Admin ... </h4>
+			<h4>Welcome back Sub-Admin ... </h4>
           
 			<input type="text" id="userName" name="admin_name" class="form-control input-sm chat-input" placeholder="username" required/>
             </br>

@@ -1,15 +1,16 @@
 <?php
-class Admin_model extends CI_Model 
+class subAdminModel extends CI_Model 
 {
 	
-    public function __construct()	//DONE
+    public function __construct()	
 	{
         $this->load->database();
 	}
-		
-	public function get_loginInfo($data)	//DONE
+	
+	
+	public function get_loginInfo($data)	
 	{
-		$sql='SELECT * FROM admin where `admin_name` = ? and `password` = ?';
+		$sql='SELECT * FROM subadmin where `name` = ? and `password` = ?';
 		$query = $this->db->query($sql,array($data['admin_name'],$data['password']));
 		return $query;
 	}
@@ -21,11 +22,17 @@ class Admin_model extends CI_Model
 		return $query;
 	}
 	
+	
 	public function search_post($search_key)
 	{
 		/**
 			Show all posts
 		*/
+		
+		$search_key['status'] = 0;			//PENDING
+		
+		//echo '<br><br><br>Hello';
+		
 		if($search_key['location']==="ANY" && $search_key['category']==="ANY" && $search_key['duration']==="ANY" && $search_key['status']==="ANY")
 		{
 			$sql='SELECT * FROM post ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
