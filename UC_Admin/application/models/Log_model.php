@@ -45,6 +45,13 @@ class Log_model extends CI_Model
 		$sql = 'INSERT INTO `logs`(`user_id`, `cat_id`, `time`, `log_type`, `post_id`, `changed_status`, `cat_name`) VALUES (?,?,CURRENT_TIMESTAMP,?,?,?,?)';
 		$this->db->query($sql,array($data['user_id'],$data['cat_id'],$data['log_type'],$data['post_id'],$data['changed_status'],$data['cat_name']));
 	}
+	
+	public function get_all_logs()
+	{
+		$sql = 'SELECT * FROM `logs` ORDER BY time DESC';
+		$query = $this->db->query($sql)->result_array();
+		return $query;
+	}
 }
 
 ?>
