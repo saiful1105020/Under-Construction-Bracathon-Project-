@@ -3,7 +3,7 @@ class Log_model extends CI_Model
 {
 	/**
 		log_type:
-			1 => User suggested a category
+			
 			2 => User Reported a problem
 			3 => Admin logged in
 			4 => Admin updated a post status
