@@ -1,10 +1,13 @@
 package com.underconstruction.underconstruction;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Log;
 
 import java.text.DateFormat;
@@ -14,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -26,14 +30,15 @@ public class Utility {
 
     static Context initialContext;      //set in LoginActivity
 
-    static String ip = "http://" + "172.20.62.27" +                //main url
-            "/hackThon/UC_Server/index.php/home";                  //root directory
+    static String ip = "http://" + "192.168.88.15" +                //main url
+//            "/hackThon/UC_Server/index.php/home";                  //root directory
+            "/uc_brac_git/uc_server/index.php/home";
                                                                    //used in the class JSONParser for network connection
 
     /**
      *
-     * @param context
-     * @return true if the device is connected to the internet, false otherwise
+     * @param context The context of the application
+     * @return true if device  is online, false otherwise
      */
     public static boolean isOnline(Context context) {
 
@@ -41,6 +46,32 @@ public class Utility {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         //should check null because in air plan mode it will be null
         return (netInfo != null && netInfo.isConnected());
+    }
+
+
+    public static boolean isAppIsInBackground(Context context) {
+        boolean isInBackground = true;
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+            List<ActivityManager.RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
+            for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
+                if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    for (String activeProcess : processInfo.pkgList) {
+                        if (activeProcess.equals(context.getPackageName())) {
+                            isInBackground = false;
+                        }
+                    }
+                }
+            }
+        } else {
+            List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+            ComponentName componentInfo = taskInfo.get(0).topActivity;
+            if (componentInfo.getPackageName().equals(context.getPackageName())) {
+                isInBackground = false;
+            }
+        }
+
+        return isInBackground;
     }
 
 

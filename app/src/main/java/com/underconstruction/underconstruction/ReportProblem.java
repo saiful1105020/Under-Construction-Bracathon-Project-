@@ -316,8 +316,8 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         // Only start the service to fetch the address if GoogleApiClient is
         // connected.
         if (mGoogleApiClient.isConnected() && mLastLocation != null) {
-            Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
-            //THis post has to be inserted in the main database
+//            Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
+            //This post has to be inserted in the main database
             if(Utility.isOnline(getApplicationContext())) {
                 //We will give the user a list of very similar posts from the main database
                 new PostSuggestionTask().execute();

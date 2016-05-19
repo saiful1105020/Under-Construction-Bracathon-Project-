@@ -1,5 +1,6 @@
 package com.underconstruction.underconstruction;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,9 +38,26 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
     //the object holding users current rating graph and rating point
     private UserRating userRating = null;
 
+    Context context;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("MainActivity", "onResume");
+
+        context = getApplicationContext();
+        DBHelper dbHelper = new DBHelper(context);
+        int n = dbHelper.getDataForUser(Utility.CurrentUser.getUserId()).size();
 
 
-
+        //device is online, so we will initiate a new intent to complete sending all the items in SQLite DB to main database
+        if(!Utility.isAppIsInBackground(context) && n>0 && Utility.isOnline(context)) {
+            Log.d("MainActivity", "internet available, app in foreground, number of saved reports: " + n);
+            Intent newIntent = new Intent(context, ReportAutoUploadActivity.class);
+            newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(newIntent);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +65,7 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
         setContentView(R.layout.activity_tabbed_home);
 
 
+        context = getApplicationContext();
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 

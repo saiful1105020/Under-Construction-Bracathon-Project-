@@ -35,7 +35,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         Log.d("broadcast receiver ", "called");
         this.context = context;
 
-        if(isOnline(context)){
+        if(Utility.isOnline(context)){
 
             Log.d("device ", "online");
 
@@ -48,8 +48,8 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             int n = dbHelper.getDataForUser(Utility.CurrentUser.getUserId()).size();
 
 
-            //device is online, so we will initiate a new intent to complete sending all the items in SQLIte DB to main database
-            if(!isAppIsInBackground(context) && n>0) {
+            //device is online, so we will initiate a new intent to complete sending all the items in SQLite DB to main database
+            if(!Utility.isAppIsInBackground(context) && n>0) {
                 Log.d("Broadcast Receiver", "app in foreground, number of saved reports: " + n);
                 Intent newIntent = new Intent(context, ReportAutoUploadActivity.class);
                 newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -65,44 +65,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
     }
 
 
-    /**
-     *
-     * @param context The context of the application
-     * @return true if device  is online, false otherwise
-     */
-    public boolean isOnline(Context context) {
 
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        //should check null because in air plan mode it will be null
-        return (netInfo != null && netInfo.isConnected());
-
-    }
-
-    private boolean isAppIsInBackground(Context context) {
-        boolean isInBackground = true;
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
-            List<ActivityManager.RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
-            for (RunningAppProcessInfo processInfo : runningProcesses) {
-                if (processInfo.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
-                    for (String activeProcess : processInfo.pkgList) {
-                        if (activeProcess.equals(context.getPackageName())) {
-                            isInBackground = false;
-                        }
-                    }
-                }
-            }
-        } else {
-            List<RunningTaskInfo> taskInfo = am.getRunningTasks(1);
-            ComponentName componentInfo = taskInfo.get(0).topActivity;
-            if (componentInfo.getPackageName().equals(context.getPackageName())) {
-                isInBackground = false;
-            }
-        }
-
-        return isInBackground;
-    }
 
 
 }

@@ -152,7 +152,7 @@ public class HomeFragment extends Fragment {
 
         //the user is greeted
         TextView lblGreeting = (TextView) getView().findViewById(R.id.lblDashboardHello);
-        lblGreeting.setText(Utility.CurrentUser.getUsername() + "!");
+        lblGreeting.setText(" " + Utility.CurrentUser.getUsername() + "!");
 
 
         //the user rating is fetched for the first time
@@ -351,7 +351,7 @@ public class HomeFragment extends Fragment {
             //JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("userRating");
             int userR = userRating.getUserRatingPoint();
             TextView lblUsrt = (TextView)getView().findViewById(R.id.lblDashboardCurrentRating);
-            lblUsrt.setText("" + userR);
+            lblUsrt.setText(" " + userR);
 
     }
 

@@ -246,8 +246,12 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Utility.CategoryList categoryList = new Utility.CategoryList();         //populating from db initially
-            categoryList.copyCategoryList(helper.getCategoryList());
+            try {
+                Utility.CategoryList categoryList = new Utility.CategoryList();         //populating from db initially
+                categoryList.copyCategoryList(helper.getCategoryList());
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
 
 
@@ -367,6 +371,8 @@ public class LoginActivity extends Activity {
 //
 //            }
             else {
+                DBHelper dbHelper = new DBHelper(getApplicationContext());
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
                 errorText.setText("Logging in...");
                 Utility.CurrentUser.setUserId(userId);
           //      Log.d("Logging in", "My ID: " + Utility.CurrentUser.getUserId());
