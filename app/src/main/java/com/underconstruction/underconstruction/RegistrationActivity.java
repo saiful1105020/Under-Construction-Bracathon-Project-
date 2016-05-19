@@ -23,29 +23,45 @@ import java.util.regex.Pattern;
 
 public class RegistrationActivity extends Activity {
 
+    //necessary Variables to store user input
     public String email, username, password, errorMessage, repeatPassword;
+    //variable to show error to user
     public TextView errorText;
+    //user presses this button to initiate registration
     public Button btnRegistration;
+
+    //variable for enhancing user experience
     public LinearLayout layoutWait;
 
+    //This will match whether the user is giving  a well formed email
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+    //flag will be set to indicate any error in registration process
     boolean signUpError;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
+
+
         layoutWait = (LinearLayout) findViewById(R.id.layoutRegistrationWait);
         btnRegistration = (Button) findViewById(R.id.btnRegistrationSignup);
         signUpError=false;
         errorText = (TextView) findViewById(R.id.lblRegistrationError);
+
+        //User wants to register
         btnRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                //so collect all the inputs
                 email = ((EditText) findViewById(R.id.txtRegistrationEmail)).getText().toString();
                 password = ((EditText) findViewById(R.id.txtRegistrationPassword)).getText().toString();
                 username = ((EditText) findViewById(R.id.txtRegistrationUsername)).getText().toString();
                 repeatPassword= ((EditText) findViewById(R.id.txtRegistrationConfirmPassword)).getText().toString();
+
+
+                //handling all teh corner cases. See all the methods
                 if(showSignUpError()){
                     errorText.setText("One or more required fields are missing!\n");
                 }else if(!validate(email)) {
@@ -56,9 +72,13 @@ public class RegistrationActivity extends Activity {
                 }
                 else
                 {
-                    //Log.e("EMAIL", email + "\n" + password + "\n" + username + "\n"  + "\n");
+                    //Everything is fine.
+
                     errorText.setText("");
+                    //a new session has been initiated
                     busy_session(true);
+
+                    //start talking to database
                     SignUpTask signUpTask = new SignUpTask();
                     signUpTask.execute();
 
@@ -68,9 +88,13 @@ public class RegistrationActivity extends Activity {
         });
     }
 
+
+    /**
+     * Sends server request to complete registration
+     */
     class SignUpTask extends AsyncTask<String, Void, String> {
 
-        private JSONObject jsonSignUp, jsonLocations;
+        private JSONObject jsonSignUp;
 
         @Override
         protected void onPreExecute() {
@@ -81,21 +105,22 @@ public class RegistrationActivity extends Activity {
         protected String doInBackground(String... args) {
 
             JSONParser jParser = new JSONParser();
+
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
             params.add(new Pair("userName",username));
             params.add(new Pair("email",email));
             params.add(new Pair("password",password));
-            // getting JSON string from URL
+
+            // getting JSON  from URL
             jsonSignUp = jParser.makeHttpRequest("/register", "GET", params);
 
             return null;
         }
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
+
         protected void onPostExecute (String file_url){
+
             if(jsonSignUp == null) {
                 //Utility.CurrentUser.showConnectionError(getApplicationContext());
                 errorText.setText("Please check your internet connection");
@@ -103,6 +128,8 @@ public class RegistrationActivity extends Activity {
                 layoutWait.setVisibility(View.INVISIBLE);
                 return;
             }
+
+            //Extract all the necessary fields
             String loginStatus = new String ("");
             try {
                 loginStatus = jsonSignUp.getString("status");
@@ -112,12 +139,15 @@ public class RegistrationActivity extends Activity {
                 e.printStackTrace();
             }
 
+            //check if we have got the correct response
             if(loginStatus.equals("0")){
                 errorText.setText("Sorry, this email already exists.");
                 busy_session(false);
                 return;
             }
             else{
+
+                //yes we have got the correct response
                 finish();
 
                 /**
@@ -128,6 +158,9 @@ public class RegistrationActivity extends Activity {
 
 //                Intent intent=new Intent(RegistrationActivity.this,VerificationActivity.class);
                 //Intent intent=new Intent(RegistrationActivity.this, TabbedHome.class);
+
+
+                //so prompt the user for logging in
                 Intent intent=new Intent(RegistrationActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
@@ -191,6 +224,8 @@ public class RegistrationActivity extends Activity {
         }
         return false;
     }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

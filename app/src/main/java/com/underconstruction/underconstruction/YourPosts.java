@@ -3,6 +3,10 @@ package com.underconstruction.underconstruction;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * THis class holds data for populating the users own "dashboard". It holds only a summary of data of the Object "Post"
+ */
+
 public class YourPosts {
     //When did the user created the post
     String timeStamp;

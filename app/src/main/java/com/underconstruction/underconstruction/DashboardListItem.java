@@ -1,11 +1,13 @@
 package com.underconstruction.underconstruction;
 
-import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/**
+ * Holds the list items of the dashboard.
+ */
 public class DashboardListItem extends AppCompatActivity {
 
     @Override
