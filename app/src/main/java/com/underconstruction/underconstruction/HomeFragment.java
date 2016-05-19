@@ -1,11 +1,8 @@
 package com.underconstruction.underconstruction;
 
 import android.app.Activity;
-
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -40,6 +37,14 @@ import java.util.Stack;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+
+
+/**
+ *
+ * THis fragment shows teh user rating graph and the current rating point of the user.
+ * THis fragment loads only once when the user first loads te fragment. AFter that, it does not load in that particular session
+ */
+
 public class HomeFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,9 +55,22 @@ public class HomeFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    public static final int REQUEST_SETTINGS_CHANGE = 1;
+
+    String lastPreferredLanguage;
+
+    //json object holding the rating object sent by the database
     JSONObject jsonRating;
 
+    //the object to communicate with the activity holding the fragment
     private OnFragmentInteractionListener mListener;
+
+    //Settings menu will open after the user clicks the button
+    ImageButton btnSettings;
+
+    //The user will log out from the app after clicking the button
+    ImageButton btnLogout;
+
 
     /**
      * Use this factory method to create a new instance of
@@ -75,7 +93,8 @@ public class HomeFragment extends Fragment {
     public HomeFragment() {
         // Required empty public constructor
     }
-    ImageButton btnSettings, btnLogout, btnRefresh;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,25 +108,31 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         View v = inflater.inflate(R.layout.fragment_home, container, false);
+
+        //instantiating the variables
         btnSettings = (ImageButton)v.findViewById(R.id.btnSettings);
         btnLogout = (ImageButton)v.findViewById(R.id.btnLogout);
 
+        //setting clicklistener for the settings button
         btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //the settings Activity will be opened
+                lastPreferredLanguage = Utility.Settings.get_language(getActivity());
                 Intent k = new Intent(getContext(), SettingsActivity.class);
-                startActivity(k);
+                startActivityForResult(k, REQUEST_SETTINGS_CHANGE);
             }
         });
+
+        //setting clicklistener for the logout button
+
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Disable autologin and clear login history
                 SharedPreferences pref = getActivity().getApplicationContext().getSharedPreferences("LoginPref", 0); // 0 - for private mode
                 SharedPreferences.Editor editor = pref.edit();
-//                editor.putBoolean("Save", false);
                 editor.putBoolean("IsLoggedIn", false);
                 editor.commit();
 
@@ -119,23 +144,23 @@ public class HomeFragment extends Fragment {
         });
 
         return v;
-
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        //the user is greeted
         TextView lblGreeting = (TextView) getView().findViewById(R.id.lblDashboardHello);
-        lblGreeting.setText("Hello " + Utility.CurrentUser.getUsername() + "!");
-//        if(DashboardFragment.jsonPosts != null)
-//            DashboardFragment.populateRatingGraph(DashboardFragment.jsonPosts);
-        Line l = new Line();
-        l.setColor(Color.parseColor("#FFBB33"));
-        Log.d("onActivityCreated", "yes");
+        lblGreeting.setText(Utility.CurrentUser.getUsername() + "!");
+
+
+        //the user rating is fetched for the first time
         if(mListener.getUserRating()== null){
             Log.d("HomeFragment.java","Fetching rating for the first time");
             new FetchRatingTask().execute();
         }
+        //redraw the rating graph and rating point from previuosly fetched data
         else{
 
             Log.d("HomeFragment.java","using previously fetched rating");
@@ -151,6 +176,17 @@ public class HomeFragment extends Fragment {
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        //reload if language has been changed
+        if(requestCode == REQUEST_SETTINGS_CHANGE && !lastPreferredLanguage.equals(Utility.Settings.get_language(getActivity()))){
+            Intent intent=new Intent(getActivity(), TabbedHome.class);
+            startActivity(intent);
+            getActivity().finish();
         }
     }
 
@@ -189,6 +225,10 @@ public class HomeFragment extends Fragment {
         public void setUserRating(UserRating userRating);
     }
 
+    /**
+     * Fetches the most recent rating from the database
+     */
+
     class FetchRatingTask extends AsyncTask<String, Void, String> {
 
 
@@ -208,18 +248,14 @@ public class HomeFragment extends Fragment {
             List<Pair> params = new ArrayList<Pair>();
 
             params.add(new Pair("userId", Utility.CurrentUser.getUserId()));
-//            params.add(new Pair("userName", Utility.CurrentUser.getId()));
 
-            // getting JSON string from URL
             jsonRating = jParser.makeHttpRequest("/getuserrating", "GET", params);
 
             return null;
         }
 
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
+
         protected void onPostExecute(String a) {
 //            progressLayout.setVisibility(View.GONE);
 //            customDiscussionListView.setVisibility(View.VISIBLE);
@@ -237,13 +273,24 @@ public class HomeFragment extends Fragment {
                 e.printStackTrace();
             }
 
+            formatRatingFields(jsonRating);
         }
+
+        /**
+         * Creates a new UserRating object by parsing the returned json Object
+         * @param jsonRating the database object returned that holds all the rating data
+         */
 
         private void formatRatingFields(JSONObject jsonRating) {
             JSONArray ratingJSONArray = new JSONArray();
+
+            //holds the rating point
             int userR = 0;
+
             try {
+                //build a rating array
                 ratingJSONArray = jsonRating.getJSONArray("rating");
+                //get the rating point
                 userR = jsonRating.getInt("userRating");
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -251,16 +298,20 @@ public class HomeFragment extends Fragment {
 
             int curIndex = 0, N = ratingJSONArray.length();
 
+            //holds the max and min rating points. Used for drawing the graph
+            int max, min;
 
-            int max, min, rating = 0;
-
-            //ArrayList<RatingGraphItem> graphItems = new ArrayList<RatingGraphItem>();
             int currentRating = userR;
             min = max = userR;
 
+            //holds all the items for drawing the graph
             Stack<RatingGraphItem> graphItemStack = new Stack<>();
+
             graphItemStack.push(new RatingGraphItem(currentRating, ""));
+
             Log.d("HomeFragment","json array len "+N);
+
+            //This loop processes the items one by one and pushes them into a stack
             while (curIndex < N) {
                 try {
                     JSONObject curObj = ratingJSONArray.getJSONObject(curIndex);
@@ -279,39 +330,53 @@ public class HomeFragment extends Fragment {
                 }
             }
 
+            //Then a new UserRating object is created
             UserRating newUserRating = new UserRating(graphItemStack, userR, max, min);
+            //and given to the parent activity for saving it
             mListener.setUserRating(newUserRating);
+            //draw the rating graph
             populateRatingGraph(newUserRating);
+            //drwa the rating point
             populateUserRating(newUserRating);
         }
     }
 
 
-
-
+    /**
+     * Populates user rating field
+     * @param userRating The current rating of the user.Holds both rating point and info to draw the rating graph
+     */
     void populateUserRating(UserRating userRating) {
 
             //JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("userRating");
             int userR = userRating.getUserRatingPoint();
             TextView lblUsrt = (TextView)getView().findViewById(R.id.lblDashboardCurrentRating);
-            lblUsrt.setText("Your current rating is " + userR);
+            lblUsrt.setText("" + userR);
 
     }
 
+    /**
+     * Draws the user rating graph
+     * @param userRating The current rating of the user.Holds both rating point and info to draw the rating graph
+     */
     void populateRatingGraph(UserRating userRating) {
         Stack<RatingGraphItem> graphItemStack = userRating.getAllRatingGraphItems();
         //to keep similarity with the json items
         int N =graphItemStack.size() -1 ;
+
         Log.d("HomeFragment","stack len "+N);
+
         int max = userRating.getMaxRating();
         int min = userRating.getMinRating();
+
         Line l = new Line();
 
-        //Queue<RatingGraphItem> saveQueue = new LinkedList<RatingGraphItem>();
+        //saves a copy of the stack
         Stack<RatingGraphItem> savedCopy = new Stack<RatingGraphItem>();
         savedCopy.addAll(graphItemStack);
 
 
+        //draws the line one by one
         for (int i = 0; i< N; i++)
         {
 
@@ -325,14 +390,15 @@ public class HomeFragment extends Fragment {
 
         }
 
+        //and restore the stack
         userRating.setAllRatingGraphItems(savedCopy);
 
         l.setColor(Color.parseColor("#FFBB33"));
 
+        //then build the fraph
         LineGraph li = (LineGraph)getView().findViewById(R.id.graph);
-
+        //and add the line to the graph
         li.addLine(l);
-
         li.setRangeY(min-2, max+2);
         li.setLineToFill(0);
     }

@@ -7,9 +7,9 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +28,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class to maintain login credential
+ *
+ */
 public class LoginActivity extends Activity {
 
     String savedEmailId, savedPassword;
@@ -49,6 +52,7 @@ public class LoginActivity extends Activity {
 
     @Override
     protected void onResume() {
+        //Check what language is currently set
         Log.d("Resume", "Language set " + Utility.Settings.get_language(getApplicationContext()));
 
         //Utility.Settings.set_app_language(Utility.Settings.get_language(getApplicationContext()), getApplicationContext());
@@ -377,6 +381,7 @@ public class LoginActivity extends Activity {
                 saveInstance();
                 if(!isLocationEnabled(context)) {
                     requestGPS(REQUEST_LOCATION_SERVICE_AFTER_NEW_LOGIN);
+                    return;
                 }
                 finish();
 

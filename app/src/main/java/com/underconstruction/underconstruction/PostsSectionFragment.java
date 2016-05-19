@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,6 +73,8 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     static GoogleApiClient mGoogleApiClient;
     static Location mLastLocation;
     ImageView feedRefresh;
+    ProgressBar pbPosts;
+    ListView lvwPosts;
 
     /**
      * Use this factory method to create a new instance of
@@ -112,7 +115,26 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_posts_section, container, false);
         feedRefresh = (ImageView) v.findViewById(R.id.btnRefreshPostSection);
+        pbPosts = (ProgressBar) v.findViewById(R.id.pbPosts);
+        lvwPosts = (ListView) v.findViewById(R.id.lvwPosts);
         return v;
+    }
+    //if refresh button is pressed, hide listview and show progressbar
+    void busy_sessions(boolean busy)
+    {
+        if (pbPosts==null) return;
+        if (busy == true)
+        {
+            pbPosts.setVisibility(View.VISIBLE);
+            lvwPosts.setVisibility(View.GONE);
+            feedRefresh.setEnabled(false);
+        }
+        else
+        {
+            pbPosts.setVisibility(View.GONE);
+            lvwPosts.setVisibility(View.VISIBLE);
+            feedRefresh.setEnabled(true);
+        }
     }
 
     @Override
@@ -471,6 +493,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
         }
 
 
@@ -496,6 +519,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
          * After completing background task Dismiss the progress dialog
          **/
         protected void onPostExecute (String a){
+
             if(jsonVotingResponse == null) {
 //                Utility.CurrentUser.showConnectionError(UpdateFragment.context);
             }
@@ -514,7 +538,9 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         @Override
         protected void onPreExecute()
         {
-            feedRefresh.setEnabled(false);
+//            progressLayout.setVisibility(View.VISIBLE);
+//            customDiscussionListView.setVisibility(View.GONE);
+            busy_sessions(true);
             super.onPreExecute();
         }
 
@@ -541,9 +567,9 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 //            progressLayout.setVisibility(View.GONE);
 //            customDiscussionListView.setVisibility(View.VISIBLE);
 
-            feedRefresh.setEnabled(true);
             if(jsonPosts == null) {
 //                Utility.CurrentUser.showConnectionError(getActivity());
+                busy_sessions(false);
                 Log.d("Connection Error", "Probably couldn't connect to the internet");
                 return;
             }
@@ -556,6 +582,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
                 e.printStackTrace();
             }
 
+            busy_sessions(false);
 
         }
 //        private static ip ()
@@ -576,14 +603,14 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if(mLastLocation==null){
-            Toast.makeText(getActivity(), "Google client has returned null", Toast.LENGTH_LONG).show();
+//            Toast.makeText(getActivity(), "Google client has returned null", Toast.LENGTH_LONG).show();
         }
         else if (mLastLocation != null) {
             // Toast.makeText(this,"Google client has returned",Toast.LENGTH_LONG).show();
             // mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
             //mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-            Toast.makeText(getActivity(),"Google client has returned not null",Toast.LENGTH_LONG).show();
-            Toast.makeText(getActivity(),mLastLocation.getLatitude()+" "+mLastLocation.getLongitude(),Toast.LENGTH_LONG).show();
+//            Toast.makeText(getActivity(),"Google client has returned not null",Toast.LENGTH_LONG).show();
+//            Toast.makeText(getActivity(),mLastLocation.getLatitude()+" "+mLastLocation.getLongitude(),Toast.LENGTH_LONG).show();
             new FetchHomePostsTask().execute();
         }
 

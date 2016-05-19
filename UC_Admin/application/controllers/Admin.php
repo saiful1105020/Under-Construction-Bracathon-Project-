@@ -29,6 +29,7 @@ class Admin extends CI_Controller {
 		  
 		//load models
 		$this->load->model('admin_model');
+		$this->load->model('log_model');
 		$this->load->model('post_model');
 		//$data['current_nav']='home';
 		//$this->load->view('templates/header',$data);
@@ -40,9 +41,27 @@ class Admin extends CI_Controller {
 	*	[ADMIN HOME PAGE]
 	*/
 	
+	
+	
 	public function index()			
 	{
 		redirect('admin/search','refresh');
+	}
+	
+	public function insert_log_test()
+	{
+		$data = array();
+		
+		$data['user_id']=1;
+		$data['cat_id']=2;
+		$data['time']='2015-12-06 02:00:00';
+		$data['log_type']=3;
+		$data['post_id']=2;
+		$data['prev_status']=3;
+		$data['changed_status']=1;
+		$data['cat_name']="Test";
+		
+		$this->log_model->insert_log($data);
 	}
 	
 	public function search()
@@ -52,11 +71,18 @@ class Admin extends CI_Controller {
 			$data['is_set']=false;
 			$data['n_loc']=$this->admin_model->get_all_locations();
 			
+			$data['catData'] = $this->post_model->get_all_categories();
+			
+			//echo '<br><br><br>';
+			//print_r($data['catData']);
+			
+			
 			$this->load->view('adminhome',$data);
 		}
 		else
 		{
 			$data['n_loc']=$this->admin_model->get_all_locations();
+			$data['catData'] = $this->post_model->get_all_categories();
 			
 			$search_key=array();
 			
@@ -78,12 +104,21 @@ class Admin extends CI_Controller {
 			$data['posts']=array();
 			foreach($posts as $p)
 			{
+				//echo '<br><br><br>';
+				//echo $p['category'];
+				
 				$post=$p;
 				$temp=$this->post_model->get_vote_count($p['post_id']);
 				$post['up_votes']=$temp['upvotes'];
 				$post['down_votes']=$temp['downvotes'];
 				$post['user_name']=$this->post_model->get_user_name($p['user_id']);
 				$post['user_rating']=$this->post_model->get_current_rating($p['user_id']);
+				
+				//echo '<br><br><br>'.$p['category'];
+				
+				//if(!($p['category']>=-1)) echo 'ERROR';
+				
+				$post['cat_name'] = $this->post_model->get_category_name($p['category']);
 				
 				$post['location']=$this->post_model->get_location($p['actual_location_id']);
 				
@@ -126,6 +161,18 @@ class Admin extends CI_Controller {
 		
 		$data['success']=true;
 		$data['success_message']="Status and user voteCount updated successfully";
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=$this->post_model->getCategoryId($post_id);
+		$logData['log_type']=4;
+		$logData['post_id']=$post_id;
+		$logData['changed_status']=$action;
+		$logData['cat_name']=$this->post_model->get_category_name($logData['cat_id']);
+		
+		$this->log_model->insert_log($logData);
+
 		$this->load->view('status_message',$data);
 	}
 	
@@ -135,6 +182,17 @@ class Admin extends CI_Controller {
 	
 	public function logout()	
 	{
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=-1;
+		$logData['log_type']=5;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']='';
+				
+		$this->log_model->insert_log($logData);
+
 		$this->session->sess_destroy();	//!Stop Session 
 		
 		/**
@@ -302,6 +360,18 @@ class Admin extends CI_Controller {
 		
 		$data['success']=true;
 		$data['success_message']='Category added successfully.';
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=$this->post_model->get_category_id_from_name($cat_name);
+		$logData['log_type']=6;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']=$cat_name;
+		
+		$this->log_model->insert_log($logData);
+
 		$this->load->view('status_message',$data);
 	}
 	
@@ -316,6 +386,18 @@ class Admin extends CI_Controller {
 		
 		$data['success']=true;
 		$data['success_message']='Category added successfully.';
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=$this->post_model->get_category_id_from_name($cat_name);
+		$logData['log_type']=6;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']=$cat_name;
+		
+		$this->log_model->insert_log($logData);
+
 		$this->load->view('status_message',$data);
 	}
 	
@@ -337,10 +419,23 @@ class Admin extends CI_Controller {
 	*/
 	public function deleteCategoryAction($id)
 	{
+		$cat_name = $this->post_model->get_category_name($id);
 		$this->post_model->delete_cat($id);
 		
 		$data['success']=true;
 		$data['success_message']='Category deleted successfully.';
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=-1;
+		$logData['log_type']=7;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']=$cat_name;
+		
+		$this->log_model->insert_log($logData);
+
 		$this->load->view('status_message',$data);
 	}
 
@@ -367,5 +462,17 @@ class Admin extends CI_Controller {
 		//unset($data['existingCat'][0]);
 		
 		$this->load->view('showMap',$data);
+	}
+	
+	public function showALocation($id)
+	{
+		//$location['lat'] = 87.091;
+		//$location['lon'] = 90.098;
+		$data['location'] = $this->post_model->get_post_location($id);
+		
+		//echo '<br><br><br>';
+		//print_r($data['location']);
+		
+		$this->load->view('showALocation',$data);
 	}
 }

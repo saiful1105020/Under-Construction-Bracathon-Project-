@@ -17,6 +17,7 @@ class Home extends CI_Controller {
 		  
 		  // <Load Admin Model>
 		  $this->load->model('admin_model');
+		  $this->load->model('log_model');
      }
 	 
 	public function index()
@@ -49,8 +50,21 @@ class Home extends CI_Controller {
 			{
 				$loginInfo=$query->row_array();
 				$_SESSION["admin_name"]=$loginInfo['admin_name'];
-				
+				$_SESSION["admin_id"] = $this->admin_model->getAdminId($_SESSION["admin_name"]);
+				//echo $_SESSION["admin_id"];
 				//Load User Admin Page
+
+				$logData = array();
+		
+				$logData['user_id']=$_SESSION["admin_id"];
+				$logData['cat_id']=-1;
+				$logData['log_type']=3;
+				$logData['post_id']=-1;
+				$logData['changed_status']=-1;
+				$logData['cat_name']='';
+				
+				$this->log_model->insert_log($logData);
+
 				redirect('/admin', 'refresh');
 			}
 			else

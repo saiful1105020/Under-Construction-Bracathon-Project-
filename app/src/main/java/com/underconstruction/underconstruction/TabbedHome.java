@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,23 +16,26 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is the main activity of the app. Holds the three main fragments : HomeFragment,DashBoardFragment,PostsFragemnt.
+ * THis is also used to initate the job of adding a report
+ */
 public class TabbedHome extends AppCompatActivity implements PostsSectionFragment.OnFragmentInteractionListener, HomeFragment.OnFragmentInteractionListener, DashboardFragment.OnFragmentInteractionListener {
 
-    private Toolbar toolbar;
+    //A layout for arranging the fragments in TAB
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
+
+    //
+
+    //all the posts in the surrounding area
     private ArrayList<Post> postsList;
+    //all the posts in the users own profile
     private ArrayList<YourPosts> profilePostsList;
+    //the object holding users current rating graph and rating point
     private UserRating userRating = null;
-//    private ArrayList<Post> postsList;
-//    private DrawerLayout mDrawerLayout;
-//    private ActionBarDrawerToggle mDrawerToggle;
-//    private CharSequence mDrawerTitle;
-//    private CharSequence mTitle;
-//    private String[] mPlanetTitles;
-//    private DrawerLayout mDrawerLayout;
-//    private ListView mDrawerList;
+
 
 
 
@@ -43,13 +45,6 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed_home);
 
-//        View view = new View(this);
-//        view.setScroll
-
-//        toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -57,52 +52,9 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-//        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
-//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-//
-//        // Set the adapter for the list view
-//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-//                R.layout.drawer_list_item, mPlanetTitles));
-//        // Set the list's click listener
-//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-//
-//
-//        mTitle = mDrawerTitle = getTitle();
-//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-//                R.string.drawer_open, R.string.drawer_close) {
-//
-//            /** Called when a drawer has settled in a completely closed state. */
-//            public void onDrawerClosed(View view) {
-//                super.onDrawerClosed(view);
-////                getActionBar().setTitle(mTitle);
-//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-//            }
-//
-//            /** Called when a drawer has settled in a completely open state. */
-//            public void onDrawerOpened(View drawerView) {
-//                super.onDrawerOpened(drawerView);
-//                Log.d("Nav Drawer", "Opened!");
-////                getActionBar().setTitle(mDrawerTitle);
-//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-//            }
-//        };
-//
-//        // Set the drawer toggle as the DrawerListener
-//        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 
     }
-
-    /* Called whenever we call invalidateOptionsMenu() */
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        // If the nav drawer is open, hide action items related to the content view
-//        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-//        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
-//        return super.onPrepareOptionsMenu(menu);
-//    }
 
 
     @Override
@@ -127,6 +79,10 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Adds the three fragments on the currrent activity
+     * @param viewPager
+     */
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new HomeFragment(), "HOME");
@@ -140,36 +96,66 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
 
     }
 
+    /**
+     *
+     * @return The current rating point and rating graph
+     */
     @Override
     public UserRating getUserRating() {
         return userRating;
     }
+
+    /**
+     * Updates the rating of a user
+     * @param userRating teh latest rating of a user fatched form database
+     */
 
     @Override
     public void setUserRating(UserRating userRating) {
             this.userRating = userRating;
     }
 
+    /**
+     * stores the latest YourPosts of a users profile
+     * @param postsList the lists of the lastest YourPosts
+     */
     @Override
     public void storeLatestProfilePosts(ArrayList<YourPosts> postsList) {
         this.profilePostsList = postsList;
     }
+
+    /**
+     * Gets the most recent your posts
+     * @return An arraylist containing the most recentYourPosts object
+     */
 
     @Override
     public ArrayList<YourPosts> retrieveLatestProfilePosts() {
         return profilePostsList;
     }
 
+    /**
+     * Stores the latest feed fetched from database
+     * @param postsList the list of all teh posts in the surrounding area
+     */
     @Override
     public void storeLatestFeed(ArrayList<Post> postsList) {
         this.postsList = postsList;
     }
 
+    /**
+     *
+     * @return An Arraylist of all the posts fetched from the surrounding area
+     */
     @Override
     public ArrayList<Post> retrieveLatestFeed() {
         return postsList;
     }
 
+
+    /**
+     * A class to manage the easy transition between tabs
+     */
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
@@ -200,51 +186,24 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
     }
 
 
-//    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-//        @Override
-//        public void onItemClick(AdapterView parent, View view, int position, long id) {
-//            selectItem(position);
-//        }
-//    }
-
-    /** Swaps fragments in the main content view */
-//    private void selectItem(int position) {
-//        // Create a new fragment and specify the planet to show based on position
-//        Fragment fragment = new PlanetFragment();
-//        Bundle args = new Bundle();
-//        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-//        fragment.setArguments(args);
-//
-//        // Insert the fragment by replacing any existing fragment
-//        FragmentManager fragmentManager = getFragmentManager();
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.content_frame, fragment)
-//                .commit();
-//
-//        // Highlight the selected item, update the title, and close the drawer
-//        mDrawerList.setItemChecked(position, true);
-//        setTitle(mPlanetTitles[position]);
-//        mDrawerLayout.closeDrawer(mDrawerList);
-//    }
-//
-//    @Override
-//    public void setTitle(CharSequence title) {
-//        mTitle = title;
-//        getActionBar().setTitle(mTitle);
-//    }
-
-
-
+    /**
+     * This method is called when the user wants to add a new report
+     * @param v the view of the context
+     */
 
     public void onReportButtonClick(View v){
+        //A new intent is opened to handle the job of adding report
         Intent intent =new Intent(this, ReportProblem.class);
         ReportProblem.camera=0;
         startActivity(intent);
-//        dispatchTakePictureIntent();
 
     }
 
 
+    /**
+     * When the user wants to refresh the profile. Not implemented. Ma be done in future
+     * @param v
+     */
 
     public void onProfileRefreshButtonClick(View v) {
 

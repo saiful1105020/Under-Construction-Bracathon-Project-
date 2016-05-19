@@ -43,8 +43,8 @@
     <string name="upload_now_btn">আপলোড করুন</string>
     <string name="settings">সেটিংস</string>
     <string name="language">ভাষা</string>
-    <string name="hello">হ্যালো...</string>
-    <string name="rating_string">আপনার বর্তমান রেটিং</string>
+    <string name="hello">হ্যালো </string>
+    <string name="rating_string">আপনার বর্তমান রেটিং: </string>
     <string name="rating_progress">গত কয়েকদিনে রেটিং পরিবর্তন:</string>
     <string name="report_problem">সমস্যা  জানান</string>
     <string name="rating">রেটিং</string>

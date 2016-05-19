@@ -16,6 +16,7 @@ class Home extends CI_Controller {
 		$this->load->library('form_validation');
 		  
 		$this->load->model('post_model');
+		$this->load->model('log_model');
 	}
 	 
 	public function index()
@@ -263,6 +264,7 @@ class Home extends CI_Controller {
 		else
 		{
 			$this->post_model->insert_cat_sugegstion($newCat);
+			
 		}
 		
 		//$jsonData['dup'] = $duplicate;
@@ -370,7 +372,20 @@ class Home extends CI_Controller {
 		
 		$this->post_model->insert_post($post);
 		
+		/**
+		not tested this portion of log
+		*/
+		$logData = array();
 		
+		$logData['user_id']=$_POST['userId'];
+		$logData['cat_id']=$_POST['category'];
+		$logData['log_type']=2;
+		$logData['post_id']=$this->post_model->maxPostID();
+		$logData['changed_status']=-1;
+		$logData['cat_name']=$this->post_model->get_category_name($logData['cat_id']);
+				
+		$this->log_model->insert_log($logData);
+
 		//Just for debug, no need to comment out. Let it stay as it is
 		$debug['post_inserted']="OK";
 		echo json_encode($debug);

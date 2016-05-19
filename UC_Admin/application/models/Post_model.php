@@ -28,6 +28,13 @@ class Post_model extends CI_Model
 	}
 	*/
 	
+	public function get_post_location($post_id)
+	{
+		$sql = 'SELECT l.`lat`,l.`lon` FROM post p, location l WHERE p.`actual_location_id` = l.`location_id` and p.`post_id`=? ';
+		$query=$this->db->query($sql,$post_id)->row_array();
+		return $query;
+	}
+	
 	public function get_suggested_categories()
 	{
 		$sql = 'SELECT * FROM `suggestedcategory`';
@@ -38,7 +45,7 @@ class Post_model extends CI_Model
 	public function get_user_name($user_id)
 	{
 		$sql="SELECT user_name FROM user WHERE user_id = ? ";
-		$query=$this->db->query($sql,$user_id)->row_array();
+		$query=$this->db->query($sql,array($user_id))->row_array();
 		return $query['user_name'];
 	}
 	
@@ -54,12 +61,12 @@ class Post_model extends CI_Model
 	public function get_vote_count($post_id)
 	{
 		$sql='SELECT COUNT(*) as upvotes FROM vote WHERE post_id=? and vote_type=1';
-		$query=$this->db->query($sql,$post_id)->row_array();
+		$query=$this->db->query($sql,array($post_id))->row_array();
 		
 		$data['upvotes']=$query['upvotes'];
 		
 		$sql='SELECT COUNT(*) as downvotes FROM vote WHERE post_id=? and vote_type=-1';
-		$query=$this->db->query($sql,$post_id)->row_array();
+		$query=$this->db->query($sql,array($post_id))->row_array();
 		
 		$data['downvotes']=$query['downvotes'];
 		
@@ -132,7 +139,7 @@ class Post_model extends CI_Model
 		
 		//update user voteCount
 		$sql='SELECT user_id FROM post WHERE post_id=?';
-		$query=$this->db->query($sql,$post_id)->row_array();
+		$query=$this->db->query($sql,array($post_id))->row_array();
 		
 		$user_id=$query['user_id'];
 		//get current user voteCount
@@ -229,22 +236,33 @@ class Post_model extends CI_Model
 	
 	public function get_category_name($id)
 	{
+		//echo $id.'---------';
+		
 		$sql = 'SELECT `name` FROM category where `categoryId` = ?';
-		$result = $this->db->query($sql,$id)->row_array();
+		$result = $this->db->query($sql,array($id))->row_array();
 		return $result['name'];
+	}
+
+	public function get_category_id_from_name($name)
+	{
+		//echo $id.'---------';
+		
+		$sql = 'SELECT `categoryId` FROM category where `name` = ?';
+		$result = $this->db->query($sql,array($name))->row_array();
+		return $result['categoryId'];
 	}
 	
 	public function category_problem_count($cat_id)
 	{
 		$q = 'Select count(*) as pCount from post where `flag` = 0 and category = ?';
-		$query = $this->db->query($q,$cat_id )->row_array();
+		$query = $this->db->query($q,array($cat_id))->row_array();
 		return $query['pCount'];
 	}
 	
 	public function category_solved_count($cat_id)
 	{
 		$q = 'Select count(*) as pCount from post where `status` = 3 and `flag` = 0 and category = ?';
-		$query = $this->db->query($q,$cat_id )->row_array();
+		$query = $this->db->query($q,array($cat_id ))->row_array();
 		return $query['pCount'];
 	}
 	
@@ -309,33 +327,40 @@ class Post_model extends CI_Model
 		$q = 'SELECT p.`post_id`,l.`lat`,l.`lon` FROM `post` p , `location` l
 				WHERE p.`actual_location_id` = l.`location_id` 
 				and p.category = ? and status = 0 and flag = 0';
-		$query = $this->db->query($q,$cat_id )->result_array();
+		$query = $this->db->query($q,array($cat_id) )->result_array();
 		return $query;
 	}
 	
 	public function get_suggested_cat_name($id)
 	{
 		$sql = 'SELECT `name` FROM `suggestedcategory` WHERE `id` = ? ORDER BY `count`';
-		$query = $this->db->query($sql,$id)->row_array();
+		$query = $this->db->query($sql,array($id))->row_array();
 		return $query['name'];
 	}
 	
 	public function delete_suggested_cat($id)
 	{
 		$sql = 'DELETE FROM `suggestedcategory` WHERE `id` = ?';
-		$query = $this->db->query($sql,$id);
+		$query = $this->db->query($sql,array($id));
 	}
 	
 	public function insert_cat($cat_name)
 	{
 		$sql = 'INSERT INTO `category`(`name`) VALUES (?)';
-		$query = $this->db->query($sql,$cat_name);
+		$query = $this->db->query($sql,array($cat_name));
 	}
 	
 	public function delete_cat($id)
 	{
 		$sql = 'DELETE FROM `category` WHERE `categoryId` = ?';
-		$query = $this->db->query($sql,$id);
+		$query = $this->db->query($sql,array($id));
+	}
+
+	public function getCategoryId($post_id)
+	{
+		$sql = "SELECT `category` from post where `post_id`=?";
+		$query = $this->db->query($sql, array($post_id))->row_array();
+		return $query['category'];
 	}
 }
 ?>

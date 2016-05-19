@@ -56,7 +56,7 @@ class Admin_model extends CI_Model
 		*/
 		else if($search_key['location']==="ANY" && $search_key['category']==="ANY" && $search_key['status']==="ANY")
 		{
-			$sql='SELECT * FROM post where `flag` = 0 and CURRENT_TIMESTAMP < time + INTERVAL ? DAY ORDER BY time DESC 
+			$sql='SELECT * FROM post where `flag` = 0 and CURRENT_TIMESTAMP < time + INTERVAL ? DAY 
 				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
 			$query = $this->db->query($sql,array($search_key['duration']))->result_array();
 			return $query;
@@ -186,6 +186,14 @@ class Admin_model extends CI_Model
 			STATUS : 	status = ?
 		*/
 	}
+
+	public function getAdminId($name)
+	{
+		$sql = "SELECT `admin_id` FROM `admin` WHERE `admin_name`=?";
+		$query = $this->db->query($sql,array($name))->row_array();
+		return $query['admin_id'];
+	}
+
 }
 
 ?>
