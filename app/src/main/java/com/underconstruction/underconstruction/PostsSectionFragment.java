@@ -225,7 +225,11 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
             }
 
             adapter.notifyDataSetChanged();
-            mListener.storeLatestFeed(postArrayList);
+            try {
+                mListener.storeLatestFeed(postArrayList);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -263,7 +267,14 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
             TextView problemType = (TextView) itemView.findViewById(R.id.lblPostProblemType);
             //problemType.setText(Utility.HazardTags.getHazardTags()[currentPost.getCategory()]);
-            problemType.setText(Utility.CategoryList.get(currentPost.getCategory()));
+
+            int categoryId = currentPost.getCategory();
+
+            if(categoryId == -1)
+                problemType.setText("Uncategorized Problem");
+            else
+                problemType.setText(Utility.CategoryList.get(categoryId));
+
             TextView postTime = (TextView) itemView.findViewById(R.id.lblPostTime);
 //            String timeOfPost = Utility.CurrentUser.parsePostTime(currentPost.getTimeOfPost());
             String x = "";
@@ -503,9 +514,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         @Override
         protected void onPreExecute()
         {
-//            progressLayout.setVisibility(View.VISIBLE);
-//            customDiscussionListView.setVisibility(View.GONE);
-
+            feedRefresh.setEnabled(false);
             super.onPreExecute();
         }
 
@@ -532,6 +541,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 //            progressLayout.setVisibility(View.GONE);
 //            customDiscussionListView.setVisibility(View.VISIBLE);
 
+            feedRefresh.setEnabled(true);
             if(jsonPosts == null) {
 //                Utility.CurrentUser.showConnectionError(getActivity());
                 Log.d("Connection Error", "Probably couldn't connect to the internet");
@@ -540,8 +550,11 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
             Log.d("FetchPostsTask", "feed reloaded");
 
-            //jsonUpdatesField=jsonPosts;
-            populatePostList(jsonPosts);
+            try {
+                populatePostList(jsonPosts);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
 
         }
@@ -561,8 +574,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     public void onConnected(Bundle connectionHint) {
         //Log.d("google map client", "returned");
 
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if(mLastLocation==null){
             Toast.makeText(getActivity(), "Google client has returned null", Toast.LENGTH_LONG).show();
         }

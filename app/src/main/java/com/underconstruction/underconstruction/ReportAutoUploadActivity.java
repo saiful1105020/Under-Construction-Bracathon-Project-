@@ -321,6 +321,8 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            Toast.makeText(context, "Trying to upload previously saved report...", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Checking for duplicate reports...", Toast.LENGTH_LONG).show();
         }
 
 

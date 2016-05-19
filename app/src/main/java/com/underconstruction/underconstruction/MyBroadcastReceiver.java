@@ -47,15 +47,16 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             DBHelper dbHelper = new DBHelper(context);
             int n = dbHelper.getDataForUser(Utility.CurrentUser.getUserId()).size();
 
+
+            //device is online, so we will initiate a new intent to complete sending all the items in SQLIte DB to main database
             if(!isAppIsInBackground(context) && n>0) {
+                Log.d("Broadcast Receiver", "app in foreground, number of saved reports: " + n);
                 Intent newIntent = new Intent(context, ReportAutoUploadActivity.class);
                 newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(newIntent);
             }
-            //device is online, so we will initiate a new intent to complete sending all the items in SQLIte DB to main database
-            Intent newIntent = new Intent(context, ReportAutoUploadActivity.class);
-            newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(newIntent);
+
+
         }
         else{
             Log.d("device ", "offline");

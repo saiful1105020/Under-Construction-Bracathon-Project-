@@ -175,7 +175,18 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
             startActivity(intent);
             //and now we can report a problem
 
-            btnAddReport.setClickable(true);
+            btnAddReport.setEnabled(true);
+
+        }
+
+        else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_CANCELED) {
+            Intent intent = new Intent(this, ReportProblem.class);
+            startActivity(intent);
+            //activity opened again
+
+            Toast.makeText(getApplicationContext(), "Please add a photo", Toast.LENGTH_LONG).show();
+
+            btnAddReport.setEnabled(false);
 
         }
         //THe user was showed some posts from the database which were very similar to the report he posted.
@@ -203,7 +214,9 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
      */
     public void onUploadNowButtonClick(View v) {
         //We will fetch lat-long of the current location in a background thread.
+        btnAddReport.setEnabled(false);
         new FetchLocation().execute();
+
 
     }
 
@@ -515,6 +528,13 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
     }
 
     private String getCurrentTimestamp(){
+        boolean isBangla = false;
+
+        if(Utility.Settings.get_language(Utility.initialContext).equals("bn")) {
+            isBangla = true;
+            Utility.Settings.set_app_language("en", Utility.initialContext);
+        }
+
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
         //DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
         Date date = new Date();
@@ -527,7 +547,13 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         //Log.d("timestamp", dateFormat.format(newDate));
 
         String timestamp = dateFormat.format(newDate);
-        Log.d("timestamp: ", "" + timestamp);
+        Log.d("timestamp of report: ", "" + timestamp);
+
+        if(isBangla == true) {
+            Utility.Settings.set_app_language("bn", Utility.initialContext);
+            //isBangla = false;
+        }
+
         return timestamp;
     }
 

@@ -48,7 +48,6 @@ public class DashboardFragment extends Fragment {
     byte[] imageByteArray;
     private static ListView lv;
     private ResultListAdaptor adapter;
-    private List<YourPosts> lst = new ArrayList<YourPosts>();
     private List<YourPosts> lst_online;
     private String[] problemCategory = {"Occupied Footpath", "Open Dustbin", "Exposed Manhole", "Dangerous Electric wire", "Waterlogging", "Risky Road Intersection", "No Street Light", "Crime Prone Area", "Broken Road", "Wrong Way Trafiic"};
     private OnFragmentInteractionListener mListener;
@@ -59,7 +58,7 @@ public class DashboardFragment extends Fragment {
     DBHelper internalDb;
     Report theReportToBeSentToMainDB;
     ImageView profileRefresh;
-    ArrayList<YourPosts> postArrayList;
+    ArrayList<YourPosts> postArrayList = new ArrayList<YourPosts>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -234,7 +233,7 @@ public class DashboardFragment extends Fragment {
 
         try {
             JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("posts");
-            lst.clear();
+            postArrayList.clear();
 
             int curIndex=0, N=dashboardListJSONArray.length();
 
@@ -244,7 +243,7 @@ public class DashboardFragment extends Fragment {
 //                int upCount = curPost.getUpVote();
 //                int downCount = curPost.getDownVote();
 //                Log.d("curPost", curPost.toString());
-                lst.add(curPost);
+                postArrayList.add(curPost);
             }
 
             adapter.notifyDataSetChanged();
@@ -253,17 +252,17 @@ public class DashboardFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        lst_online = new ArrayList<YourPosts>(lst);
+        lst_online = new ArrayList<YourPosts>(postArrayList);
         Log.d("List", "Construction passed");
         //ArrayList<Report> ar = new ArrayList<Report>(getUserRecords(Utility.CurrentUser.getName()));             //CHANGE
         //ArrayList<Report> ar = internalDb.getDataForUser(Utility.CurrentUser.getUserId());
         //Log.d("List", ar.toString());
 //        for (int i = 0; i<ar.size(); i++)
 //        {
-//            lst.add(new YourPosts(ar.get(i)));
+//            postArrayList.add(new YourPosts(ar.get(i)));
 //        }
         //Log.d("List", "report converted to list");
-        //lst.add(new YourPosts("2015-12-05 09:25:30", "Azimpur", "7", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
+        //postArrayList.add(new YourPosts("2015-12-05 09:25:30", "Azimpur", "7", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
         //(new ArrayList<YourPosts>());
     }
 
@@ -281,12 +280,12 @@ public class DashboardFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return lst.size();
+            return postArrayList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return lst.get(position) ;
+            return postArrayList.get(position) ;
         }
 
         @Override
@@ -317,7 +316,7 @@ public class DashboardFragment extends Fragment {
             LinearLayout ratingLayout = (LinearLayout)convertView.findViewById(R.id.layoutRating);
             ImageView imgStatus = (ImageView) convertView.findViewById(R.id.imgStatus);
 
-            btnDelete.setOnClickListener(new View.OnClickListener(){
+            btnDelete.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -331,11 +330,17 @@ public class DashboardFragment extends Fragment {
 
                 }
             });
-            YourPosts post_item = lst.get(position);
+            YourPosts post_item = postArrayList.get(position);
 
             Log.d("Timestamp", post_item.getTimeStamp());
             txtTimeStamp.setText(Utility.CurrentUser.parsePostTime(post_item.getTimeStamp()));
-            txtCatAtLoc.setText(problemCategory[Integer.valueOf(post_item.getCategory())] + " at " + post_item.getExactLocation());
+            int categoryId = Integer.valueOf(post_item.getCategory());
+            if(categoryId == -1)
+                txtCatAtLoc.setText("Uncategorized Problem" + " at " + post_item.getExactLocation());
+            else
+                txtCatAtLoc.setText(Utility.CategoryList.get(categoryId) + " at " + post_item.getExactLocation());
+
+
             if (!post_item.getLocationDescription().isEmpty() && !post_item.getLocationDescription().equals("null"))
                 txtLocation_desc.setText("(" + post_item.getLocationDescription() + ")");
             else
@@ -424,7 +429,7 @@ public class DashboardFragment extends Fragment {
 
         public YourPosts getResultItem(int pos)
         {
-            return lst.get(pos);
+            return postArrayList.get(pos);
         }
     }
 
@@ -452,9 +457,7 @@ public class DashboardFragment extends Fragment {
         @Override
         protected void onPreExecute()
         {
-//            progressLayout.setVisibility(View.VISIBLE);
-//            customDiscussionListView.setVisibility(View.GONE);
-
+            profileRefresh.setEnabled(false);
             super.onPreExecute();
         }
 
@@ -482,6 +485,7 @@ public class DashboardFragment extends Fragment {
 //            progressLayout.setVisibility(View.GONE);
 //            customDiscussionListView.setVisibility(View.VISIBLE);
 
+            profileRefresh.setEnabled(true);
             if(jsonPosts == null) {
 //                Utility.CurrentUser.showConnectionError(getActivity());
                 Log.d("Connection Error", "Probably couldn't connect to the internet");
@@ -490,14 +494,19 @@ public class DashboardFragment extends Fragment {
             Log.d("FetchProfilePostsTask", "profile reloaded");
 
             pd.setMessage("Please wait, loading data...");
-            pd.setCancelable(false);
+            pd.setCancelable(true);
             pd.setInverseBackgroundForced(false);
             pd.show();
             //jsonUpdatesField=jsonPosts;
             populatePostList(jsonPosts);
 
+            try {
+                populatePostListView();
+            } catch (Exception e) {
+                e.printStackTrace();
+                pd.cancel();
+            }
 
-            populatePostListView();
         }
     }
 

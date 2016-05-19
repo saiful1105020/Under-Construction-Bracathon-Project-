@@ -107,7 +107,8 @@ public class HomeFragment extends Fragment {
                 //Disable autologin and clear login history
                 SharedPreferences pref = getActivity().getApplicationContext().getSharedPreferences("LoginPref", 0); // 0 - for private mode
                 SharedPreferences.Editor editor = pref.edit();
-                editor.putBoolean("Save", false);
+//                editor.putBoolean("Save", false);
+                editor.putBoolean("IsLoggedIn", false);
                 editor.commit();
 
                 //signOut
@@ -230,7 +231,11 @@ public class HomeFragment extends Fragment {
             }
 
 
-            formatRatingFields(jsonRating);
+            try {
+                formatRatingFields(jsonRating);
+            } catch(Exception e){
+                e.printStackTrace();
+            }
 
         }
 

@@ -129,6 +129,8 @@ public class RegistrationActivity extends Activity {
 //                Intent intent=new Intent(RegistrationActivity.this,VerificationActivity.class);
                 //Intent intent=new Intent(RegistrationActivity.this, TabbedHome.class);
                 Intent intent=new Intent(RegistrationActivity.this, LoginActivity.class);
+                intent.putExtra("email", email);
+                intent.putExtra("password", password);
                 startActivity(intent);
             }
         }

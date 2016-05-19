@@ -19,11 +19,140 @@ import java.util.Locale;
 /**
  * Created by Shabab on 12/5/2015.
  *
- * Utility class holds all the information that will be needed throughout the entire app.
+ * Utility class holds essential information that will be needed throughout the entire app.
  */
 
 public class Utility {
 
+    static Context initialContext;      //set in LoginActivity
+
+    static String ip = "http://" + "172.20.62.27" +                //main url
+            "/hackThon/UC_Server/index.php/home";                  //root directory
+                                                                   //used in the class JSONParser for network connection
+
+    /**
+     *
+     * @param context
+     * @return true if the device is connected to the internet, false otherwise
+     */
+    public static boolean isOnline(Context context) {
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        //should check null because in air plan mode it will be null
+        return (netInfo != null && netInfo.isConnected());
+    }
+
+
+
+    /**
+     * Stores the info of the currently active user
+     */
+
+    public static class CurrentUser{
+
+        //The id of the user in string
+        private static String userId = "-1";
+        //the id of the user in integer
+        private static int id=Integer.valueOf(userId);
+        //the name of the user
+        static String username="";
+        //used to check if the provided ip address is ok.Used in debugging
+        static boolean ipOK = false;
+
+
+
+
+        public static String getUsername() {
+            return username;
+        }
+
+        public static void setUsername(String username) {
+            CurrentUser.username = username;
+        }
+
+        public static String getUserId() {
+            return userId;
+        }
+
+        public static void setUserId(String userId) {
+            CurrentUser.userId = userId;
+            CurrentUser.id = Integer.valueOf(userId);
+        }
+
+
+        public static int getId(){return id;}
+        public static String getName(){return username;}
+
+
+        /**
+         * Parses the post time in user readable format
+         * @param dbString the time in default format
+         * @return time in user readable format
+         */
+        public static String parsePostTime (String dbString) {
+
+            int hr = Integer.parseInt("" + dbString.charAt(11) + dbString.charAt(12));
+            String min = "" +  dbString.charAt(14) + dbString.charAt(15);
+            String timeOfDay;
+            String timeOfUpdate = "";
+            boolean isBangla = false;
+
+            if(Settings.get_language(initialContext).equals("bn")) {
+                isBangla = true;
+                Settings.set_app_language("en", initialContext);
+            }
+
+            try
+            {
+                if(hr>12) {
+                    hr = hr%12;
+                    timeOfDay = "pm";
+                }
+                else if(hr == 12) timeOfDay = "pm";
+                else timeOfDay = "am";
+
+                if(hr == 0) hr = 12;
+
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(new Date());
+                String today = dateFormat.format(cal.getTime());
+                String date = dbString.substring(0, 10);
+
+                if (today.equals(date)) {
+                    date = " Today";
+                }
+                else {
+                    cal.add(Calendar.DAY_OF_MONTH, -1);
+                    String yesterday = dateFormat.format((cal.getTime()));
+                    Log.d("yesterday", yesterday);
+                    if (yesterday.equals(date)) {
+                        date = " Yesterday";
+                    } else {
+                        String monthString = new DateFormatSymbols().getMonths()[Integer.parseInt(date.substring(5,7))-1];
+                        Log.d("monthString", monthString);
+
+                        date = " " + monthString.substring(0,3) + " " + date.substring(8,10);
+                    }
+                }
+
+                timeOfUpdate = hr + ":" + min + timeOfDay + date;
+            }
+            catch (Exception e)
+            {
+                timeOfUpdate = dbString;
+            }
+
+            if(isBangla == true) {
+                Settings.set_app_language("bn", initialContext);
+                isBangla = false;
+            }
+
+            return timeOfUpdate;
+        }
+
+    }
 
     /**
      * This class will be used to configure settings
@@ -80,9 +209,9 @@ public class Utility {
         }
 
         //Given a category name, returns its ID
-        public static HashMap<String, Integer> categoryMap = new HashMap<String, Integer> ();
+        private static HashMap<String, Integer> categoryMap = new HashMap<String, Integer> ();
         //Given an ID, returns the category name
-        public static HashMap<Integer, String> IdMap = new HashMap<Integer, String> ();
+        private static HashMap<Integer, String> IdMap = new HashMap<Integer, String> ();
 
 
         /**
@@ -159,6 +288,10 @@ public class Utility {
             categoryNames.addAll(getCategoryList());
             for (int i = 0 ; i< categoryNames.size(); i++) {
                 String categoryName = categoryNames.get(i);
+//                if(categoryName.equals("Uncategorized")) {
+//                    temp.add(-1);
+//                    continue;
+//                }
                 temp.add(get(categoryName));
             }
 
@@ -176,125 +309,6 @@ public class Utility {
             return (tempCategoryName.toString() + "\n" + tempCategoryId.toString());
         }
 
-    }
-
-    /**
-     * Stores the info of the currently active user
-     */
-
-    public static class CurrentUser{
-
-        //The id of the user in string
-        private static String userId = "-1";
-        //the id of the user in integer
-        private static int id=Integer.valueOf(userId);
-        //the name of the user
-        static String username="Onix";
-        //used to check if the provided ip address is ok.Used in debugging
-        static boolean ipOK = false;
-
-
-
-
-        public static String getUsername() {
-            return username;
-        }
-
-        public static void setUsername(String username) {
-            CurrentUser.username = username;
-        }
-
-        public static String getUserId() {
-            return userId;
-        }
-
-        public static void setUserId(String userId) {
-            CurrentUser.userId = userId;
-            CurrentUser.id = Integer.valueOf(userId);
-        }
-
-
-        public static int getId(){return id;}
-        public static String getName(){return username;}
-
-
-        /**
-         * Parses the post time in user readable format
-         * @param dbString the time in default format
-         * @return time in user readable format
-         */
-        public static String parsePostTime (String dbString) {
-
-            int hr = Integer.parseInt("" + dbString.charAt(11) + dbString.charAt(12));
-            String min = "" +  dbString.charAt(14) + dbString.charAt(15);
-            String timeOfDay;
-            String timeOfUpdate = "";
-            try
-            {
-                if(hr>12) {
-                    hr = hr%12;
-                    timeOfDay = "pm";
-                }
-                else if(hr == 12) timeOfDay = "pm";
-                else timeOfDay = "am";
-
-                if(hr == 0) hr = 12;
-
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(new Date());
-                String today = dateFormat.format(cal.getTime());
-                String date = dbString.substring(0, 10);
-
-                if (today.equals(date)) {
-                    date = " Today";
-                }
-                else {
-                    cal.add(Calendar.DAY_OF_MONTH, -1);
-                    String yesterday = dateFormat.format((cal.getTime()));
-                    Log.d("yesterday", yesterday);
-                    if (yesterday.equals(date)) {
-                        date = " Yesterday";
-                    } else {
-                        String monthString = new DateFormatSymbols().getMonths()[Integer.parseInt(date.substring(5,7))-1];
-                        Log.d("monthString", monthString);
-
-                        date = " " + monthString.substring(0,3) + " " + date.substring(8,10);
-                    }
-                }
-
-                timeOfUpdate = hr + ":" + min + timeOfDay + date;
-            }
-            catch (Exception e)
-            {
-                timeOfUpdate = dbString;
-            }
-
-            return timeOfUpdate;
-        }
-
-    }
-
-    public static class HazardTags{
-        private static String[] hazardTags={"Occupied Footpath","Open Dustbin","Open Manhole","Cluttered Electric Wires","Water Logging","Risky Intersection","No Street Light","Crime Prone Area","Damaged Road","Wro+" +
-                "ngway Traffic"};
-
-        public static String[] getHazardTags(){
-            return hazardTags;
-        }
-    }
-
-    /**
-     *
-     * @param context
-     * @return true if the device is connected to the internet, false otherwise
-     */
-    public static boolean isOnline(Context context) {
-
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        //should check null because in air plan mode it will be null
-        return (netInfo != null && netInfo.isConnected());
     }
 
 
