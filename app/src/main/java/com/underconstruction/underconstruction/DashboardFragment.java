@@ -46,8 +46,8 @@ public class DashboardFragment extends Fragment {
 
     //The adapter to show all the YourPosts
     private ResultListAdaptor adapter;
-    //The arraylist to holad all the YourPosts
-    private List<YourPosts> lst = new ArrayList<YourPosts>();
+    //The arraylist to hold all the YourPosts
+    private ArrayList<YourPosts> postArrayList = new ArrayList<YourPosts>();
     //This variable communicates with the parent actvity of the fragment
     private OnFragmentInteractionListener mListener;
 
@@ -59,10 +59,8 @@ public class DashboardFragment extends Fragment {
     ProgressBar pbDash;
     //a custom listview to show all the YourPosts of a  user
     ListView lvwDash;
-    //temporarily used to hold the YourPOsts returned by the database
-    ArrayList<YourPosts> postArrayList;
 
-    private ArrayList<YourPosts> lst_online;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -108,9 +106,10 @@ public class DashboardFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-
+        //populate the custom listview
         populatePostListView();
 
+        //Fetch latest data from database and set the listview again
         profileRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,6 +121,7 @@ public class DashboardFragment extends Fragment {
                 }
             }
         });
+
 
         //if the fragment is loaded for the first time, we bring data from the database. Otherwise, we just populate the arraylist with data stored in the parent activity
         if(mListener.retrieveLatestProfilePosts() == null) {
@@ -159,36 +159,49 @@ public class DashboardFragment extends Fragment {
     }
 
 
-
-
+    /**
+     * Clears the existing Arraylist and relaods it with the latest posts
+     * @param jsonPosts All the YourPosts in one json object
+     */
     private void populatePostList(JSONObject jsonPosts) {
 
         try {
+            //create a new JSONArray of posts
             JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("posts");
-            lst.clear();
 
+            //clear the Arraylist
+            postArrayList.clear();
+
+            //sets up variables to traverse through the entire JSON Array
             int curIndex=0, N=dashboardListJSONArray.length();
 
             while(curIndex<N) {
+                //get the json object at that index
                 JSONObject curObj = dashboardListJSONArray.getJSONObject(curIndex++);
+
+                //convert it into a YouPosts item
                 YourPosts curPost = YourPosts.createPost(curObj);
-//                int upCount = curPost.getUpVote();
-//                int downCount = curPost.getDownVote();
-//                Log.d("curPost", curPost.toString());
-                lst.add(curPost);
+
+
+                postArrayList.add(curPost);
             }
 
+            //reload the listView
             adapter.notifyDataSetChanged();
+            //set the latest ArrayList in the parent Activity
             mListener.storeLatestProfilePosts(postArrayList);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        lst_online = new ArrayList<YourPosts>(lst);
-        Log.d("List", "Construction passed");
+
 
     }
+
+    /**
+     * Populates the post listview with the latest ArrayList
+     */
 
     private void populatePostListView(){
 //        ArrayAdapter<YourPosts> adapter = new ResultListAdaptor();
@@ -200,16 +213,20 @@ public class DashboardFragment extends Fragment {
 //        lv.setItemsCanFocus(false);
     }
 
+    /**
+     * An adapter for holding and managing the listview
+     */
+
     class ResultListAdaptor extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return lst.size();
+            return postArrayList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return lst.get(position) ;
+            return postArrayList.get(position) ;
         }
 
         @Override
@@ -226,11 +243,12 @@ public class DashboardFragment extends Fragment {
                 convertView=getActivity().getLayoutInflater().inflate(R.layout.activity_dashboard_list_item,parent,false);
             }
 
+            //getting reference of all the variables
+
             TextView txtTimeStamp = (TextView)convertView.findViewById(R.id.lblDashboardTimestamp);
             TextView txtCatAtLoc = (TextView)convertView.findViewById(R.id.lblDashboardCatAtLoc);
             TextView txtLocation_desc = (TextView)convertView.findViewById(R.id.lblDashboardInformalLocation);
             TextView txtUserComment = (TextView)convertView.findViewById(R.id.lblDashboardComment);
-
             TextView txtRatingChange = (TextView)convertView.findViewById(R.id.lblDashboardRatingchange);
             TextView txtUpVote = (TextView)convertView.findViewById(R.id.lblDashboardRatingUp);
             TextView txtDownVote = (TextView)convertView.findViewById(R.id.lblDashboardRatingDown);
@@ -240,6 +258,7 @@ public class DashboardFragment extends Fragment {
             LinearLayout ratingLayout = (LinearLayout)convertView.findViewById(R.id.layoutRating);
             ImageView imgStatus = (ImageView) convertView.findViewById(R.id.imgStatus);
 
+            //not functional
             btnDelete.setOnClickListener(new View.OnClickListener(){
 
                 @Override
@@ -247,6 +266,8 @@ public class DashboardFragment extends Fragment {
 
                 }
             });
+
+            //not functional
             btnUpdate.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -254,16 +275,21 @@ public class DashboardFragment extends Fragment {
 
                 }
             });
-            YourPosts post_item = lst.get(position);
 
+            //retrieve the post at this position
+            YourPosts post_item = postArrayList.get(position);
             Log.d("Timestamp", post_item.getTimeStamp());
+
             txtTimeStamp.setText(Utility.CurrentUser.parsePostTime(post_item.getTimeStamp()));
             txtCatAtLoc.setText(Utility.CategoryList.get(Integer.valueOf(post_item.getCategory())) + " at " + post_item.getExactLocation());
+
+            //sets up the location of the post
             if (!post_item.getLocationDescription().isEmpty() && !post_item.getLocationDescription().equals("null"))
                 txtLocation_desc.setText("(" + post_item.getLocationDescription() + ")");
             else
                 txtLocation_desc.setText("");
 
+            //sets up the change in rating
             txtUserComment.setText(post_item.getProblemDescription());
             if (post_item.getRatingChanged()>0)
             {
@@ -281,9 +307,11 @@ public class DashboardFragment extends Fragment {
                 txtRatingChange.setText("");
             }
 
+            //setting up upvote downvote
             txtUpVote.setText(String.valueOf(post_item.getUpVote()));
             txtDownVote.setText(String.valueOf(post_item.getDownVote()));
 
+            //sets up appropriate image depending on the state of the post(pending, verified etc)
             if (post_item.getState() == -1)
             {
                 btnUpdate.setVisibility(View.VISIBLE);
@@ -347,7 +375,7 @@ public class DashboardFragment extends Fragment {
 
         public YourPosts getResultItem(int pos)
         {
-            return lst.get(pos);
+            return postArrayList.get(pos);
         }
     }
 
@@ -368,6 +396,10 @@ public class DashboardFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+
+    /**
+     * Brings New data from server and reloads the content of the ArrayList
+     */
     class FetchDashboardTask extends AsyncTask<String, Void, String> {
 
 
@@ -377,6 +409,7 @@ public class DashboardFragment extends Fragment {
         {
 //            progressLayout.setVisibility(View.VISIBLE);
 //            customDiscussionListView.setVisibility(View.GONE);
+
             busy_sessions(true);
             super.onPreExecute();
         }
@@ -398,9 +431,7 @@ public class DashboardFragment extends Fragment {
         }
 
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
+
         protected void onPostExecute (String a){
 //            progressLayout.setVisibility(View.GONE);
 //            customDiscussionListView.setVisibility(View.VISIBLE);
@@ -418,9 +449,15 @@ public class DashboardFragment extends Fragment {
             //pd.setInverseBackgroundForced(false);
             //pd.show();
             //jsonUpdatesField=jsonPosts;
+
+            //reloads the ArrayLIst with new item
             populatePostList(jsonPosts);
+            //redraws the Custom listview
             populatePostListView();
+
+
             busy_sessions(false);
+
             Log.d("Profile", "End of Async");
         }
     }
