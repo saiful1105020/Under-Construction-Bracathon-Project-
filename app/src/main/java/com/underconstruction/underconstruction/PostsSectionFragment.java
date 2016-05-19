@@ -2,12 +2,10 @@ package com.underconstruction.underconstruction;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
-import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -46,18 +43,29 @@ import java.util.List;
  * Use the {@link PostsSectionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
+
+
+/**
+ * Shows all the posts in the nearby location. The user can see the image captured, the address of the area, informal problem desciption
+ * , informal location description, number of votes(up/down) in a post. The user can upvote or downvote a post also.
+ */
+
 public class PostsSectionFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    //color variables to draw colors
     private static final String GREY = "#c0bfac";
     private static final String BLUE = "#16586E";
     private static final String RED = "#D90D10";
 
+    //holds all the posts in the surrounding area
     private ArrayList<Post> postArrayList = new ArrayList<Post>();
+    //a listview to show the posts
     private ListView customPostListView;
+    //an adapter to manage the listview
     ArrayAdapter<Post> adapter;
 
 
@@ -65,15 +73,23 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     private String mParam1;
     private String mParam2;
 
+    //the currently active view
     private View v;
+    //the contetx of the app
     private static Context context;
 
+    // a variable to communicate with the parent Activity
     private OnFragmentInteractionListener mListener;
 
+    //communicates with Google LOcation services
     static GoogleApiClient mGoogleApiClient;
+    //the last known location of the device
     static Location mLastLocation;
+    //the user can refresh the list through it
     ImageView feedRefresh;
+    //progressbar for better user X.
     ProgressBar pbPosts;
+    //Holds the custom list
     ListView lvwPosts;
 
     /**
@@ -85,6 +101,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
      * @return A new instance of fragment PostsSectionFragment.
      */
     // TODO: Rename and change types and number of parameters
+
     public static PostsSectionFragment newInstance(String param1, String param2) {
         PostsSectionFragment fragment = new PostsSectionFragment();
         Bundle args = new Bundle();
@@ -113,13 +130,22 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         v = inflater.inflate(R.layout.fragment_posts_section, container, false);
+
+        //initiating the necessary varaiables
         feedRefresh = (ImageView) v.findViewById(R.id.btnRefreshPostSection);
         pbPosts = (ProgressBar) v.findViewById(R.id.pbPosts);
         lvwPosts = (ListView) v.findViewById(R.id.lvwPosts);
+
         return v;
     }
-    //if refresh button is pressed, hide listview and show progressbar
+
+    /**
+     * if refresh button is pressed, hide listview and show progressbar
+     * @param busy a flag to indicate an ongoing process
+     */
+
     void busy_sessions(boolean busy)
     {
         if (pbPosts==null) return;
@@ -141,21 +167,26 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+
         populatePostListView();
 
+        //the user wants to reload the list
         feedRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (v.getId() == R.id.btnRefreshPostSection) {
+                    //get the lat-long of the place and begin the poast of this place
                     getLatLong();
                 }
             }
         });
 
+        //the user is opening this fragment for the first time
         if(mListener.retrieveLatestFeed() == null) {
             getLatLong();
         }
         else {
+            //we already have the lastest posts. So use them
             postArrayList = mListener.retrieveLatestFeed();
         }
     }
@@ -206,15 +237,14 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         public ArrayList<Post> retrieveLatestFeed();
     }
 
+    /**
+     * Converts the json into an arraylist of latest posts. Look at similar method in DashBoardFragment for more details
+     * @param jsonPosts a json object that holds all the posts
+     */
     private void populatePostList(JSONObject jsonPosts) {
 
-//        Post post1 = new Post(1, 0, "Kamalapur, Dhaka", convertDrawableIntoByteArray(R.drawable.dustbin_image), "Behind the Railstation", 1, "Very smelly dustbin out in the open. Very unhealthy", 1510, "2:20pm Dec 16", 5, "Onix", null);
-//        postArrayList.add(post1);
-//        Post post2 = new Post(2, -2, "Mohakhali, Dhaka", convertDrawableIntoByteArray(R.drawable.manhole_image), "Under flyover", 2, "Risky!", 1200, "12:10pm Dec 16", 6, "Saif", null);
-////        postArrayList.add(post2);
-//        Post post3 = new Post(3, 3, "Baridhara, Dhaka", convertDrawableIntoByteArray(R.drawable.wire_image), "Beside rail crossing", 3, "God knows when the place catches fire...", 550, "10:45am Dec 16", 0, "Wasif", null);
-//        postArrayList.add(post3);
         try {
+
             JSONArray postsJSONArray = jsonPosts.getJSONArray("posts");
             postArrayList.clear();
 
@@ -224,19 +254,21 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
                 JSONObject curObj = postsJSONArray.getJSONObject(curIndex++);
                 Log.d("jsonReturned", curObj.toString());
                 Post curPost = Post.createPost(curObj);
-//                int upCount = curPost.getUpCount();
-//                int downCount = curPost.getDownCount();
 
+
+                //which users have upvoted the post
                 JSONArray upVotersJSONArray=curObj.getJSONArray("upVoters");
 
+                //add all the voters in the posts voter list
                 for(int i=0;i<upVotersJSONArray.length();i++){
 
                     Voter newVoter = new Voter(upVotersJSONArray.getJSONObject(i).getInt("userId"));
                     curPost.addVoterFromDB(newVoter, 1);
                 }
 
+                //which users have upvoted the post
                 JSONArray downVotersJSONArray=curObj.getJSONArray("downVoters");
-
+                //add all the voters in the posts voter list
                 for(int i=0;i<downVotersJSONArray.length();i++){
 
                     Voter newVoter = new Voter(downVotersJSONArray.getJSONObject(i).getInt("userId"));
@@ -246,7 +278,9 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
                 postArrayList.add(curPost);
             }
 
+            //redraw the list
             adapter.notifyDataSetChanged();
+            //store latest post list in parent activity
             mListener.storeLatestFeed(postArrayList);
 
         } catch (JSONException e) {
@@ -254,6 +288,9 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         }
     }
 
+    /**
+     * redraws the listview by setting up the adapter and notifying it
+     */
     private void populatePostListView(){
         adapter = new MyListAdapter();
 
@@ -262,6 +299,9 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         adapter.notifyDataSetChanged();
     }
 
+    /**
+     * An adapter to manage the listview
+     */
     private class MyListAdapter extends ArrayAdapter<Post>{
         public MyListAdapter(){
 
@@ -281,19 +321,17 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
             //find the update to work with
             Post currentPost = postArrayList.get(position);
-            //fill the view
 
+            //Get reference to all the variables and sets them up appropriately
             TextView problemType = (TextView) itemView.findViewById(R.id.lblPostProblemType);
-            //problemType.setText(Utility.HazardTags.getHazardTags()[currentPost.getCategory()]);
+
             problemType.setText(Utility.CategoryList.get(currentPost.getCategory()));
             TextView postTime = (TextView) itemView.findViewById(R.id.lblPostTime);
-//            String timeOfPost = Utility.CurrentUser.parsePostTime(currentPost.getTimeOfPost());
-            String x = "";
-            x = currentPost.getTimeOfPost();
+
+
             postTime.setText(Utility.CurrentUser.parsePostTime(currentPost.getTimeOfPost()));
 
 
-//            postTime.setText(currentPost.getTimeOfPost());
 
             TextView formalLocation = (TextView) itemView.findViewById(R.id.lblPostProblemLocation);
             formalLocation.setText(currentPost.getFormalLocation());
@@ -317,9 +355,11 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
             final ImageView voteUpView = (ImageView) itemView.findViewById(R.id.imgPostUp);
             final ImageView voteDownView = (ImageView) itemView.findViewById(R.id.imgPostDown);
 
+            //If the user has already voted the post, change color accordingly
             checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, voteUpView, voteDownView);
             checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, voteUpView, voteDownView);
 
+            //The user has upvoted the post
             voteUpView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -329,6 +369,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
                 }
             });
 
+            //the user has downvoted the post
             voteDownView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -338,6 +379,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
                 }
             });
 
+            //sets up the image
             ImageView image = (ImageView) itemView.findViewById(R.id.lblPostProblemImage);
             byte[] imageBytes = currentPost.getImageBytes();
             Bitmap bMap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
@@ -347,6 +389,11 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         }
     }
 
+    /**
+     * Not used in this app
+     * @param id
+     * @return
+     */
 
     private byte[] convertDrawableIntoByteArray(int id){
 
@@ -360,6 +407,11 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     }
 
 
+    /**
+     * Not used in this app
+
+     * @return
+     */
     public void testHomePage() {
         postArrayList.clear();
 
@@ -375,6 +427,11 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         populatePostListView();
     }
 
+    /**
+     * sets up +/- sign and color depending on the number ofr votes a post has got
+     * @param currentPost
+     * @param totalVote
+     */
     private void showTotalVote(Post currentPost, TextView totalVote) {
         int voteCount = (-1)*currentPost.getDownCount() + currentPost.getUpCount();
 
@@ -393,6 +450,13 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
     }
 
 
+    /**
+     * If the current user has voted the post, set color accordingly
+     * @param curVoter
+     * @param curPost
+     * @param voteUpView
+     * @param voteDownView
+     */
     private void checkIfAlreadyVotedAndChangeColorAccordingly(Voter curVoter, Post curPost, ImageView voteUpView, ImageView voteDownView) {
 
         // Log.d("UpdateId-LikerId-LikeCount", curUpdate.getId() + "-" + curVoter.getLikerId() + "-" + curUpdate.getLikeCount());
@@ -421,16 +485,25 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         }
     }
 
+    /**
+     * Method is called when the user has pressed the upvote. It checks if the user has already voted. If yes, it does not
+     * allow the user to vote again. If no, it adds up the user as a voter in the post and change the UI holding the vote number \
+     * accordingly
+     * @param index
+     * @param voteUpView
+     * @param voteDownView
+     * @param totalVote
+     */
+
     private void handleUpvoteView(int index, ImageView voteUpView, ImageView voteDownView, TextView totalVote) {
         Log.d("Upvoting", "Voter's id: " + Utility.CurrentUser.getId());
+
         Voter curVoter = new Voter(Utility.CurrentUser.getId());
+
         Post curPost = postArrayList.get(index);
         Log.d("Upvoting", "Poster id: " + curPost.getUserId());
 
-//        if(Utility.CurrentUser.getUserId().equals(curPost.getUserId()))
-//            return;                                         //user cannot vote in his own post
 
-                                                              //Of course, he can! Ref: Facebook
 
         if(curPost.hasTheUserUpvoted(curVoter)) {           //if user has upvoted before... trying to upvote again
             //do nothing
@@ -451,6 +524,15 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         }
     }
 
+    /**
+     * Method is called when the user has pressed the upvote. It checks if the user has already voted. If yes, it does not
+     * allow the user to vote again. If no, it adds up the user as a voter in the post and change the UI holding the vote number \
+     * accordingly
+     * @param index
+     * @param voteUpView
+     * @param voteDownView
+     * @param totalVote
+     */
     private void handleDownvoteView(int index, ImageView voteUpView, ImageView voteDownView, TextView totalVote) {
         Voter curVoter = new Voter(Utility.CurrentUser.getId());
         Post curPost = postArrayList.get(index);
@@ -475,6 +557,10 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         }
     }
 
+
+    /**
+     * The user casts a vote through thsi task.Changes database accordingly
+     */
     class SubmitVoteTask extends AsyncTask<String, Void, String> {
 
         private JSONObject jsonVotingResponse;
@@ -504,9 +590,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
         }
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
+
         protected void onPostExecute (String a){
 
             if(jsonVotingResponse == null) {
@@ -515,6 +599,10 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         }
     }
 
+
+    /**
+     * Fetches all the posts surrounding  the current lat-long of the user
+     */
 
     public class FetchHomePostsTask extends AsyncTask<String, Void, String> {
 
@@ -565,7 +653,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
             Log.d("FetchPostsTask", "feed reloaded");
 
-            //jsonUpdatesField=jsonPosts;
+            //Then populate the arraylist  again with latets posts
             populatePostList(jsonPosts);
             busy_sessions(false);
 
@@ -573,21 +661,33 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 //        private static ip ()
     }
 
+    /**
+     *  This method contacts the google location services and brings up the current lat-long
+     */
     public synchronized void getLatLong() {
         mGoogleApiClient = new GoogleApiClient.Builder(context)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-        //Toast.makeText(this,"google map client",Toast.LENGTH_LONG).show();
+
+        //Attempts to connect to the Google Services. onConnected is called upon success
         mGoogleApiClient.connect();
     }
 
+    /**
+     * Look at the ssame method in ReportProblem for more documentation
+     * @param connectionHint
+     */
     public void onConnected(Bundle connectionHint) {
-        //Log.d("google map client", "returned");
 
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+        try {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
         if(mLastLocation==null){
             Toast.makeText(getActivity(), "Google client has returned null", Toast.LENGTH_LONG).show();
         }
@@ -597,6 +697,8 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
             //mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
             Toast.makeText(getActivity(),"Google client has returned not null",Toast.LENGTH_LONG).show();
             Toast.makeText(getActivity(),mLastLocation.getLatitude()+" "+mLastLocation.getLongitude(),Toast.LENGTH_LONG).show();
+
+            //fetches up posts of the current location
             new FetchHomePostsTask().execute();
         }
 

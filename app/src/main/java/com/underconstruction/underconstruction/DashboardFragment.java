@@ -5,17 +5,12 @@ package com.underconstruction.underconstruction;
  */
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
-import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -29,9 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,47 +33,58 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * This fragment holds all the recent activity of the user. And the situation of his posts. whether thery are pending, solved or rejected
+ * The fragment data will be downloaded from the database only once. However, the user may click the refresh button and bring latest data
+ *
+ */
+
 public class DashboardFragment extends Fragment {
-    //public static ProgressDialog pd;
-    public String mAddressOutput;
-    private AddressResultReceiver mResultReceiver;
-    private ArrayList<String>locationAtrributes;
-    private String resultOutput;
-    byte[] imageByteArray;
-    private static ListView lv;
+
+
+
+    //The adapter to show all the YourPosts
     private ResultListAdaptor adapter;
-    private List<YourPosts> lst = new ArrayList<YourPosts>();
-    private List<YourPosts> lst_online;
-    private String[] problemCategory = {"Occupied Footpath", "Open Dustbin", "Exposed Manhole", "Dangerous Electric wire", "Waterlogging", "Risky Road Intersection", "No Street Light", "Crime Prone Area", "Broken Road", "Wrong Way Trafiic"};
+    //The arraylist to hold all the YourPosts
+    private ArrayList<YourPosts> postArrayList = new ArrayList<YourPosts>();
+    //This variable communicates with the parent actvity of the fragment
     private OnFragmentInteractionListener mListener;
-//    private String userName = "Onix";
-    ScrollView parentScroll, childScroll;
-    ListView myPosts;
+
+    //Holds all the posts returned by the database
     JSONObject jsonPosts;
-    DBHelper internalDb;
-    Report theReportToBeSentToMainDB;
+    //By clicking this button, user can refresh his dashboard
     ImageButton profileRefresh;
+    //a progressbar to show shile posts are being downloaded
     ProgressBar pbDash;
+    //a custom listview to show all the YourPosts of a  user
     ListView lvwDash;
-    ArrayList<YourPosts> postArrayList;
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //initiates the adapter
         adapter = new ResultListAdaptor();
-        //pd = new ProgressDialog(getActivity());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_dashboard, container, false);
+
+        //variables are initiated
         profileRefresh = (ImageButton) view.findViewById(R.id.btnRefreshDashboard);
         pbDash = (ProgressBar) view.findViewById(R.id.pbDashboard);
         lvwDash = (ListView) view.findViewById(R.id.lvwDashboard);
+
         return view;
     }
 
-    //if refresh button is pressed, hide listview and show progressbar
+    /**
+     * /if refresh button is pressed, hide listview and show progressbar
+     * @param busy
+     */
     void busy_sessions(boolean busy)
     {
         if (pbDash == null) return;
@@ -97,24 +101,29 @@ public class DashboardFragment extends Fragment {
             profileRefresh.setEnabled(true);
         }
     }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        locationAtrributes = new ArrayList<String >();
-        mResultReceiver = new AddressResultReceiver(new Handler());
 
+        //populate the custom listview
         populatePostListView();
 
+        //Fetch latest data from database and set the listview again
         profileRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (v.getId() == R.id.btnRefreshDashboard) {
                     Log.d("Profile", "reload button clicked");
+
+                    //bring all the YourPOst from database again
                     new FetchDashboardTask().execute();
                 }
             }
         });
 
+
+        //if the fragment is loaded for the first time, we bring data from the database. Otherwise, we just populate the arraylist with data stored in the parent activity
         if(mListener.retrieveLatestProfilePosts() == null) {
             new FetchDashboardTask().execute();
         }
@@ -142,105 +151,6 @@ public class DashboardFragment extends Fragment {
         mListener = null;
     }
 
-    private void bringDataFromInternalDb() {
-        internalDb = new DBHelper(getContext());
-        ArrayList<Report> allTheReportsOfIntDb = internalDb.getDataForUser(Utility.CurrentUser.getUserId());
-        if(!allTheReportsOfIntDb.isEmpty()) {
-            uploadTheReportToMainDatabase(allTheReportsOfIntDb.get(0));
-        }
-        Log.d("bring back our report", allTheReportsOfIntDb.toString());
-
-    }
-
-
-    private void deleteAReportFromIntDb(Report deleteIt){
-        String idOfTheRecord = deleteIt.getRecordID();
-        //converting to int as the record id is in integer in sqlite database;
-        internalDb.deleteRecord(idOfTheRecord);
-
-    }
-
-    private void uploadTheReportToMainDatabase(Report sendIt){
-        theReportToBeSentToMainDB = sendIt;
-        Log.d("the selected report",theReportToBeSentToMainDB.toString());
-        startIntentServiceForReverseGeoTagging(sendIt);
-    }
-
-    protected void startIntentServiceForReverseGeoTagging(Report sendIt) {
-        double lat = Double.parseDouble(sendIt.getLatitude());
-        double lon = Double.parseDouble(sendIt.getLongitude());
-        Location mLastLocation = new Location("");
-        mLastLocation.setLatitude(lat);
-        mLastLocation.setLongitude(lon);
-        Intent intent = new Intent(getContext(), FetchAddressIntentService.class);
-        intent.putExtra(Constants.RECEIVER, mResultReceiver);
-        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
-        Toast.makeText(getActivity(), "Just before calling intent service", Toast.LENGTH_LONG).show();
-        //Log.d("inside service",mLastLocation.getLatitude()+" "+mLastLocation.getLongitude());
-        getActivity().startService(intent);
-
-
-    }
-
-    class AddressResultReceiver extends ResultReceiver {
-
-
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            // Display the address string
-            // or an error message sent from the intent service.
-            resultOutput= resultData.getString(Constants.RESULT_DATA_KEY);
-            Log.d("returned to destination","true");
-            // Log.d("address location", resultOutput);
-            //displayAddressOutput();
-
-            // Show a toast message if an address was found.
-            Log.d("result code",resultCode+"");
-            if (resultCode == Constants.SUCCESS_RESULT) {
-                //showToast(getString(R.string.address_found));
-                //Toast.makeText(AddReport.class,resultOutput,Toast.LENGTH_LONG).show();
-                //Toast.makeText(this,resultOutput,Toast.LENGTH_LONG).show();
-                Log.d("address location", resultOutput);
-                formatAndSendDataToMainDB();
-            }
-
-        }
-    }
-
-
-    private void formatAndSendDataToMainDB() {
-        Log.d("result_output",resultOutput);
-        String[] locationPairs=resultOutput.split("~" +
-                "");
-
-        for(int i=0;i<locationPairs.length;i++){
-            locationAtrributes.add(locationPairs[i]);
-        }
-
-        locationAtrributes.add("latitude:"+theReportToBeSentToMainDB.getLatitude());
-        locationAtrributes.add("longitude:" + theReportToBeSentToMainDB.getLongitude());
-        locationAtrributes.add("category:"+ theReportToBeSentToMainDB.getCategory());
-        locationAtrributes.add("time:" + theReportToBeSentToMainDB.getTime());
-        String informalLocation= theReportToBeSentToMainDB.getInformalLocation();
-        locationAtrributes.add("informalLocation:" + informalLocation);
-        String informalDescription=theReportToBeSentToMainDB.getProblemDescription();
-        locationAtrributes.add("problemDescription:" + informalDescription);
-        //locationAtrributes.add("userName:" + "Onix");
-
-        imageByteArray=theReportToBeSentToMainDB.getImage();
-        //Log.d("byteArray", new String(imageByteArray));
-        //locationAtrributes.add("image:"+new String(imageByteArray));
-
-        new AddReportTask().execute();
-
-    }
-
-
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
@@ -249,44 +159,49 @@ public class DashboardFragment extends Fragment {
     }
 
 
-
-
+    /**
+     * Clears the existing Arraylist and relaods it with the latest posts
+     * @param jsonPosts All the YourPosts in one json object
+     */
     private void populatePostList(JSONObject jsonPosts) {
 
         try {
+            //create a new JSONArray of posts
             JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("posts");
-            lst.clear();
 
+            //clear the Arraylist
+            postArrayList.clear();
+
+            //sets up variables to traverse through the entire JSON Array
             int curIndex=0, N=dashboardListJSONArray.length();
 
             while(curIndex<N) {
+                //get the json object at that index
                 JSONObject curObj = dashboardListJSONArray.getJSONObject(curIndex++);
+
+                //convert it into a YouPosts item
                 YourPosts curPost = YourPosts.createPost(curObj);
-//                int upCount = curPost.getUpVote();
-//                int downCount = curPost.getDownVote();
-//                Log.d("curPost", curPost.toString());
-                lst.add(curPost);
+
+
+                postArrayList.add(curPost);
             }
 
+            //reload the listView
             adapter.notifyDataSetChanged();
+            //set the latest ArrayList in the parent Activity
             mListener.storeLatestProfilePosts(postArrayList);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        lst_online = new ArrayList<YourPosts>(lst);
-        Log.d("List", "Construction passed");
-        //ArrayList<Report> ar = new ArrayList<Report>(getUserRecords(Utility.CurrentUser.getName()));             //CHANGE
-        //ArrayList<Report> ar = internalDb.getDataForUser(Utility.CurrentUser.getUserId());
-        //Log.d("List", ar.toString());
-//        for (int i = 0; i<ar.size(); i++)
-//        {
-//            lst.add(new YourPosts(ar.get(i)));
-//        }
-        //Log.d("List", "report converted to list");
-        //lst.add(new YourPosts("2015-12-05 09:25:30", "Azimpur", "7", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
-        //(new ArrayList<YourPosts>());
+
+
+
     }
+
+    /**
+     * Populates the post listview with the latest ArrayList
+     */
 
     private void populatePostListView(){
 //        ArrayAdapter<YourPosts> adapter = new ResultListAdaptor();
@@ -298,16 +213,20 @@ public class DashboardFragment extends Fragment {
 //        lv.setItemsCanFocus(false);
     }
 
+    /**
+     * An adapter for holding and managing the listview
+     */
+
     class ResultListAdaptor extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return lst.size();
+            return postArrayList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return lst.get(position) ;
+            return postArrayList.get(position) ;
         }
 
         @Override
@@ -324,11 +243,12 @@ public class DashboardFragment extends Fragment {
                 convertView=getActivity().getLayoutInflater().inflate(R.layout.activity_dashboard_list_item,parent,false);
             }
 
+            //getting reference of all the variables
+
             TextView txtTimeStamp = (TextView)convertView.findViewById(R.id.lblDashboardTimestamp);
             TextView txtCatAtLoc = (TextView)convertView.findViewById(R.id.lblDashboardCatAtLoc);
             TextView txtLocation_desc = (TextView)convertView.findViewById(R.id.lblDashboardInformalLocation);
             TextView txtUserComment = (TextView)convertView.findViewById(R.id.lblDashboardComment);
-
             TextView txtRatingChange = (TextView)convertView.findViewById(R.id.lblDashboardRatingchange);
             TextView txtUpVote = (TextView)convertView.findViewById(R.id.lblDashboardRatingUp);
             TextView txtDownVote = (TextView)convertView.findViewById(R.id.lblDashboardRatingDown);
@@ -338,6 +258,7 @@ public class DashboardFragment extends Fragment {
             LinearLayout ratingLayout = (LinearLayout)convertView.findViewById(R.id.layoutRating);
             ImageView imgStatus = (ImageView) convertView.findViewById(R.id.imgStatus);
 
+            //not functional
             btnDelete.setOnClickListener(new View.OnClickListener(){
 
                 @Override
@@ -345,6 +266,8 @@ public class DashboardFragment extends Fragment {
 
                 }
             });
+
+            //not functional
             btnUpdate.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -352,16 +275,21 @@ public class DashboardFragment extends Fragment {
 
                 }
             });
-            YourPosts post_item = lst.get(position);
 
+            //retrieve the post at this position
+            YourPosts post_item = postArrayList.get(position);
             Log.d("Timestamp", post_item.getTimeStamp());
+
             txtTimeStamp.setText(Utility.CurrentUser.parsePostTime(post_item.getTimeStamp()));
             txtCatAtLoc.setText(Utility.CategoryList.get(Integer.valueOf(post_item.getCategory())) + " at " + post_item.getExactLocation());
+
+            //sets up the location of the post
             if (!post_item.getLocationDescription().isEmpty() && !post_item.getLocationDescription().equals("null"))
                 txtLocation_desc.setText("(" + post_item.getLocationDescription() + ")");
             else
                 txtLocation_desc.setText("");
 
+            //sets up the change in rating
             txtUserComment.setText(post_item.getProblemDescription());
             if (post_item.getRatingChanged()>0)
             {
@@ -379,9 +307,11 @@ public class DashboardFragment extends Fragment {
                 txtRatingChange.setText("");
             }
 
+            //setting up upvote downvote
             txtUpVote.setText(String.valueOf(post_item.getUpVote()));
             txtDownVote.setText(String.valueOf(post_item.getDownVote()));
 
+            //sets up appropriate image depending on the state of the post(pending, verified etc)
             if (post_item.getState() == -1)
             {
                 btnUpdate.setVisibility(View.VISIBLE);
@@ -445,7 +375,7 @@ public class DashboardFragment extends Fragment {
 
         public YourPosts getResultItem(int pos)
         {
-            return lst.get(pos);
+            return postArrayList.get(pos);
         }
     }
 
@@ -466,6 +396,10 @@ public class DashboardFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+
+    /**
+     * Brings New data from server and reloads the content of the ArrayList
+     */
     class FetchDashboardTask extends AsyncTask<String, Void, String> {
 
 
@@ -475,6 +409,7 @@ public class DashboardFragment extends Fragment {
         {
 //            progressLayout.setVisibility(View.VISIBLE);
 //            customDiscussionListView.setVisibility(View.GONE);
+
             busy_sessions(true);
             super.onPreExecute();
         }
@@ -496,9 +431,7 @@ public class DashboardFragment extends Fragment {
         }
 
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
+
         protected void onPostExecute (String a){
 //            progressLayout.setVisibility(View.GONE);
 //            customDiscussionListView.setVisibility(View.VISIBLE);
@@ -516,117 +449,16 @@ public class DashboardFragment extends Fragment {
             //pd.setInverseBackgroundForced(false);
             //pd.show();
             //jsonUpdatesField=jsonPosts;
+
+            //reloads the ArrayLIst with new item
             populatePostList(jsonPosts);
+            //redraws the Custom listview
             populatePostListView();
+
+
             busy_sessions(false);
+
             Log.d("Profile", "End of Async");
         }
     }
-
-
-
-    class AddReportTask extends AsyncTask<String, Void, String> {
-
-        private JSONObject jsonAddReport;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-
-        protected String doInBackground(String... args) {
-
-            JSONParser jParser = new JSONParser();
-            // Building Parameters
-            List<Pair> params = new ArrayList<Pair>();
-
-
-            for(int i=0;i<locationAtrributes.size();i++){
-
-                String tagAndValueString=locationAtrributes.get(i);
-
-                String tag= tagAndValueString.split(":")[0];
-                Log.d("timest: ",tagAndValueString);
-                String value;
-                if(!tag.equals("time"))
-                    if(tagAndValueString.split(":").length==1){
-                        value="";
-                    }
-                    else value=tagAndValueString.split(":")[1];
-                else{
-                    value=tagAndValueString.substring(tagAndValueString.indexOf(":")+1);
-                }
-
-                if(tag.equals("street_number"))
-                    tag="streetNo";
-                else if(tag.equals("sublocality_level_1"))
-                    tag="sublocality";
-                params.add(new Pair(tag, value));
-
-                Log.d("string_test", tag + " " + value);
-            }
-            String encodedString = Base64.encodeToString(imageByteArray, 0);
-            params.add(new Pair("image",encodedString));
-//            params.add(new Pair("userName:", Utility.CurrentUser.getUsername()));
-            params.add(new Pair("userId",Utility.CurrentUser.getUserId()));
-            Log.d("image size", imageByteArray.length + "");
-
-            // getting JSON string from URL
-            jsonAddReport = jParser.makeHttpRequest("/insertPost", "POST", params);
-//            jsonLocations = jParser.makeHttpRequest("/locations", "GET", null);
-
-
-            // Check your log cat for JSON reponse
-//            Log.e("All info: ", jsonLogin.toString());
-            return null;
-
-        }
-
-
-        protected void onPostExecute (String a){
-
-
-            if(jsonAddReport==null)
-                Log.d("report_database"," null");
-            else Log.d("report_database",jsonAddReport.toString());
-
-
-
-        }
-    }
-
-    /*
-    public ArrayList<Report> getUserRecords(String name){
-
-        DBHelper help=new DBHelper(getActivity());
-        Log.d("List", String.valueOf(help.numberOfRows()));
-        Cursor allRowsForName=help.getData(name);
-        ArrayList<Report> reportsToBeSent=new ArrayList<Report>();
-        allRowsForName.moveToFirst();
-        while(allRowsForName.isAfterLast() == false){
-            int tREPORT_COLUMN_ID = allRowsForName.getInt(allRowsForName.getColumnIndex(help.REPORT_COLUMN_ID));
-            String tREPORT_COLUMN_NAME = allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_NAME));
-            String tREPORT_COLUMN_CATEGORY = allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_CATEGORY));
-            byte[] tREPORT_COLUMN_IMAGE = allRowsForName.getBlob(allRowsForName.getColumnIndex(help.REPORT_COLUMN_IMAGE));
-            String tREPORT_COLUMN_TIME = allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_TIME));
-            String tREPORT_COLUMN_INFORMALLOCATION=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_INFORMALLOCATION));
-            String tREPORT_COLUMN_PROBDESCR=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_PROBDESCR));
-            String tREPORT_COLUMN_STREETNO=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_STREETNO));
-            String tREPORT_COLUMN_ROUTE=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_ROUTE));
-            String tREPORT_COLUMN_NEIGHBORHOOD=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_NEIGHBORHOOD));
-            String tREPORT_COLUMN_SUBLOCALITY=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_SUBLOCALITY));
-            String tREPORT_COLUMN_LOCALITY=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_LOCALITY));
-            String tREPORT_COLUMN_LATITUDE=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_LATITUDE));
-            String tREPORT_COLUMN_LONGITUDE=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_LONGITUDE));
-            //Log.d("userentries:",allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_NAME))+" "+allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_TIME)));
-            Report objectToBeSent=new Report(tREPORT_COLUMN_ID,1,tREPORT_COLUMN_NAME,tREPORT_COLUMN_CATEGORY,tREPORT_COLUMN_IMAGE,tREPORT_COLUMN_TIME,tREPORT_COLUMN_INFORMALLOCATION,tREPORT_COLUMN_PROBDESCR,tREPORT_COLUMN_STREETNO,tREPORT_COLUMN_ROUTE,tREPORT_COLUMN_NEIGHBORHOOD,tREPORT_COLUMN_SUBLOCALITY,tREPORT_COLUMN_LOCALITY,tREPORT_COLUMN_LATITUDE,tREPORT_COLUMN_LONGITUDE);
-            reportsToBeSent.add(objectToBeSent);
-            Log.d("userentries:",objectToBeSent.toString());
-
-            allRowsForName.moveToNext();
-        }
-        return reportsToBeSent;
-    }
-    */
 }
