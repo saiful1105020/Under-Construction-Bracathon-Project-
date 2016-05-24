@@ -1,4 +1,5 @@
- 
+ <html>
+	<body>
     <h2 style="text-align:center"><b>Search Reported Posts</b></h2>
 
     <div class="container-fluid">
@@ -14,11 +15,11 @@
                 <form class="form-control" method="post" action="">
                     <?php 
                     foreach($logData as $l){
-                        echho'<tr>
+                        echo "<tr>
                             <td></td>
-                            <td>'.$l['string'].'</td>
+                            <td>".$l['string']."</td>
                         </tr>
-                    }';
+                    }";
                         echo'<a href=""><b>Next</b></a>
                         <a href=""><b>Previous</b></a>
                     ;'
@@ -28,6 +29,7 @@
             </tbody>
         </table>
     </div>
+	
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -39,5 +41,6 @@
     <script src="<?php echo base_url("assets/js/vendor/holder.min.js"); ?>"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="<?php echo base_url("assets/js/ie10-viewport-bug-workaround.js"); ?>"></script>
-  </body>
-</html>
+	
+	</body>
+  </html>

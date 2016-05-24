@@ -38,9 +38,9 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="<?php echo site_url('subAdmin'); ?>" class="glyphicon glyphicon-home"> Home</a></li>
-            <li><a href="<?php echo site_url('subAdmin/Check Discrepency');?>"></a></li>
-            <li><a href="<?php echo site_url('subAdmin/logout'); ?>" class="glyphicon glyphicon-log-out"> LogOut</a></li>
+            <li><a href="<?php echo site_url('bracAdmin'); ?>" class="glyphicon glyphicon-home"> Home</a></li>
+            <li><a href="<?php echo site_url('bracAdmin/Check Discrepency');?>"></a></li>
+            <li><a href="<?php echo site_url('bracAdmin/logout'); ?>" class="glyphicon glyphicon-log-out"> LogOut</a></li>
           </ul>
           
         </div>
