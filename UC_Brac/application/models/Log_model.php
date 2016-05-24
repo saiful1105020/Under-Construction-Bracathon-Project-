@@ -3,7 +3,7 @@ class Log_model extends CI_Model
 {
 	/**
 		log_type:
-			1 => User suggested a category
+			
 			2 => User Reported a problem
 			3 => Admin logged in
 			4 => Admin updated a post status
@@ -44,6 +44,44 @@ class Log_model extends CI_Model
 		*/
 		$sql = 'INSERT INTO `logs`(`user_id`, `cat_id`, `time`, `log_type`, `post_id`, `changed_status`, `cat_name`) VALUES (?,?,CURRENT_TIMESTAMP,?,?,?,?)';
 		$this->db->query($sql,array($data['user_id'],$data['cat_id'],$data['log_type'],$data['post_id'],$data['changed_status'],$data['cat_name']));
+	}
+	
+	public function get_all_logs()
+	{
+		$sql = 'SELECT * FROM `logs` ORDER BY time DESC';
+		$query = $this->db->query($sql)->result_array();
+		return $query;
+	}
+	
+	/**
+		Apparently hard-coded. need to redo
+	*/
+	public function get_user_name($user_id)
+	{
+		$sql = "SELECT `user_name` FROM `user` WHERE `user_id` = ?";
+		$query = $this->db->query($sql,array($user_id))->row_array();
+		return $query['user_name'];
+	}
+	
+	public function get_user_rating($user_id)
+	{	
+		$sql = "SELECT `user_rating` FROM `user` WHERE `user_id` = ?";
+		$query = $this->db->query($sql,array($user_id))->row_array();
+		return $query['user_rating'];
+	}
+	
+	public function get_admin_name($user_id)
+	{
+		$sql = "SELECT `admin_name` FROM `admin` WHERE `admin_id` = ?";
+		$query = $this->db->query($sql,array($user_id))->row_array();
+		return $query['admin_name'];
+	}
+	
+	public function get_subAdmin_name($user_id)
+	{
+		$sql = "SELECT `name` FROM `subadmin` WHERE `id` = ?";
+		$query = $this->db->query($sql,array($user_id))->row_array();
+		return $query['name'];
 	}
 }
 
