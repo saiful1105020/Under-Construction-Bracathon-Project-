@@ -4,7 +4,274 @@ class Post_model extends CI_Model
 	public function __construct()	//DONE
 	{
         $this->load->database();
-	}	
+	}
+
+	/**
+		Returns the list of all categories
+	*/
+	public function get_all_categories()
+	{
+		$sql = 'SELECT * FROM category';
+		$result = $this->db->query($sql)->result_array();
+		return $result;
+	}
+	
+	/**
+		Returns total # of upvotes and downvotes of a post
+	*/
+	public function get_vote_count($post_id)
+	{
+		$sql='SELECT COUNT(*) as upvotes FROM vote WHERE post_id=? and vote_type=1';
+		$query=$this->db->query($sql,array($post_id))->row_array();
+		
+		$data['upvotes']=$query['upvotes'];
+		
+		$sql='SELECT COUNT(*) as downvotes FROM vote WHERE post_id=? and vote_type=-1';
+		$query=$this->db->query($sql,array($post_id))->row_array();
+		
+		$data['downvotes']=$query['downvotes'];
+		
+		return $data;
+	}
+	
+	/**
+		Return type: String
+	*/
+	public function get_user_name($user_id)
+	{
+		$sql="SELECT user_name FROM user WHERE user_id = ? ";
+		$query=$this->db->query($sql,array($user_id))->row_array();
+		return $query['user_name'];
+	}
+	
+	/**
+		Return type : Integer
+	*/
+	public function get_current_rating($user_id)
+	{
+		$sql='SELECT user_rating FROM user WHERE user_id = ? ';
+		$query=$this->db->query($sql,array($user_id))->row_array();
+		return $query['user_rating'];
+	}
+	
+	/**
+		Return type: String
+		Params : $id -> category id
+	*/
+	public function get_category_name($id)
+	{
+		$sql = 'SELECT `name` FROM category where `categoryId` = ?';
+		$result = $this->db->query($sql,array($id))->row_array();
+		return $result['name'];
+	}
+	
+	/**
+		Return type : An array of all information about a location
+	*/
+	public function get_location($location_id)
+	{
+		$sql='SELECT * FROM location WHERE location_id = ?';
+		$query=$this->db->query($sql,array($location_id))->row_array();
+		return $query;
+	}
+	
+	/**
+		Update the rating of an user who posted this problem
+		Return type: void
+	*/
+	public function update_rating_change($post_id,$change)
+	{
+		$sql='UPDATE `post` SET `rating_change`=? WHERE post_id = ?';
+		$query=$this->db->query($sql,array($change,$post_id));
+		
+		//update user voteCount
+		$sql='SELECT user_id FROM post WHERE post_id=?';
+		$query=$this->db->query($sql,array($post_id))->row_array();
+		
+		$user_id=$query['user_id'];
+		//get current user voteCount
+		
+		$sql='SELECT user_rating FROM user WHERE user_id = ? ';
+		$query=$this->db->query($sql,array($user_id))->row_array();
+		$current_rating = $query['user_rating'];
+		
+		$current_rating+=$change;
+		
+		//update voteCount
+		$sql='UPDATE user SET user_rating = ? WHERE user_id = ? ';
+		$query=$this->db->query($sql,array($current_rating,$user_id));
+		
+	}
+	
+	/**
+		return type : int
+		params : $post_id -> id of the post
+	*/
+	public function getCategoryId($post_id)
+	{
+		$sql = "SELECT `category` from post where `post_id`=?";
+		$query = $this->db->query($sql, array($post_id))->row_array();
+		return $query['category'];
+	}
+	
+	/**
+		Returns array of all category ids
+		Return type : array of int
+	*/
+	public function get_category_ids()
+	{
+		$sql = 'SELECT categoryId FROM category';
+		$temp = $this->db->query($sql)->result_array();
+		
+		$result = array();
+		$i = 0;
+		
+		foreach($temp as $t)
+		{
+			$result[$i] = $t['categoryId'];
+			$i++;
+		}
+		return $result;
+	}
+	
+	/**
+		return type : int
+		params : $cat_id -> category id
+	*/
+	public function category_problem_count($cat_id)
+	{
+		$q = 'Select count(*) as pCount from post where `flag` = 0 and category = ?';
+		$query = $this->db->query($q,array($cat_id))->row_array();
+		return $query['pCount'];
+	}
+	
+	/**
+		return type : int
+		params : $cat_id -> category id
+	*/
+	public function category_solved_count($cat_id)
+	{
+		$q = 'Select count(*) as pCount from post where `status` = 3 and `flag` = 0 and category = ?';
+		$query = $this->db->query($q,array($cat_id ))->row_array();
+		return $query['pCount'];
+	}
+	
+	/**
+		Return type : Array of string, each string contains a name of a neighbourhood
+	*/
+	public function get_all_neighborhoods()
+	{
+		$sql = 'SELECT distinct neighbourhood from location';
+		return $this->db->query($sql)->result_array();
+	}
+	
+	/**
+		Return type : Array of database rows
+	*/
+	public function get_suggested_categories()
+	{
+		$sql = 'SELECT * FROM `suggestedcategory`';
+		$query = $this->db->query($sql)->result_array();
+		return $query;
+	}
+	
+	public function insert_cat($cat_name)
+	{
+		$sql = 'INSERT INTO `category`(`name`) VALUES (?)';
+		$query = $this->db->query($sql,array($cat_name));
+	}
+	
+	/**
+		param : $id : category id
+	*/
+	public function delete_cat($id)
+	{
+		$sql = 'DELETE FROM `category` WHERE `categoryId` = ?';
+		$query = $this->db->query($sql,array($id));
+	}
+	
+	/**
+		Get problem locations for a given category (used to show map)
+		Return type : array of tuples <post_id,lat,lon>
+	*/
+	public function get_category_problem_locations($cat_id)
+	{
+		$q = 'SELECT p.`post_id`,l.`lat`,l.`lon` FROM `post` p , `location` l
+				WHERE p.`actual_location_id` = l.`location_id` 
+				and p.category = ? and status = 0 and flag = 0';
+		$query = $this->db->query($q,array($cat_id) )->result_array();
+		return $query;
+	}
+	
+	/**
+		Return type : a tuple of <lat,lon>
+	*/
+	public function get_post_location($post_id)
+	{
+		$sql = 'SELECT l.`lat`,l.`lon` FROM post p, location l WHERE p.`actual_location_id` = l.`location_id` and p.`post_id`=? ';
+		$query=$this->db->query($sql,$post_id)->row_array();
+		return $query;
+	}
+	
+	public function update_post_status($post_id,$status)
+	{
+		$sql='UPDATE `post` SET `status`=? WHERE post_id = ?';
+		$query=$this->db->query($sql,array($status,$post_id));
+	}
+	
+	/**
+		Discouraged to use. It is only used in a critical case while generating log.
+		There might be inconsistency if it is used further
+	*/
+	public function get_category_id_from_name($name)
+	{
+		$sql = 'SELECT `categoryId` FROM category where `name` = ?';
+		$result = $this->db->query($sql,array($name))->row_array();
+		return $result['categoryId'];
+	}
+	
+	/**
+		Returns the array of location_id which contains neighbourhood $n
+		param : $n -> name of the neighbourhood (string)
+	*/
+	public function get_nbrhd_location_ids($n)
+	{
+		$sql = 'SELECT location_id from location where neighbourhood = ?';
+		$temp = $this->db->query($sql,array($n))->result_array();
+		$list = array();
+		foreach ($temp as $t) {
+				array_push($list, $t['location_id']);
+			}	
+
+		return $list;
+
+	}
+	
+	/**
+		Return type : int
+		param : $idList -> array of some location_id s
+	*/
+	public function get_problem_count_location($idList)
+	{
+		$sql = 'SELECT count(*) as cnt from post where `flag`=0 and actual_location_id in ?';
+		$result = $this->db->query($sql,array($idList))->row_array();
+		return $result['cnt'];
+	}
+	
+	/**
+		Return type : int
+		param : $idList -> array of some location_id s
+	*/
+	public function get_solved_count_location($idList)
+	{
+		$sql = 'SELECT count(*) as cnt from post where `status` = 3 and `flag`=0 and actual_location_id in ?';
+		$result = $this->db->query($sql,array($idList))->row_array();
+		return $result['cnt'];
+	}
+	
+	//---------------------------------------------------------------------------------------------------------------//
+	//										UNNECESSARY																 //
+	//---------------------------------------------------------------------------------------------------------------//
 
 	/**
 	public function get_all_post($location_id)
@@ -28,25 +295,14 @@ class Post_model extends CI_Model
 	}
 	*/
 	
-	public function get_post_location($post_id)
+	
+	
+	//test -> transfer to bracAdmin module later
+	public function get_post_info($post_id)
 	{
-		$sql = 'SELECT l.`lat`,l.`lon` FROM post p, location l WHERE p.`actual_location_id` = l.`location_id` and p.`post_id`=? ';
+		$sql = 'SELECT * FROM post p WHERE p.`post_id`=? ';
 		$query=$this->db->query($sql,$post_id)->row_array();
 		return $query;
-	}
-	
-	public function get_suggested_categories()
-	{
-		$sql = 'SELECT * FROM `suggestedcategory`';
-		$query = $this->db->query($sql)->result_array();
-		return $query;
-	}
-	
-	public function get_user_name($user_id)
-	{
-		$sql="SELECT user_name FROM user WHERE user_id = ? ";
-		$query=$this->db->query($sql,array($user_id))->row_array();
-		return $query['user_name'];
 	}
 	
 	/**
@@ -58,20 +314,7 @@ class Post_model extends CI_Model
 	}
 	*/
 	
-	public function get_vote_count($post_id)
-	{
-		$sql='SELECT COUNT(*) as upvotes FROM vote WHERE post_id=? and vote_type=1';
-		$query=$this->db->query($sql,array($post_id))->row_array();
-		
-		$data['upvotes']=$query['upvotes'];
-		
-		$sql='SELECT COUNT(*) as downvotes FROM vote WHERE post_id=? and vote_type=-1';
-		$query=$this->db->query($sql,array($post_id))->row_array();
-		
-		$data['downvotes']=$query['downvotes'];
-		
-		return $data;
-	}
+	
 	/**
 	public function get_user_id($user_name)
 	{
@@ -116,45 +359,6 @@ class Post_model extends CI_Model
 	}
 	*/
 	
-	public function get_location($location_id)
-	{
-		$sql='SELECT * FROM location WHERE location_id = ?';
-		$query=$this->db->query($sql,array($location_id))->row_array();
-		return $query;
-	}
-	
-	public function update_post_status($post_id,$status)
-	{
-		//echo $post_id;
-		//echo $status;
-		//change post status
-		$sql='UPDATE `post` SET `status`=? WHERE post_id = ?';
-		$query=$this->db->query($sql,array($status,$post_id));
-	}
-	
-	public function update_rating_change($post_id,$change)
-	{
-		$sql='UPDATE `post` SET `rating_change`=? WHERE post_id = ?';
-		$query=$this->db->query($sql,array($change,$post_id));
-		
-		//update user voteCount
-		$sql='SELECT user_id FROM post WHERE post_id=?';
-		$query=$this->db->query($sql,array($post_id))->row_array();
-		
-		$user_id=$query['user_id'];
-		//get current user voteCount
-		
-		$sql='SELECT user_rating FROM user WHERE user_id = ? ';
-		$query=$this->db->query($sql,array($user_id))->row_array();
-		$current_rating = $query['user_rating'];
-		
-		$current_rating+=$change;
-		
-		//update voteCount
-		$sql='UPDATE user SET user_rating = ? WHERE user_id = ? ';
-		$query=$this->db->query($sql,array($current_rating,$user_id));
-		
-	}
 	
 	/**
 		WASIF
@@ -177,12 +381,7 @@ class Post_model extends CI_Model
 	}
 	*/
 	
-	public function get_current_rating($user_id)
-	{
-		$sql='SELECT user_rating FROM user WHERE user_id = ? ';
-		$query=$this->db->query($sql,array($user_id))->row_array();
-		return $query['user_rating'];
-	}
+	
 	
 	/**
 	//insert location and get location id
@@ -211,60 +410,6 @@ class Post_model extends CI_Model
 	*/
 	
 	
-	public function get_category_ids()
-	{
-		$sql = 'SELECT categoryId FROM category';
-		$temp = $this->db->query($sql)->result_array();
-		
-		$result = array();
-		$i = 0;
-		
-		foreach($temp as $t)
-		{
-			$result[$i] = $t['categoryId'];
-			$i++;
-		}
-		return $result;
-	}
-	
-	public function get_all_categories()
-	{
-		$sql = 'SELECT * FROM category';
-		$result = $this->db->query($sql)->result_array();
-		return $result;
-	}
-	
-	public function get_category_name($id)
-	{
-		//echo $id.'---------';
-		
-		$sql = 'SELECT `name` FROM category where `categoryId` = ?';
-		$result = $this->db->query($sql,array($id))->row_array();
-		return $result['name'];
-	}
-
-	public function get_category_id_from_name($name)
-	{
-		//echo $id.'---------';
-		
-		$sql = 'SELECT `categoryId` FROM category where `name` = ?';
-		$result = $this->db->query($sql,array($name))->row_array();
-		return $result['categoryId'];
-	}
-	
-	public function category_problem_count($cat_id)
-	{
-		$q = 'Select count(*) as pCount from post where `flag` = 0 and category = ?';
-		$query = $this->db->query($q,array($cat_id))->row_array();
-		return $query['pCount'];
-	}
-	
-	public function category_solved_count($cat_id)
-	{
-		$q = 'Select count(*) as pCount from post where `status` = 3 and `flag` = 0 and category = ?';
-		$query = $this->db->query($q,array($cat_id ))->row_array();
-		return $query['pCount'];
-	}
 	
 	/**
 		neamul --- need to modify
@@ -285,51 +430,11 @@ class Post_model extends CI_Model
 		return $problem;
 	}
 	*/
-	
-	public function get_all_neighborhoods()
-	{
-		$sql = 'SELECT distinct neighbourhood from location';
-		return $this->db->query($sql)->result_array();
-	}
 
-	public function get_nbrhd_location_ids($n)
-	{
-		$sql = 'SELECT location_id from location where neighbourhood = ?';
-		$temp = $this->db->query($sql,array($n))->result_array();
-		$list = array();
-		foreach ($temp as $t) {
-				array_push($list, $t['location_id']);
-			}	
-
-		return $list;
-
-	}
 
 	/**
 		--modify --done
 	*/
-	public function get_problem_count_location($idList)
-	{
-		$sql = 'SELECT count(*) as cnt from post where `flag`=0 and actual_location_id in ?';
-		$result = $this->db->query($sql,array($idList))->row_array();
-		return $result['cnt'];
-	}
-	
-	public function get_solved_count_location($idList)
-	{
-		$sql = 'SELECT count(*) as cnt from post where `status` = 3 and `flag`=0 and actual_location_id in ?';
-		$result = $this->db->query($sql,array($idList))->row_array();
-		return $result['cnt'];
-	}
-	
-	public function get_category_problem_locations($cat_id)
-	{
-		$q = 'SELECT p.`post_id`,l.`lat`,l.`lon` FROM `post` p , `location` l
-				WHERE p.`actual_location_id` = l.`location_id` 
-				and p.category = ? and status = 0 and flag = 0';
-		$query = $this->db->query($q,array($cat_id) )->result_array();
-		return $query;
-	}
 	
 	public function get_suggested_cat_name($id)
 	{
@@ -344,23 +449,6 @@ class Post_model extends CI_Model
 		$query = $this->db->query($sql,array($id));
 	}
 	
-	public function insert_cat($cat_name)
-	{
-		$sql = 'INSERT INTO `category`(`name`) VALUES (?)';
-		$query = $this->db->query($sql,array($cat_name));
-	}
-	
-	public function delete_cat($id)
-	{
-		$sql = 'DELETE FROM `category` WHERE `categoryId` = ?';
-		$query = $this->db->query($sql,array($id));
-	}
 
-	public function getCategoryId($post_id)
-	{
-		$sql = "SELECT `category` from post where `post_id`=?";
-		$query = $this->db->query($sql, array($post_id))->row_array();
-		return $query['category'];
-	}
 }
 ?>
