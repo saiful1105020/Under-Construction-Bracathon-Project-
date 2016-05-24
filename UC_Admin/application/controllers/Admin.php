@@ -1,7 +1,7 @@
 <?php
 
 /**
-*	LAST MODIFIED : 29-06-2015 04:02 PM
+*	Controller for all admin actions
 */
 
 defined('BASEPATH') OR exit('No direct script access allowed');
@@ -21,7 +21,10 @@ class Admin extends CI_Controller {
           $this->load->helper('url');
           $this->load->helper('html');
 		  $this->load->library('form_validation');
-		  
+		 
+		/**
+			If not logged in, redirect to login page
+		*/
 		if(!isset($_SESSION["admin_name"]))
 		{
 			redirect('/home', 'refresh');
@@ -31,18 +34,15 @@ class Admin extends CI_Controller {
 		$this->load->model('admin_model');
 		$this->load->model('log_model');
 		$this->load->model('post_model');
-		//$data['current_nav']='home';
-		//$this->load->view('templates/header',$data);
 		
 		$this->load->view('templates/header2');
      }
 	 
+	
+	
 	/**
-	*	[ADMIN HOME PAGE]
-	*/
-	
-	
-	
+	*	[ADMIN HOME PAGE] --- Search is the default activity
+	*/ 
 	public function index()			
 	{
 		redirect('admin/search','refresh');
