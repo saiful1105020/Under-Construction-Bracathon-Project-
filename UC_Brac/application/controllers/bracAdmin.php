@@ -41,20 +41,32 @@ class BracAdmin extends CI_Controller {
 		$temp = $this->log_model->get_all_logs();
 		
 		$data = array();
+		$logArray = array();
 		//print_r($temp);
 		
 		for($i=0;$i<50;$i++)
 		{
 			$idx = $index*50+$i;
 			if($idx>=sizeof($temp)) break;
+
+			$logArray[$i] = $temp[$idx];
+			$logArray[$i]['message'] =  $this->form_string($temp[$idx]);
 			
-			$data['message'] = $this->form_string($temp[$idx]);
-			echo $data['message'].'    -------    '.$temp[$idx]['time'];
+			
+			
+			//$data['message'] = $this->form_string($temp[$idx]);
+			//echo $data['message'].'    -------    '.$temp[$idx]['time'];
 			//print_r($temp[$idx]);
-			echo '<br>';
+			//echo '<br>';
 			
-			//$this->load->view('bracHome');
+			
 		}
+
+		//print_r($logArray);
+
+		$data['index'] = $index;
+		$data['logData'] =$logArray;
+		$this->load->view('bracHome',$data);
 	}
 	
 	public function form_string($log)
@@ -110,6 +122,35 @@ class BracAdmin extends CI_Controller {
 		}
 		return $str;
 	}
+
+
+	public function showPost($post_id)
+	{
+		$p=$this->post_model->get_post_info($post_id);
+		//echo '<br><br><br>';
+		//print_r($p);
+		
+		$post = $p;
+	
+		$temp=$this->post_model->get_vote_count($p['post_id']);
+				
+		$post['up_votes']=$temp['upvotes'];
+		$post['down_votes']=$temp['downvotes'];
+				
+		$post['user_name']=$this->post_model->get_user_name($p['user_id']);
+				
+		$post['user_rating']=$this->post_model->get_current_rating($p['user_id']);
+				
+		$post['cat_name'] = $this->post_model->get_category_name($p['category']);
+				
+		$post['location']=$this->post_model->get_location($p['actual_location_id']);
+		
+		//print_r($post);
+
+		$data['post'] = $post;
+
+		$this->load->view('showPost',$data);
+	}
 	 
 	/**
 	*	[ADMIN HOME PAGE]
@@ -120,6 +161,7 @@ class BracAdmin extends CI_Controller {
 		redirect('bracAdmin/showLog/0','refresh');
 	}
 	
+
 	
 	//--------------------------------------------------------------------------------------//
 	//--------------------------------------------------------------------------------------//
