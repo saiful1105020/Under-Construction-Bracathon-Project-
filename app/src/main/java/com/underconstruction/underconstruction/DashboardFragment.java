@@ -46,16 +46,21 @@ public class DashboardFragment extends Fragment {
 
     //The adapter to show all the YourPosts
     private ResultListAdaptor adapter;
-    //The arraylist to hold all the YourPosts
+
+
+    //The arraylist to hold all YourPosts
     private ArrayList<YourPosts> postArrayList = new ArrayList<YourPosts>();
     //This variable communicates with the parent actvity of the fragment
     private OnFragmentInteractionListener mListener;
 
     //Holds all the posts returned by the database
     JSONObject jsonPosts;
+    DBHelper internalDb;
+    Report theReportToBeSentToMainDB;
+
     //By clicking this button, user can refresh his dashboard
     ImageButton profileRefresh;
-    //a progressbar to show shile posts are being downloaded
+    //a progressbar to show while posts are being downloaded
     ProgressBar pbDash;
     //a custom listview to show all the YourPosts of a  user
     ListView lvwDash;
@@ -107,7 +112,12 @@ public class DashboardFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         //populate the custom listview
-        populatePostListView();
+        try {
+            populatePostListView();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
 
         //Fetch latest data from database and set the listview again
         profileRefresh.setOnClickListener(new View.OnClickListener() {
@@ -130,6 +140,7 @@ public class DashboardFragment extends Fragment {
         else {
             postArrayList = mListener.retrieveLatestProfilePosts();
         }
+
 
 
     }
@@ -181,7 +192,9 @@ public class DashboardFragment extends Fragment {
 
                 //convert it into a YouPosts item
                 YourPosts curPost = YourPosts.createPost(curObj);
-
+//                int upCount = curPost.getUpVote();
+//                int downCount = curPost.getDownVote();
+//                Log.d("curPost", curPost.toString());
 
                 postArrayList.add(curPost);
             }
@@ -194,8 +207,6 @@ public class DashboardFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
 
     }
 
@@ -276,12 +287,19 @@ public class DashboardFragment extends Fragment {
                 }
             });
 
+
             //retrieve the post at this position
             YourPosts post_item = postArrayList.get(position);
             Log.d("Timestamp", post_item.getTimeStamp());
 
             txtTimeStamp.setText(Utility.CurrentUser.parsePostTime(post_item.getTimeStamp()));
-            txtCatAtLoc.setText(Utility.CategoryList.get(Integer.valueOf(post_item.getCategory())) + " at " + post_item.getExactLocation());
+
+            int categoryId = Integer.valueOf(post_item.getCategory());
+            if(categoryId == -1)
+                txtCatAtLoc.setText("Uncategorized Problem" + " at " + post_item.getExactLocation());
+            else
+                txtCatAtLoc.setText(Utility.CategoryList.get(categoryId) + " at " + post_item.getExactLocation());
+
 
             //sets up the location of the post
             if (!post_item.getLocationDescription().isEmpty() && !post_item.getLocationDescription().equals("null"))
@@ -407,9 +425,6 @@ public class DashboardFragment extends Fragment {
         @Override
         protected void onPreExecute()
         {
-//            progressLayout.setVisibility(View.VISIBLE);
-//            customDiscussionListView.setVisibility(View.GONE);
-
             busy_sessions(true);
             super.onPreExecute();
         }
@@ -422,7 +437,6 @@ public class DashboardFragment extends Fragment {
             List<Pair> params = new ArrayList<Pair>();
 
             params.add(new Pair("userId", Utility.CurrentUser.getUserId()));
-//            params.add(new Pair("userName", Utility.CurrentUser.getId()));
 
             // getting JSON string from URL
             jsonPosts = jParser.makeHttpRequest("/getuserposts", "GET", params);
@@ -436,6 +450,7 @@ public class DashboardFragment extends Fragment {
 //            progressLayout.setVisibility(View.GONE);
 //            customDiscussionListView.setVisibility(View.VISIBLE);
 
+            profileRefresh.setEnabled(true);
             if(jsonPosts == null) {
 //                Utility.CurrentUser.showConnectionError(getActivity());
                 Log.d("Connection Error", "Probably couldn't connect to the internet");
@@ -444,16 +459,14 @@ public class DashboardFragment extends Fragment {
             }
             Log.d("FetchProfilePostsTask", "profile reloaded");
 
-            //pd.setMessage("Please wait, loading data...");
-            //pd.setCancelable(false);
-            //pd.setInverseBackgroundForced(false);
-            //pd.show();
-            //jsonUpdatesField=jsonPosts;
-
-            //reloads the ArrayLIst with new item
-            populatePostList(jsonPosts);
-            //redraws the Custom listview
-            populatePostListView();
+            try {
+                //reloads the ArrayLIst with new item
+                populatePostList(jsonPosts);
+                //redraws the Custom listview
+                populatePostListView();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
 
             busy_sessions(false);

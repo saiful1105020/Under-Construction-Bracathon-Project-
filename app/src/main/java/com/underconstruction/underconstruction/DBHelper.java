@@ -66,7 +66,13 @@ public class DBHelper extends SQLiteOpenHelper {
                 "create table if not exists tempTable " +
                         "(id integer primary key autoincrement,userID text,category text,image blob,time text,informalLocation text,problemDescription text,latitude text,longitude text)"
         );
-        Log.d("table created", "yes we can");
+
+        db.execSQL(
+                "create table if not exists category " +
+                        "(id integer primary key autoincrement, categoryName text, categoryId integer)"
+        );
+
+        Log.d("Database created", "yes we can");
     }
 
 
@@ -81,7 +87,34 @@ public class DBHelper extends SQLiteOpenHelper {
         // If table exists, drop it and create a new one. Otherwise just create a new one.
         // TODO Don't drop the table right away. Check how long it has been stagnant. Drop if only it has been sitting for a (given) long time. Otherwise add new entries.
         db.execSQL("DROP TABLE IF EXISTS tempTable");
+        db.execSQL("DROP TABLE IF EXISTS category");
         onCreate(db);
+    }
+
+    public boolean insertCategory (Utility.CategoryList categoryList) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        ArrayList<String> categories = new ArrayList<String>();
+        categories.addAll(categoryList.getCategoryList());
+
+        ArrayList<Integer> categoryIds = new ArrayList<Integer>();
+        categoryIds.addAll(categoryList.getCategoryIds());
+
+        db.execSQL("delete from category");                           //Clear existing category list first
+        for(int i=0; i<categories.size(); i++) {
+            contentValues.put("categoryName", categories.get(i));        //"Others" category to be handled separately
+            contentValues.put("categoryId", categoryIds.get(i));
+
+            Log.d("contentValues", contentValues.toString());
+            db.insert("category", null, contentValues);
+            Log.d("after_insert", getAllRecords().toString());
+
+            contentValues.clear();
+        }
+
+
+        return true;
     }
 
     /**
@@ -127,8 +160,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         contentValues.put("image", arr);
         contentValues.put("userID",Utility.CurrentUser.getUserId());
-
-        //Log.d("contentValues",contentValues.toString());
+        Log.d("contentValues", contentValues.toString());
         //Insert the report in SQLite
         db.insert("tempTable", null, contentValues);
         //Log.d("after_insert", getAllRecords().toString());
@@ -182,6 +214,36 @@ public class DBHelper extends SQLiteOpenHelper {
             res.moveToNext();
         }
         return allReportsByAUser;
+
+    }
+
+    public Utility.CategoryList getCategoryList() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from category", null);
+
+        return convertCursorIntoCategoryList(res);
+    }
+
+    private Utility.CategoryList convertCursorIntoCategoryList(Cursor res){
+
+        //SQLiteDatabase db = this.getReadableDatabase();
+        //Cursor res =  db.rawQuery( "select * from tempTable", null );
+        res.moveToFirst();
+
+        Utility.CategoryList categoryList = new Utility.CategoryList();
+
+        while(res.isAfterLast() == false){
+            String categoryName = res.getString(res.getColumnIndex("categoryName"));
+            int categoryId = res.getInt(res.getColumnIndex("categoryId"));
+
+            categoryList.add(categoryName, categoryId);
+
+            res.moveToNext();
+        }
+
+        Log.d("category list from db","" + categoryList.toString());
+
+        return categoryList;
 
     }
 

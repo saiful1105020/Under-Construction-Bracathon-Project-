@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,13 +34,21 @@ import java.util.List;
  */
 public class LoginActivity extends Activity {
 
-    String savedUserName, savedPassword;
+    String savedEmailId, savedPassword;
+    String savedUserId, savedUserName;
     public EditText txtEmail, txtPassword;
     public Button btnLogin;
     public LinearLayout layoutWait;
     public TextView errorText;
     CheckBox chkSave;
     String email, password;
+    Context context;
+    DBHelper helper;
+    boolean isLoggedIn = false;
+
+    public static final int REQUEST_LOCATION_SERVICE_BEFORE_DIRECT_LOGIN = 1;
+    public static final int REQUEST_LOCATION_SERVICE_AFTER_NEW_LOGIN = 2;
+    SharedPreferences pref;
 
     @Override
     protected void onResume() {
@@ -60,7 +69,9 @@ public class LoginActivity extends Activity {
         //=============================================
 
         setContentView(R.layout.activity_login);
+        Utility.initialContext = getApplicationContext();
 
+//        requestGPS();           //ask to enable gps if required
 
         txtEmail = (EditText) findViewById(R.id.txtLoginEmail);
         txtPassword = (EditText) findViewById(R.id.txtLoginPassword);
@@ -68,9 +79,6 @@ public class LoginActivity extends Activity {
         chkSave = (CheckBox) findViewById(R.id.chkLoginRemember);
         layoutWait = (LinearLayout) findViewById(R.id.layoutLoginWait);
         Button btnRegistration = (Button) findViewById(R.id.btnLoginRegistration);
-
-        restoreInstance();
-        requestGPS();
 
         btnRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +98,9 @@ public class LoginActivity extends Activity {
             }
         });
 
+        context = getApplicationContext();
+        helper = new DBHelper(context);             //will be used for communication with SQLite Database
+
         btnLogin = (Button) findViewById(R.id.btnLoginLogin);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,9 +111,11 @@ public class LoginActivity extends Activity {
                     errorText.setText("Please enter email and password.");
                 else
                 {
+                    new UpdateCategoryListTask().execute();
+
                     if (!chkSave.isChecked())
                     {
-                        savedUserName = savedPassword = "";
+                        LoginActivity.this.savedEmailId = savedPassword = "";
                     }
                     busy_session(true);
                     LoginTask loginTask = new LoginTask();
@@ -113,7 +126,87 @@ public class LoginActivity extends Activity {
                 //startActivity(k);
             }
         });
+
+        /**
+         * check if the activity has been directed from RegistrationActivity
+         */
+        String emailFromReg = getIntent().getStringExtra("email");
+        String passwordFromReg = getIntent().getStringExtra("password");
+
+        if(emailFromReg != null && passwordFromReg != null) {
+            savedEmailId = emailFromReg;
+            savedPassword = passwordFromReg;
+            chkSave.setChecked(true);
+
+            txtEmail.setText(savedEmailId);         //pre-fill with RegistrationActivity details
+            txtPassword.setText(savedPassword);
+            return;
+        }
+
+        /**
+         * check if user is already logged in
+         */
+        pref = getApplicationContext().getSharedPreferences("LoginPref", 0); // 0 - for private mode
+        isLoggedIn = pref.getBoolean("IsLoggedIn", false);
+        if(isLoggedIn == true) {
+            if(!isLocationEnabled(context)) {
+                requestGPS(REQUEST_LOCATION_SERVICE_BEFORE_DIRECT_LOGIN);
+                return;
+            }
+            Log.d("LoginActivity", "User is already logged in");
+            Utility.CurrentUser.setUserId(pref.getString("UserID", "-1"));
+            Utility.CurrentUser.setUsername(pref.getString("UserName", ""));
+
+            new UpdateCategoryListTask().execute();
+
+            Intent intent=new Intent(LoginActivity.this, TabbedHome.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+
+        /**
+         * login normally
+         */
+        restoreInstance();      //some fields are pre-filled based on user preferences
+
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //Log.d(TAG,"returned from intent");
+
+        if(requestCode == REQUEST_LOCATION_SERVICE_BEFORE_DIRECT_LOGIN){
+            if(!isLocationEnabled(this)) {
+                Toast.makeText(this, "Your Location Service should be turned on", Toast.LENGTH_LONG).show();
+            }
+
+            if(isLoggedIn) {
+                Utility.CurrentUser.setUserId(pref.getString("UserID", "-1"));
+                Utility.CurrentUser.setUsername(pref.getString("UserName", ""));
+
+                new UpdateCategoryListTask().execute();
+
+                Intent intent=new Intent(LoginActivity.this, TabbedHome.class);
+                startActivity(intent);
+                finish();
+            }
+        }
+
+        else if(requestCode == REQUEST_LOCATION_SERVICE_AFTER_NEW_LOGIN){
+
+            Intent intent=new Intent(LoginActivity.this, TabbedHome.class);
+            startActivity(intent);
+            finish();
+            if(!isLocationEnabled(this)) {
+                Toast.makeText(this, "Your Location Service should be turned on", Toast.LENGTH_LONG).show();
+
+            }
+        }
+    }
+
+
 
     private boolean incompleteFields()
     {
@@ -146,6 +239,67 @@ public class LoginActivity extends Activity {
             layoutWait.setVisibility(View.INVISIBLE);
         }
     }
+
+    class UpdateCategoryListTask extends AsyncTask<String, Void, String> {
+        private JSONObject jsonCategoryList;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            try {
+                Utility.CategoryList categoryList = new Utility.CategoryList();         //populating from db initially
+                categoryList.copyCategoryList(helper.getCategoryList());
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        protected String doInBackground(String... args) {
+
+            JSONParser jParser = new JSONParser();
+            // getting JSON string from URL
+            jsonCategoryList = jParser.makeHttpRequest("/getcategorylist", "GET", null);
+
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         **/
+        protected void onPostExecute (String file_url){
+            if(jsonCategoryList == null) {
+                //Utility.CurrentUser.showConnectionError(getApplicationContext());
+                return;
+            }
+
+            Log.d("categories received", jsonCategoryList.toString());
+            Utility.CategoryList categoryList = new Utility.CategoryList();
+
+            try {
+                JSONArray categories = jsonCategoryList.getJSONArray("catList");
+                int n = categories.length();
+                int curIndex = 1;                       //Skipping first category i.e. Others
+                while(curIndex<n) {
+                    JSONObject curObj = categories.getJSONObject(curIndex++);
+
+                    String categoryName = curObj.getString("name");
+                    int categoryId = curObj.getInt("categoryId");
+
+                    categoryList.add(categoryName, categoryId);
+                }
+
+                categoryList.add("Others", -1);
+
+                helper.insertCategory(categoryList);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
     class LoginTask extends AsyncTask<String, Void, String> {
 
         private JSONObject jsonSignUp, jsonLocations;
@@ -162,7 +316,7 @@ public class LoginActivity extends Activity {
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
             params.add(new Pair("email",email));
-            params.add(new Pair("password",password));
+            params.add(new Pair("password", password));
             // getting JSON string from URL
             jsonSignUp = jParser.makeHttpRequest("/login", "GET", params);
 
@@ -176,7 +330,10 @@ public class LoginActivity extends Activity {
             if(jsonSignUp == null) {
                 //Utility.CurrentUser.showConnectionError(getApplicationContext());
                 errorText.setText("Please check your internet connection");
+                Log.d("LoginTask", "Internet problem, email: " + email);
                 busy_session(false);
+                txtEmail.setText(email);
+                txtPassword.setText(password);
                 return;
             }
             String userId = new String ("");
@@ -196,6 +353,7 @@ public class LoginActivity extends Activity {
             if(userId.equals("0")){
                 errorText.setText("Incorrect password, please try again.");
                 busy_session(false);
+                txtEmail.setText(email);
                 return;
             }
 
@@ -213,20 +371,28 @@ public class LoginActivity extends Activity {
 //
 //            }
             else {
-                errorText.setText("Success! Hello " + userName + " :" + userId);
+                DBHelper dbHelper = new DBHelper(getApplicationContext());
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                errorText.setText("Logging in...");
                 Utility.CurrentUser.setUserId(userId);
-                Log.d("Logging in", "My ID: " + Utility.CurrentUser.getUserId());
+          //      Log.d("Logging in", "My ID: " + Utility.CurrentUser.getUserId());
                 Utility.CurrentUser.setUsername(userName);
                 if (chkSave.isChecked())
                 {
-                    savedUserName = email;
+                    savedEmailId = email;
                     savedPassword = password;
+                    savedUserId = userId;
+                    savedUserName = userName;
                 }
                 saveInstance();
+                if(!isLocationEnabled(context)) {
+                    requestGPS(REQUEST_LOCATION_SERVICE_AFTER_NEW_LOGIN);
+                    return;
+                }
                 finish();
 
                 /**
-                 * Bypassing without linking login user id to home page received // or maybe i don't need to :/
+                 * Bypassing without linking login user id to home page received
                  *
                  */
                 Intent intent=new Intent(LoginActivity.this, TabbedHome.class);
@@ -241,7 +407,7 @@ public class LoginActivity extends Activity {
         // Save UI state changes to the savedInstanceState.
         // This bundle will be passed to onCreate if the process is
         // killed and restarted.
-        savedInstanceState.putString("Email", savedUserName);
+        savedInstanceState.putString("Email", savedEmailId);
         savedInstanceState.putString("Password", savedPassword);
         // etc.
     }
@@ -269,18 +435,15 @@ public class LoginActivity extends Activity {
     }
 
 
-    void requestGPS()
+    void requestGPS(int requestId)
     {
-        if (!isLocationEnabled(this))
-        {
-            Toast.makeText(this, "Please enable GPS Service" , Toast.LENGTH_LONG).show();
-            Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(gpsOptionsIntent);
-        }
-
-
-
+        Log.d("requestGPS()", "Checking if GPS is enabled");
+        Toast.makeText(context, "Please enable GPS Service" , Toast.LENGTH_LONG).show();
+        Log.d("LoginActivity", "Location not enabled");
+        Intent gpsOptionsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivityForResult(gpsOptionsIntent, requestId);
     }
+
     public static boolean isLocationEnabled(Context context) {
         int locationMode = 0;
         String locationProviders;
@@ -307,10 +470,14 @@ public class LoginActivity extends Activity {
         SharedPreferences pref = getApplicationContext().getSharedPreferences("LoginPref", 0); // 0 - for private mode
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean("Save", chkSave.isChecked());
+
         if (chkSave.isChecked())
         {
-            editor.putString("Email", savedUserName);
+            editor.putString("Email", savedEmailId);
             editor.putString("Password", savedPassword);
+            editor.putString("UserID", savedUserId);
+            editor.putString("UserName", savedUserName);
+            editor.putBoolean("IsLoggedIn", true);
         }
         editor.commit();
     }

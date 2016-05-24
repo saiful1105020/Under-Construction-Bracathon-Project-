@@ -42,13 +42,10 @@ public class JSONParser {
     public JSONObject  makeHttpRequest(String urlParameter, String method,
                                        List<Pair> params) {
 
-//        final String BASE_URL = "http://" + "172.20.62.63"r
-
-
-        final String BASE_URL = "http://" + "172.20.62.27" +                //Alternate Database
-                "/hackThon/UC_Server/index.php/home";
+        final String BASE_URL = Utility.ip;
 
         Log.d("base url", BASE_URL);
+
         URL url;
 //        List<Pair> paramaters = new ArrayList<Pair>();
         // Making HTTP request

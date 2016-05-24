@@ -162,6 +162,8 @@ public class RegistrationActivity extends Activity {
 
                 //so prompt the user for logging in
                 Intent intent=new Intent(RegistrationActivity.this, LoginActivity.class);
+                intent.putExtra("email", email);
+                intent.putExtra("password", password);
                 startActivity(intent);
             }
         }

@@ -278,10 +278,12 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
                 postArrayList.add(curPost);
             }
 
-            //redraw the list
-            adapter.notifyDataSetChanged();
             //store latest post list in parent activity
-            mListener.storeLatestFeed(postArrayList);
+            try {
+                mListener.storeLatestFeed(postArrayList);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -324,8 +326,15 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
             //Get reference to all the variables and sets them up appropriately
             TextView problemType = (TextView) itemView.findViewById(R.id.lblPostProblemType);
+            //problemType.setText(Utility.HazardTags.getHazardTags()[currentPost.getCategory()]);
 
-            problemType.setText(Utility.CategoryList.get(currentPost.getCategory()));
+            int categoryId = currentPost.getCategory();
+
+            if(categoryId == -1)
+                problemType.setText("Uncategorized Problem");
+            else
+                problemType.setText(Utility.CategoryList.get(categoryId));
+
             TextView postTime = (TextView) itemView.findViewById(R.id.lblPostTime);
 
 
@@ -653,8 +662,13 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
             Log.d("FetchPostsTask", "feed reloaded");
 
-            //Then populate the arraylist  again with latets posts
-            populatePostList(jsonPosts);
+            //Then populate the arraylist again with latest posts
+            try {
+                populatePostList(jsonPosts);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             busy_sessions(false);
 
         }
@@ -688,15 +702,18 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
             e.printStackTrace();
         }
 
+        //for debugging purposes
         if(mLastLocation==null){
-            Toast.makeText(getActivity(), "Google client has returned null", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Please check Location Service permission", Toast.LENGTH_LONG).show();
         }
         else if (mLastLocation != null) {
             // Toast.makeText(this,"Google client has returned",Toast.LENGTH_LONG).show();
             // mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
             //mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-            Toast.makeText(getActivity(),"Google client has returned not null",Toast.LENGTH_LONG).show();
-            Toast.makeText(getActivity(),mLastLocation.getLatitude()+" "+mLastLocation.getLongitude(),Toast.LENGTH_LONG).show();
+
+//            Toast.makeText(getActivity(),"Google client has returned not null",Toast.LENGTH_LONG).show();
+//            Toast.makeText(getActivity(),mLastLocation.getLatitude()+" "+mLastLocation.getLongitude(),Toast.LENGTH_LONG).show();
+
 
             //fetches up posts of the current location
             new FetchHomePostsTask().execute();

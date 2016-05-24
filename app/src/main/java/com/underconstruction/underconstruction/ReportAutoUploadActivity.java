@@ -8,9 +8,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v7.app.AppCompatActivity;
+import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -54,7 +58,10 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
     Report theReportToBeSentToMainDB;
     //the index of the current report in the arraylist
     int theIndexOfTheReportToBeSent=0;
-
+    //progressbar for better user X.
+    ProgressBar pbPosts;
+    //Holds the custom list
+    ListView lvwPosts;
 
 
 
@@ -71,6 +78,14 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
 
         bringDataFromInternalDb();
 
+    }
+
+    @Override
+    public View onCreateView(String name, Context context, AttributeSet attrs) {
+        View v= super.onCreateView(name, context, attrs);
+//        pbPosts = (ProgressBar) v.findViewById(R.id.pbPosts);
+//        lvwPosts = (ListView) v.findViewById(R.id.lvwPosts);
+        return v;
     }
 
     /**
@@ -128,7 +143,7 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
         Intent intent = new Intent(context, FetchAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, mResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mLastLocation);
-        Toast.makeText(context, "Just before calling intent service", Toast.LENGTH_LONG).show();
+//        Toast.makeText(context, "Just before calling intent service", Toast.LENGTH_LONG).show();
         //Log.d("inside service",mLastLocation.getLatitude()+" "+mLastLocation.getLongitude());
         context.startService(intent);
     }
@@ -136,6 +151,8 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //Log.d(TAG,"returned from intent");
+        DBHelper dbHelper = new DBHelper(getApplicationContext());
 
         if(requestCode == REQUEST_POST_SUGGESTION  && resultCode == RESULT_OK){
 
@@ -151,9 +168,14 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
             else if(chosenOption == DONT_UPLOAD_REPORT){
                 //don't upload, just remove from the SQLite db.
                 Log.d("ReportAutoUpload", "dont upload");
+                String reportIdToBeDeleted = allTheReportsOfIntDb.get(theIndexOfTheReportToBeSent).getRecordID();
+
+                dbHelper.deleteRecord(reportIdToBeDeleted);
                 sendPostSuggestion(++theIndexOfTheReportToBeSent);
 
             }
+
+            Log.d("Reports in db", dbHelper.getAllRecords().toString());
         }
     }
 
@@ -317,6 +339,21 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
     }
 
 
+    void busy_sessions(boolean busy)
+    {
+        if (pbPosts==null) return;
+        if (busy == true)
+        {
+            pbPosts.setVisibility(View.VISIBLE);
+            lvwPosts.setVisibility(View.GONE);
+        }
+        else
+        {
+            pbPosts.setVisibility(View.GONE);
+            lvwPosts.setVisibility(View.VISIBLE);
+        }
+    }
+
     /**
      * Sends post suggestion for a post. Look at the same class in ReportProblem
      */
@@ -329,6 +366,9 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            Toast.makeText(context, "Trying to upload previously saved report...", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Checking for duplicate reports...", Toast.LENGTH_LONG).show();
+//            busy_sessions(true);
         }
 
 
@@ -355,6 +395,7 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
         }
 
         protected void onPostExecute (String file_url){
+//            busy_sessions(false);
             if(jsonPostSuggestion == null) {
                 Log.d("OnPostExecute", "jsonPostSuggestion == null");
                 return;

@@ -72,7 +72,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
     //an string representation of the address retrieved from Google API
     private String resultOutput;
     //the problem category selected by the user, by default the first category is selected
-    private int categorySelected = 1;
+    private int categorySelected;
     //A TAG for debugging
     private String TAG = getClass().getSimpleName().toString();
 
@@ -98,20 +98,24 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         txtCateDesc = (TextView) findViewById(R.id.txtCategoryDesc);
 
 
-        //An adapter to show the custom listview
-        ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, Utility.CategoryList.getArrayList());
+        //String[] values = new String[]{"Broken Road", "Manhole", "Risky Intersection", "Crime prone area", "Others"};
+        ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, Utility.CategoryList.getCategoryList());
         list.setAdapter(adapt);
         list.setItemChecked(0, true);
-        categorySelected = 0;
-        //Log.d("Category Selected", categorySelected + "");
+        Log.d("Category Selected", categorySelected + "");
 
-        //to capture which category the user has selected
+        final ArrayList<Integer> getCategoryIds = new ArrayList<Integer>();
+        getCategoryIds.addAll(Utility.CategoryList.getCategoryIds());
+
+        categorySelected = getCategoryIds.get(1);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 //to select the user defined category
-                categorySelected = position;
-                Log.d("Category Selected", position + "");
+                categorySelected = getCategoryIds.get(position);
+                Log.d("Category Selected", categorySelected + "");
+
 
                 //the code inside if-else is not functional now.They may be used in future
                 /*
@@ -183,7 +187,18 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
             startActivity(intent);
             //and now we can report a problem
 
-            btnAddReport.setClickable(true);
+            btnAddReport.setEnabled(true);
+
+        }
+
+        else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_CANCELED) {
+            Intent intent = new Intent(this, ReportProblem.class);
+            startActivity(intent);
+            //activity opened again
+
+            Toast.makeText(getApplicationContext(), "Please add a photo", Toast.LENGTH_LONG).show();
+
+            btnAddReport.setEnabled(false);
 
         }
         //THe user was showed some posts from the database which were very similar to the report he posted.
@@ -211,7 +226,9 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
      */
     public void onUploadNowButtonClick(View v) {
         //We will fetch lat-long of the current location in a background thread.
+        btnAddReport.setEnabled(false);
         new FetchLocation().execute();
+
 
     }
 
@@ -299,8 +316,8 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         // Only start the service to fetch the address if GoogleApiClient is
         // connected.
         if (mGoogleApiClient.isConnected() && mLastLocation != null) {
-            Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
-            //THis post has to be inserted in the main database
+//            Toast.makeText(this,"before starting the intent service",Toast.LENGTH_LONG).show();
+            //This post has to be inserted in the main database
             if(Utility.isOnline(getApplicationContext())) {
                 //We will give the user a list of very similar posts from the main database
                 new PostSuggestionTask().execute();
@@ -529,6 +546,13 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
      * @return the current time in string format
      */
     private String getCurrentTimestamp(){
+        boolean isBangla = false;
+
+        if(Utility.Settings.get_language(Utility.initialContext).equals("bn")) {
+            isBangla = true;
+            Utility.Settings.set_app_language("en", Utility.initialContext);
+        }
+
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ");
 
         Date date = new Date();
@@ -539,7 +563,13 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
         Date newDate = cal.getTime();
         String timestamp = dateFormat.format(newDate);
-        Log.d("timestamp: ", "" + timestamp);
+        Log.d("timestamp of report: ", "" + timestamp);
+
+        if(isBangla == true) {
+            Utility.Settings.set_app_language("bn", Utility.initialContext);
+            //isBangla = false;
+        }
+
         return timestamp;
     }
 

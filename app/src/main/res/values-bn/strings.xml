@@ -6,8 +6,8 @@
     <string name="user_name">আপনার নাম</string>
     <string name="password">পাসওয়ার্ড</string>
     <string name="Login">লগিন করুন</string>
-    <string name="Registration">অ্যাকাউন্ট নেই? আজই বিনা খরচে বানিয়ে নিন!</string>
-    <string name="Forget">পাসওয়ার্ড   ভুলে গেছি</string>
+    <string name="Registration">অ্যাকাউন্ট নেই? এখনই বিনা খরচে বানিয়ে নিন!</string>
+    <string name="Forget">পাসওয়ার্ড  ভুলে গেছি</string>
     <string name="Remember">মনে রেখো আমাকে</string>
     <string name="registration_heading">তথ্য দিন</string>
     <string name="email">ইমেইল</string>
@@ -43,8 +43,8 @@
     <string name="upload_now_btn">আপলোড করুন</string>
     <string name="settings">সেটিংস</string>
     <string name="language">ভাষা</string>
-    <string name="hello">হ্যালো...</string>
-    <string name="rating_string">আপনার বর্তমান রেটিং</string>
+    <string name="hello">হ্যালো </string>
+    <string name="rating_string">আপনার বর্তমান রেটিং: </string>
     <string name="rating_progress">গত কয়েকদিনে রেটিং পরিবর্তন:</string>
     <string name="report_problem">সমস্যা  জানান</string>
     <string name="rating">রেটিং</string>

@@ -22,7 +22,6 @@ public class Report implements Serializable{
         return "Report{" +
                 "category='" + category + '\'' +
                 ", recordID='" + recordID + '\'' +
-                // + Arrays.toString(image) +
                 ", time='" + time + '\'' +
                 ", informalLocation='" + informalLocation + '\'' +
                 ", userId='" + userId + '\'' +

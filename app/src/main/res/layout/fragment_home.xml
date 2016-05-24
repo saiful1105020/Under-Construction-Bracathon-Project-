@@ -19,17 +19,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/hello"
-                    android:id="@+id/lblDashboardHello"
+                    android:orientation="horizontal"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_weight="1"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_gravity="center_vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="@string/hello"
+                         />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text=" User!"
+                        android:id="@+id/lblDashboardHello" />
+                </LinearLayout>
 
                 <ImageButton
                     android:layout_width="50dp"
@@ -61,16 +72,31 @@
                     android:onClick="onProfileRefreshButtonClick" />
             </LinearLayout>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/rating_string"
-                android:id="@+id/lblDashboardCurrentRating"
-                android:layout_below="@+id/lblDashboardHello"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginBottom="5dp" />
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/rating_string"
+                    android:layout_below="@+id/lblDashboardHello"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text=" 500"
+                    android:id="@+id/lblDashboardCurrentRating"
+                    android:layout_below="@+id/lblDashboardHello"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="5dp" />
+            </LinearLayout>
 
             <!--<CheckBox-->
             <!--android:layout_width="wrap_content"-->
@@ -104,7 +130,8 @@
                 android:id="@+id/textView2"
                 android:layout_below="@+id/lblDashboardCurrentRating"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_alignParentStart="true"
+                android:paddingBottom="5dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

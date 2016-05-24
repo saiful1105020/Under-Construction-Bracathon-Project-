@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +41,8 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_suggestion);
+
+        Toast.makeText(getApplicationContext(), "Possible Duplicates", Toast.LENGTH_LONG).show();
 
         //instantiating the above mentioned variables
         btnUpload = (Button) findViewById(R.id.btnUploadSuggestionAnyway);

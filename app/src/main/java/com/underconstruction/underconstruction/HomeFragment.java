@@ -55,6 +55,9 @@ public class HomeFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    public static final int REQUEST_SETTINGS_CHANGE = 1;
+
+    String lastPreferredLanguage;
 
     //json object holding the rating object sent by the database
     JSONObject jsonRating;
@@ -111,17 +114,14 @@ public class HomeFragment extends Fragment {
         btnSettings = (ImageButton)v.findViewById(R.id.btnSettings);
         btnLogout = (ImageButton)v.findViewById(R.id.btnLogout);
 
-
-
-
         //setting clicklistener for the settings button
-
         btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //the settings Activity will be opened
+                lastPreferredLanguage = Utility.Settings.get_language(getActivity());
                 Intent k = new Intent(getContext(), SettingsActivity.class);
-                startActivity(k);
+                startActivityForResult(k, REQUEST_SETTINGS_CHANGE);
             }
         });
 
@@ -133,7 +133,7 @@ public class HomeFragment extends Fragment {
                 //Disable autologin and clear login history
                 SharedPreferences pref = getActivity().getApplicationContext().getSharedPreferences("LoginPref", 0); // 0 - for private mode
                 SharedPreferences.Editor editor = pref.edit();
-                editor.putBoolean("Save", false);
+                editor.putBoolean("IsLoggedIn", false);
                 editor.commit();
 
                 //signOut
@@ -143,9 +143,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
         return v;
-
     }
 
     @Override
@@ -154,7 +152,7 @@ public class HomeFragment extends Fragment {
 
         //the user is greeted
         TextView lblGreeting = (TextView) getView().findViewById(R.id.lblDashboardHello);
-        lblGreeting.setText("Hello " + Utility.CurrentUser.getUsername() + "!");
+        lblGreeting.setText(" " + Utility.CurrentUser.getUsername() + "!");
 
 
         //the user rating is fetched for the first time
@@ -178,6 +176,17 @@ public class HomeFragment extends Fragment {
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        //reload if language has been changed
+        if(requestCode == REQUEST_SETTINGS_CHANGE && !lastPreferredLanguage.equals(Utility.Settings.get_language(getActivity()))){
+            Intent intent=new Intent(getActivity(), TabbedHome.class);
+            startActivity(intent);
+            getActivity().finish();
         }
     }
 
@@ -257,8 +266,14 @@ public class HomeFragment extends Fragment {
                 return;
             }
 
-            formatRatingFields(jsonRating);
 
+            try {
+                formatRatingFields(jsonRating);
+            } catch(Exception e){
+                e.printStackTrace();
+            }
+
+            formatRatingFields(jsonRating);
         }
 
         /**
@@ -336,7 +351,7 @@ public class HomeFragment extends Fragment {
             //JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("userRating");
             int userR = userRating.getUserRatingPoint();
             TextView lblUsrt = (TextView)getView().findViewById(R.id.lblDashboardCurrentRating);
-            lblUsrt.setText("Your current rating is " + userR);
+            lblUsrt.setText(" " + userR);
 
     }
 
@@ -387,5 +402,7 @@ public class HomeFragment extends Fragment {
         li.setRangeY(min-2, max+2);
         li.setLineToFill(0);
     }
+
+
 
 }
