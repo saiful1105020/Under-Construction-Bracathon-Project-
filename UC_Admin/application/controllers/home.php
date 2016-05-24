@@ -58,7 +58,7 @@ class Home extends CI_Controller {
 		
 				$logData['user_id']=$_SESSION["admin_id"];
 				$logData['cat_id']=-1;
-				$logData['log_type']=3;
+				$logData['log_type']=LOG_ADMIN_LOGIN;
 				$logData['post_id']=-1;
 				$logData['changed_status']=-1;
 				$logData['cat_name']='';
