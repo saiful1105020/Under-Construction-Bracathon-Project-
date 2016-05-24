@@ -1,5 +1,7 @@
 package com.underconstruction.underconstruction;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -49,7 +51,7 @@ public class LoginActivity extends Activity {
     public static final int REQUEST_LOCATION_SERVICE_BEFORE_DIRECT_LOGIN = 1;
     public static final int REQUEST_LOCATION_SERVICE_AFTER_NEW_LOGIN = 2;
     SharedPreferences pref;
-
+    String gmail_id;
     @Override
     protected void onResume() {
         //Check what language is currently set
@@ -78,7 +80,22 @@ public class LoginActivity extends Activity {
         errorText = (TextView) findViewById(R.id.lblLoginError);
         chkSave = (CheckBox) findViewById(R.id.chkLoginRemember);
         layoutWait = (LinearLayout) findViewById(R.id.layoutLoginWait);
+        LinearLayout layoutGmail = (LinearLayout) findViewById(R.id.layoutGmail);
         Button btnRegistration = (Button) findViewById(R.id.btnLoginRegistration);
+        Button btnGmail = (Button) findViewById(R.id.btnGmail);
+
+        //Login using Google plus account
+
+        gmail_id = getGmailId();
+        if (gmail_id == null)
+            layoutGmail.setVisibility(View.GONE);
+//        Toast.makeText(this, gmail_id, Toast.LENGTH_SHORT).show();
+        btnGmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         btnRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -400,6 +417,106 @@ public class LoginActivity extends Activity {
             }
         }
     }
+    class GmailLoginTask extends AsyncTask<String, Void, String> {
+
+        private JSONObject jsonSignUp;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        protected String doInBackground(String... args) {
+
+            JSONParser jParser = new JSONParser();
+            // Building Parameters
+            List<Pair> params = new ArrayList<Pair>();
+            params.add(new Pair("gmail",gmail_id));
+            // getting JSON string from URL
+            jsonSignUp = jParser.makeHttpRequest("/gmailLogin", "GET", params);
+
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         **/
+        protected void onPostExecute (String file_url){
+            if(jsonSignUp == null) {
+                //Utility.CurrentUser.showConnectionError(getApplicationContext());
+                errorText.setText("Please check your internet connection");
+                Log.d("GmailLoginTask", "Internet problem, Gmail id: " + gmail_id);
+                busy_session(false);
+                txtEmail.setText(email);
+                txtPassword.setText(password);
+                return;
+            }
+            String userId = new String ("");
+            String userName = new String ("");
+            //String isVerified = new String ("");
+            try {
+                userId = jsonSignUp.getString("userId");
+                userName = gmail_id.replace("@gmail.com", ""); //jsonSignUp.getString("userName");
+                //isVerified = jsonSignUp.getString("isVerified");
+
+                //String uid = jsonSignUp.getString("userId");
+                //Utility.CurrentUser.setUserId(uid);
+            }catch(JSONException e){
+                e.printStackTrace();
+            }
+
+//            if(userId.equals("0")){
+//                errorText.setText("Incorrect password, please try again.");
+//                busy_session(false);
+//                txtEmail.setText(email);
+//                return;
+//            }
+
+            /**
+             * Merging without verification activity for now
+             *
+             */
+
+//            else if (isVerified.equals("0"))
+//            {
+//                Utility.CurrentUser.setUserId(userId);
+//                Intent k = new Intent(LoginActivity.this, VerificationActivity.class);
+//                startActivity(k);
+//                finish();
+//
+//            }
+//            else {
+                DBHelper dbHelper = new DBHelper(getApplicationContext());
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                errorText.setText("Logging in...");
+                Utility.CurrentUser.setUserId(userId);
+                //      Log.d("Logging in", "My ID: " + Utility.CurrentUser.getUserId());
+
+                Utility.CurrentUser.setUsername(userName);
+                if (chkSave.isChecked())
+                {
+                    savedEmailId = email;
+                    savedPassword = password;
+                    savedUserId = userId;
+                    savedUserName = userName;
+                }
+                saveInstance();
+                if(!isLocationEnabled(context)) {
+                    requestGPS(REQUEST_LOCATION_SERVICE_AFTER_NEW_LOGIN);
+                    return;
+                }
+                finish();
+
+                /**
+                 * Bypassing without linking login user id to home page received
+                 *
+                 */
+                Intent intent=new Intent(LoginActivity.this, TabbedHome.class);
+                startActivity(intent);
+  //          }
+        }
+    }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -493,6 +610,25 @@ public class LoginActivity extends Activity {
             txtPassword.setText(pref.getString("Password", null));
         }
     }
+    /*
+    **Fetch Google plus id
+     */
+    String getGmailId()
+    {
+        AccountManager manager = (AccountManager) getSystemService(ACCOUNT_SERVICE);
+        Account[] list = manager.getAccounts();
+        String gmail = null;
 
+        for(Account account: list)
+        {
+            if(account.type.equalsIgnoreCase("com.google"))
+            {
+                Log.d("Acc", account.name);
+                gmail = account.name;
+                break;
+            }
+        }
+        return gmail;
+    }
 }
 

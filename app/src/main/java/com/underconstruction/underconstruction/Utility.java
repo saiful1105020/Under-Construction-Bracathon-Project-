@@ -30,9 +30,9 @@ public class Utility {
 
     static Context initialContext;      //set in LoginActivity
 
-    static String ip = "http://" + "192.168.88.15" +                //main url
-//            "/hackThon/UC_Server/index.php/home";                  //root directory
-            "/uc_brac_git/uc_server/index.php/home";
+    static String ip = "http://" + "172.20.62.6" +                //main url
+            "/hackThon/UC_Server/index.php/home";                  //root directory
+            //"/uc_brac_git/uc_server/index.php/home";
                                                                    //used in the class JSONParser for network connection
 
     /**
@@ -40,6 +40,7 @@ public class Utility {
      * @param context The context of the application
      * @return true if device  is online, false otherwise
      */
+
     public static boolean isOnline(Context context) {
 
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
