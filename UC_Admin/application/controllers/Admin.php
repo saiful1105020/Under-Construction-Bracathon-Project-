@@ -1,7 +1,7 @@
 <?php
 
 /**
-*	LAST MODIFIED : 29-06-2015 04:02 PM
+*	Controller for all admin actions
 */
 
 defined('BASEPATH') OR exit('No direct script access allowed');
@@ -21,7 +21,10 @@ class Admin extends CI_Controller {
           $this->load->helper('url');
           $this->load->helper('html');
 		  $this->load->library('form_validation');
-		  
+		 
+		/**
+			If not logged in, redirect to login page
+		*/
 		if(!isset($_SESSION["admin_name"]))
 		{
 			redirect('/home', 'refresh');
@@ -31,23 +34,25 @@ class Admin extends CI_Controller {
 		$this->load->model('admin_model');
 		$this->load->model('log_model');
 		$this->load->model('post_model');
-		//$data['current_nav']='home';
-		//$this->load->view('templates/header',$data);
 		
 		$this->load->view('templates/header2');
+		
+		require_once("Constants.php");
      }
 	 
+	
+	
 	/**
-	*	[ADMIN HOME PAGE]
-	*/
-	
-	
-	
+	*	[ADMIN HOME PAGE] --- Search is the default activity
+	*/ 
 	public function index()			
 	{
 		redirect('admin/search','refresh');
 	}
 	
+	/**
+		Nothing important ; just for test purpose
+	*/
 	public function insert_log_test()
 	{
 		$data = array();
@@ -64,18 +69,21 @@ class Admin extends CI_Controller {
 		$this->log_model->insert_log($data);
 	}
 	
+	/**
+		Search Reported Posts
+		Based on Category , Location , Status (0->PENDING ; 1->VERIFIED ; 2-> REJECTED ; 3-> SOLVED) and time
+	*/
 	public function search()
 	{
 		if(!isset($_POST['location_select']))
 		{
 			$data['is_set']=false;
+			
+			//if empty -> no problem
 			$data['n_loc']=$this->admin_model->get_all_locations();
 			
+			//if empty -> no problem
 			$data['catData'] = $this->post_model->get_all_categories();
-			
-			//echo '<br><br><br>';
-			//print_r($data['catData']);
-			
 			
 			$this->load->view('adminhome',$data);
 		}
@@ -104,19 +112,15 @@ class Admin extends CI_Controller {
 			$data['posts']=array();
 			foreach($posts as $p)
 			{
-				//echo '<br><br><br>';
-				//echo $p['category'];
-				
 				$post=$p;
 				$temp=$this->post_model->get_vote_count($p['post_id']);
+				
 				$post['up_votes']=$temp['upvotes'];
 				$post['down_votes']=$temp['downvotes'];
+				
 				$post['user_name']=$this->post_model->get_user_name($p['user_id']);
+				
 				$post['user_rating']=$this->post_model->get_current_rating($p['user_id']);
-				
-				//echo '<br><br><br>'.$p['category'];
-				
-				//if(!($p['category']>=-1)) echo 'ERROR';
 				
 				$post['cat_name'] = $this->post_model->get_category_name($p['category']);
 				
@@ -125,10 +129,13 @@ class Admin extends CI_Controller {
 				array_push($data['posts'],$post);
 			}
 			$this->load->view('adminhome',$data);
-			//print_r($data);
 		}
 	}
 	
+	
+	/**
+		Change the status of a post (verify, reject or solve)
+	*/
 	public function take_action($post_id)
 	{
 		if(isset($_POST['action'])) $action = $_POST['action'];
@@ -139,20 +146,20 @@ class Admin extends CI_Controller {
 		
 		//CALCULATE RATING CHANGE
 		$change=0;
-		if($action==0)
+		if($action==STATUS_PENDING)
 		{
 			//DO NOTHING
 		}
-		else if($action==1)
+		else if($action==STATUS_VERIFIED)
 		{
 			//Exponential Function Later
-			$change= 5;
+			$change= STATUS_VERIFY_POINT;
 		}
-		else if($action==2)
+		else if($action==STATUS_REJECTED)
 		{
-			$change= -3;
+			$change= STATUS_REJECT_POINT;
 		}
-		else if($action==3)
+		else if($action==STATUS_SOLVED)
 		{
 			//DO NOTHING
 		}
@@ -160,13 +167,15 @@ class Admin extends CI_Controller {
 		$this->post_model->update_rating_change($post_id,$change);
 		
 		$data['success']=true;
-		$data['success_message']="Status and user voteCount updated successfully";
+		$data['success_message']="Status and user vote count updated successfully";
 
 		$logData = array();
 		
 		$logData['user_id']=$_SESSION["admin_id"];
+		
 		$logData['cat_id']=$this->post_model->getCategoryId($post_id);
-		$logData['log_type']=4;
+		
+		$logData['log_type']=LOG_ADMIN_ACTION;
 		$logData['post_id']=$post_id;
 		$logData['changed_status']=$action;
 		$logData['cat_name']=$this->post_model->get_category_name($logData['cat_id']);
@@ -186,7 +195,7 @@ class Admin extends CI_Controller {
 		
 		$logData['user_id']=$_SESSION["admin_id"];
 		$logData['cat_id']=-1;
-		$logData['log_type']=5;
+		$logData['log_type']=LOG_ADMIN_LOGOUT;
 		$logData['post_id']=-1;
 		$logData['changed_status']=-1;
 		$logData['cat_name']='';
@@ -201,8 +210,9 @@ class Admin extends CI_Controller {
 		
 		redirect('/home', 'refresh');
 	}
+	
 	/**
-	neamul
+		Show problem counts in a brachart
 	*/
 	public function showBarGraph()
 	{
@@ -213,7 +223,7 @@ class Admin extends CI_Controller {
 		$i = 0;
 		foreach($catIds as $id)
 		{
-			$newCat[0] = "Avoid This";
+			$newCat[0] = "unused";
 			$newCat[1] = $this->post_model->get_category_name($id);
 			
 			$count = $this->post_model->category_problem_count($id);
@@ -227,38 +237,11 @@ class Admin extends CI_Controller {
 			$i++;
 		}
 		
-		//echo '<br><br><br><br><br><br><br>';
-		
-		//print_r($cats);
-		
-		//echo '<br>';
-		//print_r($pCount);
-		
-		/*
-		$pCounts = $this->post_model->get_problem_count();
-		$temp = $this->post_model->get_all_categories();
-		$cats = array();
-		
-		foreach($temp as $t)
-		{
-			$newCat = array();
-			$newCat[0] = $t['categoryId'];
-			$newCat[1] = $t['name'];
-			
-			array_push($newCat, $cats);
-		}
-		*/
-		//print_r($cats);
-		
 		
 		$data['pCounts'] = $pCount;
 		$data['cats'] = $cats;
 		$data['solvedCounts'] = $solvedCount;
 		
-		//echo '<br><br><br><br><br><br><br>';
-		
-		//print_r($solvedCount);
-
 		$locations = array();	
 		$lCounts = array();
 		$solvedCounts2 = array();
@@ -266,35 +249,168 @@ class Admin extends CI_Controller {
 
 		$nbrhood = $this->post_model->get_all_neighborhoods();
 		foreach ($nbrhood as $n) {
-			//echo $n['neighbourhood'];
 			$element = array();
-			//$element['name']=$n['neighbourhood'];
 			$element['loc_id']=$this->post_model->get_nbrhd_location_ids($n['neighbourhood']);
 			$element['problem_count'] = $this->post_model->get_problem_count_location($element['loc_id']);
 			$element['solved_count'] = $this->post_model->get_solved_count_location($element['loc_id']);
-			//array_push($data,$element);
-
-
-			array_push($locations,$n['neighbourhood']);				//
-			array_push($lCounts, $element['problem_count']);	//
+			
+			array_push($locations,$n['neighbourhood']);				
+			array_push($lCounts, $element['problem_count']);	
 			array_push($solvedCounts2, $element['solved_count']);
 
 		}
 
-		//$pCounts = $this->post_model->get_problem_count();
-		//$cats = array(array(0,'Occupied Footpath'), array(1,'Open Dustbin'), array(2,'Open Manhole'), array(3,'Cluttered Electric Wires'), array(4,'Waterlogging'), array(5,'Risky Intersection'), array(6,'No Street Light'), array(7,'Crime Prone Area'), array(8,'Damaged Road'), array(9,'Wrong Way Traffic'));
 		$data['lCounts'] = $lCounts;
 		$data['locations'] = $locations;
 		$data['solvedCounts2'] = $solvedCounts2;
-		
-		
-		//echo '<br><br><br><br>';
-		//print_r($data);
 		
 		$this->load->view("showBarGraph", $data);
 		
 	}
 
+	/**
+		Generate UI data for add category
+	*/
+	public function addCategory()
+	{
+		$catData = $this->post_model->get_suggested_categories();
+
+		$data['catData'] = $catData;
+		$data['existingCat'] = $this->post_model->get_all_categories();
+		
+		unset($data['existingCat'][0]);
+		
+		$this->load->view('addCategory',$data);
+	}
+	
+	/**
+		Take action for add cateogory
+	*/
+	public function addCategoryAction($id)
+	{
+		//get category name from suggestedCategories table
+		$cat_name = $this->post_model->get_suggested_cat_name($id);
+		
+		//remove it from suggestedCategories table
+		$this->post_model->delete_suggested_cat($id);
+		
+		//insert it into categories table
+		$this->post_model->insert_cat($cat_name);
+		
+		$data['success']=true;
+		$data['success_message']='Category added successfully.';
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=$this->post_model->get_category_id_from_name($cat_name);
+		$logData['log_type']=LOG_ADD_CATEGORY;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']=$cat_name;
+		
+		$this->log_model->insert_log($logData);
+
+		$this->load->view('status_message',$data);
+	}
+	
+	/**
+		Add Category -> submit button action
+	*/
+	public function addNewCategory()
+	{
+		$cat_name = $_POST['newCat'];
+		//insert it into categories table
+		$this->post_model->insert_cat($cat_name);
+		
+		$data['success']=true;
+		$data['success_message']='Category added successfully.';
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=$this->post_model->get_category_id_from_name($cat_name);
+		$logData['log_type']=LOG_ADD_CATEGORY;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']=$cat_name;
+		
+		$this->log_model->insert_log($logData);
+
+		$this->load->view('status_message',$data);
+	}
+	
+	/**
+		Generate UI
+	*/
+	public function deleteCategory()
+	{
+		$data['existingCat'] = $this->post_model->get_all_categories();
+		unset($data['existingCat'][0]);
+		$this->load->view('deleteCategory',$data);
+	}
+	
+	/**
+		Take action to delete cateogory
+	*/
+	public function deleteCategoryAction($id)
+	{
+		$cat_name = $this->post_model->get_category_name($id);
+		$this->post_model->delete_cat($id);
+		
+		$data['success']=true;
+		$data['success_message']='Category deleted successfully.';
+
+		$logData = array();
+		
+		$logData['user_id']=$_SESSION["admin_id"];
+		$logData['cat_id']=-1;
+		$logData['log_type']=LOG_DELETE_CATEGORY;
+		$logData['post_id']=-1;
+		$logData['changed_status']=-1;
+		$logData['cat_name']=$cat_name;
+		
+		$this->log_model->insert_log($logData);
+
+		$this->load->view('status_message',$data);
+	}
+
+	/**
+		Show problems in a map
+	*/
+	public function showMap()
+	{
+		$temp = $this->post_model->get_all_categories();
+		$existingCat = array();
+		
+		foreach($temp as $t)
+		{
+			$e = array();
+			$e['id'] = $t['categoryId'];
+			$e['name'] = $t['name'];
+			$e['locations'] = $this->post_model->get_category_problem_locations($e['id']);
+			
+			array_push($existingCat,$e);
+		}
+		
+		$data['mapData'] = $existingCat;
+		
+		$this->load->view('showMap',$data);
+	}
+	
+	/**
+		Show a reported problem (post) in map
+		param : $id -> post id
+	*/
+	public function showALocation($id)
+	{
+		$data['location'] = $this->post_model->get_post_location($id);
+		
+		$this->load->view('showALocation',$data);
+	}
+	
+	
+	/**
 	public function test()
 	{
 		//$data = array();
@@ -326,153 +442,31 @@ class Admin extends CI_Controller {
 		$this->load->view("showBarGraph", $data);
 		//print_r($data);
 	}
-
-	public function addCategory()
-	{
-		$catData = $this->post_model->get_suggested_categories();
-
-		$data['catData'] = $catData;
-		$data['existingCat'] = $this->post_model->get_all_categories();
-		
-		unset($data['existingCat'][0]);
-		
-		//ksort($data['existingCat']);
-		
-		//echo '<br><br><br>';
-		//print_r($data['existingCat']);
-		
-		$this->load->view('addCategory',$data);
-	}
-	
-	/**
-	To-Do
 	*/
-	public function addCategoryAction($id)
-	{
-		//get category name from suggestedCategories table
-		$cat_name = $this->post_model->get_suggested_cat_name($id);
-		
-		//remove it from suggestedCategories table
-		$this->post_model->delete_suggested_cat($id);
-		
-		//insert it into categories table
-		$this->post_model->insert_cat($cat_name);
-		
-		$data['success']=true;
-		$data['success_message']='Category added successfully.';
-
-		$logData = array();
-		
-		$logData['user_id']=$_SESSION["admin_id"];
-		$logData['cat_id']=$this->post_model->get_category_id_from_name($cat_name);
-		$logData['log_type']=6;
-		$logData['post_id']=-1;
-		$logData['changed_status']=-1;
-		$logData['cat_name']=$cat_name;
-		
-		$this->log_model->insert_log($logData);
-
-		$this->load->view('status_message',$data);
-	}
 	
-	/**
-	To-Do
-	*/
-	public function addNewCategory()
+	//test -> transfer to bracAdmin module later
+	public function test2($post_id)
 	{
-		$cat_name = $_POST['newCat'];
-		//insert it into categories table
-		$this->post_model->insert_cat($cat_name);
+		$p=$this->post_model->get_post_info($post_id);
+		echo '<br><br><br>';
+		//print_r($p);
 		
-		$data['success']=true;
-		$data['success_message']='Category added successfully.';
-
-		$logData = array();
-		
-		$logData['user_id']=$_SESSION["admin_id"];
-		$logData['cat_id']=$this->post_model->get_category_id_from_name($cat_name);
-		$logData['log_type']=6;
-		$logData['post_id']=-1;
-		$logData['changed_status']=-1;
-		$logData['cat_name']=$cat_name;
-		
-		$this->log_model->insert_log($logData);
-
-		$this->load->view('status_message',$data);
-	}
+		$post = $p;
 	
-
-	public function deleteCategory()
-	{
-		$data['existingCat'] = $this->post_model->get_all_categories();
+		$temp=$this->post_model->get_vote_count($p['post_id']);
+				
+		$post['up_votes']=$temp['upvotes'];
+		$post['down_votes']=$temp['downvotes'];
+				
+		$post['user_name']=$this->post_model->get_user_name($p['user_id']);
+				
+		$post['user_rating']=$this->post_model->get_current_rating($p['user_id']);
+				
+		$post['cat_name'] = $this->post_model->get_category_name($p['category']);
+				
+		$post['location']=$this->post_model->get_location($p['actual_location_id']);
 		
-		unset($data['existingCat'][0]);
+		print_r($post);
 		
-		//echo '<br><br><br>';
-		//print_r($data['existingCat']);
-		
-		$this->load->view('deleteCategory',$data);
-	}
-	
-	/**
-	To-Do
-	*/
-	public function deleteCategoryAction($id)
-	{
-		$cat_name = $this->post_model->get_category_name($id);
-		$this->post_model->delete_cat($id);
-		
-		$data['success']=true;
-		$data['success_message']='Category deleted successfully.';
-
-		$logData = array();
-		
-		$logData['user_id']=$_SESSION["admin_id"];
-		$logData['cat_id']=-1;
-		$logData['log_type']=7;
-		$logData['post_id']=-1;
-		$logData['changed_status']=-1;
-		$logData['cat_name']=$cat_name;
-		
-		$this->log_model->insert_log($logData);
-
-		$this->load->view('status_message',$data);
-	}
-
-	public function showMap()
-	{
-		$temp = $this->post_model->get_all_categories();
-		$existingCat = array();
-		
-		foreach($temp as $t)
-		{
-			$e = array();
-			$e['id'] = $t['categoryId'];
-			$e['name'] = $t['name'];
-			$e['locations'] = $this->post_model->get_category_problem_locations($e['id']);
-			
-			array_push($existingCat,$e);
-		}
-		
-		//echo '<br><br><br>';
-		//print_r($existingCat);
-		
-		$data['mapData'] = $existingCat;
-		
-		//unset($data['existingCat'][0]);
-		
-		$this->load->view('showMap',$data);
-	}
-	
-	public function showALocation($id)
-	{
-		//$location['lat'] = 87.091;
-		//$location['lon'] = 90.098;
-		$data['location'] = $this->post_model->get_post_location($id);
-		
-		//echo '<br><br><br>';
-		//print_r($data['location']);
-		
-		$this->load->view('showALocation',$data);
 	}
 }

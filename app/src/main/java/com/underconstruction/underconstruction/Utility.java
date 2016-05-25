@@ -40,6 +40,7 @@ public class Utility {
      * @param context The context of the application
      * @return true if device  is online, false otherwise
      */
+
     public static boolean isOnline(Context context) {
 
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

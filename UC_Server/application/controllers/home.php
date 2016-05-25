@@ -229,9 +229,9 @@ class Home extends CI_Controller {
 		if any duplicate exists, count++
 		otherwise, insert with count 1
 	*/
-	public function insertCatSuggestion()
+	public function insertCatSuggestion($newCat)
 	{
-		$newCat = $_GET['category'];
+		//$newCat = $_GET['category'];
 		//$jsonData['str'] = $this->mapString("Hi T here");
 		//echo json_encode($jsonData);
 		//check duplicate
@@ -354,6 +354,8 @@ class Home extends CI_Controller {
 		else $post['category']='';
 		
 		
+		
+		
 		if(isset($_POST['image']))$post['image']=base64_decode($_POST['image']);
 		else $post['image']='';
 		
@@ -363,14 +365,22 @@ class Home extends CI_Controller {
 		if(isset($_POST['informalLocation'])) $post['informal_location']=$_POST['informalLocation'];
 		else $post['informal_location']='';
 		
-		if(isset($_POST['problemDescription']))$post['text']=$_POST['problemDescription'];
+		if(isset($_POST['problemDescription'])) $post['text']=$_POST['problemDescription'];
 		else $post['text']='';
 		
 		$post['actual_location_id']=$location_id;
 		$post['status']=0;
 		$post['rating_change']=0;
 		
+		
+		
+		
 		$this->post_model->insert_post($post);
+		
+		if($post['category']==-1 && !($post['text']===""))
+		{
+			$this->insertCatSuggestion($post['text']);
+		}
 		
 		/**
 		not tested this portion of log

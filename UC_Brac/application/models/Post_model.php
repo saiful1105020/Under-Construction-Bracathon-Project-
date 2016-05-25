@@ -18,6 +18,13 @@ class Post_model extends CI_Model
 		$sql='UPDATE `post` SET `flag`=? WHERE post_id = ?';
 		$query=$this->db->query($sql,array($flag,$post_id));
 	}
+
+	public function get_post_info($post_id)
+	{
+		$sql = 'SELECT * FROM post p WHERE p.`post_id`=? ';
+		$query=$this->db->query($sql,$post_id)->row_array();
+		return $query;
+	}
 	/////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////
 
