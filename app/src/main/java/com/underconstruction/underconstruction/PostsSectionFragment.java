@@ -366,7 +366,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
             //If the user has already voted the post, change color accordingly
             checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, voteUpView, voteDownView);
-            checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, voteUpView, voteDownView);
+//            checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, voteUpView, voteDownView);
 
             //The user has upvoted the post
             voteUpView.setOnClickListener(new View.OnClickListener() {
