@@ -165,9 +165,13 @@ class subAdmin extends CI_Controller {
 		$logData['changed_status']=-1;
 		$logData['cat_name']='';
 				
+		
 		$this->log_model->insert_log($logData);
 
-		$this->session->sess_destroy();	//!Stop Session 
+		//$this->session->sess_destroy();	//!Stop Session 
+		
+		unset($_SESSION["subAdmin_id"]);
+		unset($_SESSION["subAdminName"]);
 		
 		/**
 		*Redirect To Homepage

@@ -18,6 +18,8 @@ class Home extends CI_Controller {
 		  // <Load Admin Model>
 		  $this->load->model('admin_model');
 		  $this->load->model('log_model');
+		  
+		  require_once("Constants.php");
      }
 	 
 	public function index()

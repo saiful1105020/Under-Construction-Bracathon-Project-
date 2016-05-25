@@ -134,7 +134,9 @@ class BracAdmin extends CI_Controller {
 		
 		//$logData['user_id']=$_SESSION["bracAdmin_id"];
 		
-		$this->session->sess_destroy();	//!Stop Session 
+		//$this->session->sess_destroy();	//!Stop Session 
+		
+		unset($_SESSION["bracAdmin_id"]);
 		
 		/**
 		*Redirect To Homepage

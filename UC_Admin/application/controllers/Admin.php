@@ -202,7 +202,10 @@ class Admin extends CI_Controller {
 				
 		$this->log_model->insert_log($logData);
 
-		$this->session->sess_destroy();	//!Stop Session 
+		unset($_SESSION["admin_id"]);
+		unset($_SESSION["admin_name"]);
+		
+		//$this->session->sess_destroy();	//!Stop Session 
 		
 		/**
 		*Redirect To Homepage
