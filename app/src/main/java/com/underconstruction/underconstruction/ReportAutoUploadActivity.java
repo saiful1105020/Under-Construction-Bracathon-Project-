@@ -62,29 +62,34 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
     ProgressBar pbPosts;
     //Holds the custom list
     ListView lvwPosts;
+    Context thisContext;
+    Boolean first = true;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_verification);
+        setContentView(R.layout.activity_report_auto_upload);
         Log.d("in report auto upload activity", " done successfully");
 
         //instantiate the necessary variables
-        context = getApplicationContext();
+        if(getParent() != null)
+            context = getParent();
+        else
+            context = getApplicationContext();
+        thisContext = getApplicationContext();
         mResultReceiver = new AddressResultReceiver(new Handler());
-
+        pbPosts = (ProgressBar) findViewById(R.id.pbPosts);
 
         bringDataFromInternalDb();
-
     }
 
     @Override
     public View onCreateView(String name, Context context, AttributeSet attrs) {
+//        setContentView(R.layout.activity_report_auto_upload);
         View v= super.onCreateView(name, context, attrs);
 //        pbPosts = (ProgressBar) v.findViewById(R.id.pbPosts);
-//        lvwPosts = (ListView) v.findViewById(R.id.lvwPosts);
         return v;
     }
 
@@ -117,17 +122,22 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
         //if the index is within the bounds of the array, send a suggestion for it. Otherwise, go to the Home Activity
         if(index<allTheReportsOfIntDb.size()) {
             new PostSuggestionTask().execute(index + "");
+            if(context == thisContext) {
+                return;                     //can't leave this intent until onActivityResult is called; no parent context
+            }
         }
-        else {
-            goToHomeActivity();
+        if(first) {                         //sending first report and leaving this activity
+            first = false;
+            goToParentActivity(context);
         }
     }
 
     /**
      * Goes to the Home Activity of the App
      */
-    private void goToHomeActivity() {
-        Intent intent = new Intent(this, TabbedHome.class);
+    private void goToParentActivity(Context context) {
+        Intent intent = new Intent(context, TabbedHome.class);
+        intent.putExtra("parent", "ReportAutoUpload");
         startActivity(intent);
     }
 
@@ -154,13 +164,17 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
         //Log.d(TAG,"returned from intent");
         DBHelper dbHelper = new DBHelper(getApplicationContext());
 
+        if(context == thisContext) {            //this activity is still in view unnecessarily
+            goToParentActivity(context);
+        }
+
         if(requestCode == REQUEST_POST_SUGGESTION  && resultCode == RESULT_OK){
 
             int chosenOption = data.getIntExtra("uploadDecision",-1);
             Log.d("ReportAutoUpload",chosenOption+"");
 
             //the user wants to upload the report
-            if(chosenOption == UPLOAD_REPORT){
+            if(chosenOption == UPLOAD_REPORT) {
                 //so start uploading the report in main database
                 startIntentServiceForReverseGeoTagging(reportToBeSent);
                 Log.d("ReportAutoUpload","upload");
@@ -257,7 +271,7 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
 
     }
 
-    //adds the report to the main db. Similar to the sam method in ReportProblem
+    //adds the report to the main db. Similar to the same method in ReportProblem
     class AddReportTask extends AsyncTask<String, Void, String> {
 
         private JSONObject responseJSON;
@@ -314,7 +328,7 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
 
         protected void onPostExecute (String a){
 
-
+            TabbedHome.sendingSavedReports = false;
             if(responseJSON!=null){
 
                 try {
@@ -345,12 +359,10 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
         if (busy == true)
         {
             pbPosts.setVisibility(View.VISIBLE);
-            lvwPosts.setVisibility(View.GONE);
         }
         else
         {
             pbPosts.setVisibility(View.GONE);
-            lvwPosts.setVisibility(View.VISIBLE);
         }
     }
 
@@ -367,8 +379,10 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
         protected void onPreExecute() {
             super.onPreExecute();
             Toast.makeText(context, "Trying to upload previously saved report...", Toast.LENGTH_LONG).show();
-            Toast.makeText(context, "Checking for duplicate reports...", Toast.LENGTH_LONG).show();
-//            busy_sessions(true);
+            Toast.makeText(context, "Checking for duplicate reports...", Toast.LENGTH_SHORT).show();
+            if(context == thisContext) {
+                busy_sessions(true);
+            }
         }
 
 
@@ -395,7 +409,9 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
         }
 
         protected void onPostExecute (String file_url){
-//            busy_sessions(false);
+            if(context == thisContext) {
+                busy_sessions(false);
+            }
             if(jsonPostSuggestion == null) {
                 Log.d("OnPostExecute", "jsonPostSuggestion == null");
                 return;
@@ -413,12 +429,17 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
                 // No conflict with other posts, so just save it
                 if (N==0) {
                     startIntentServiceForReverseGeoTagging(reportToBeSent);
+                    TabbedHome.sendingSavedReports = false;
                     return;
                 }
 
                 //otherwise, open a post suggestion activity for getting user feedback
+
+                Report newReport = new Report(Utility.CategoryList.get(Integer.parseInt(reportToBeSent.getCategory())), reportToBeSent.getImage(), reportToBeSent.getTime());
+
                 Intent intent = new Intent(context, PostSuggestion.class);
                 intent.putExtra("jsonPostSuggestions", jsonPostSuggestion.toString());
+                intent.putExtra("newReport", reportToBeSent);
                 startActivityForResult(intent, REQUEST_POST_SUGGESTION);
 
 

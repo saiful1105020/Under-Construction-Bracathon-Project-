@@ -30,9 +30,9 @@ public class Utility {
 
     static Context initialContext;      //set in LoginActivity
 
-    static String ip = "http://" + "172.20.62.6" +                //main url
+    static String ip = "http://" + "172.20.62.3" +                //main url
             "/hackThon/UC_Server/index.php/home";                  //root directory
-            //"/uc_brac_git/uc_server/index.php/home";
+//            "/uc_brac_git/uc_server/index.php/home";
                                                                    //used in the class JSONParser for network connection
 
     /**

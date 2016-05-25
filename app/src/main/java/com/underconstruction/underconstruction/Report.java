@@ -90,6 +90,12 @@ public class Report implements Serializable{
         this.time = time;
     }
 
+    public Report(String category, byte[] image, String time) {
+        this.category = category;
+        this.image = image;
+        this.time = time;
+    }
+
     private String problemDescription;
 
     private String latitude;

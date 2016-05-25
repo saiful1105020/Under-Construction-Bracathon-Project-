@@ -1,7 +1,9 @@
 package com.underconstruction.underconstruction;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -42,7 +44,7 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_suggestion);
 
-        Toast.makeText(getApplicationContext(), "Possible Duplicates", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Possible Duplicates", Toast.LENGTH_SHORT).show();
 
         //instantiating the above mentioned variables
         btnUpload = (Button) findViewById(R.id.btnUploadSuggestionAnyway);
@@ -81,7 +83,14 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
 
             }
         });
+        ImageView imgPostSug = (ImageView)findViewById(R.id.imgPostSuggestion);
+        TextView lblPostSugDetails = (TextView)findViewById(R.id.lblPostSuggestionDetails); //Time + (Category)
 
+        Report newReport = (Report) (getIntent().getSerializableExtra("newReport"));
+        Bitmap bMap = BitmapFactory.decodeByteArray(newReport.getImage(), 0, newReport.getImage().length);
+        imgPostSug.setImageBitmap(bMap);
+
+        lblPostSugDetails.setText(Utility.CurrentUser.parsePostTime(newReport.getTime()) + " (" + newReport.getCategory() + ")");
 
         // a jsonObject to hold all the post suggestions
         JSONObject jsonPostSuggestions;

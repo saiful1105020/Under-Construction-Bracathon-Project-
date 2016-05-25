@@ -305,6 +305,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
      * An adapter to manage the listview
      */
     private class MyListAdapter extends ArrayAdapter<Post>{
+        View itemView;
         public MyListAdapter(){
 
             super(getActivity(), R.layout.home_post_item, postArrayList);
@@ -313,7 +314,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-            View itemView = convertView;
+            itemView = convertView;
             if (itemView == null) {
                 itemView = getActivity().getLayoutInflater().inflate(R.layout.home_post_item, parent, false);
             }
@@ -366,7 +367,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
             //If the user has already voted the post, change color accordingly
             checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, voteUpView, voteDownView);
-            checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, voteUpView, voteDownView);
+//            checkIfAlreadyVotedAndChangeColorAccordingly(curVoter, currentPost, voteUpView, voteDownView);
 
             //The user has upvoted the post
             voteUpView.setOnClickListener(new View.OnClickListener() {
@@ -374,6 +375,8 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
                 public void onClick(View v) {
                     if (v.getId() == R.id.imgPostUp) {
                         handleUpvoteView(position, voteUpView, voteDownView, totalVote);
+//                        itemView.invalidate();
+                        lvwPosts.invalidateViews();
                     }
                 }
             });
@@ -384,6 +387,8 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
                 public void onClick(View v) {
                     if (v.getId() == R.id.imgPostDown) {
                         handleDownvoteView(position, voteUpView, voteDownView, totalVote);
+//                        itemView.invalidate();
+                        lvwPosts.invalidateViews();
                     }
                 }
             });

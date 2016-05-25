@@ -309,7 +309,7 @@ public class HomeFragment extends Fragment {
 
             graphItemStack.push(new RatingGraphItem(currentRating, ""));
 
-            Log.d("HomeFragment","json array len "+N);
+            Log.d("HomeFragment", "json array len " + N);
 
             //This loop processes the items one by one and pushes them into a stack
             while (curIndex < N) {
@@ -332,12 +332,17 @@ public class HomeFragment extends Fragment {
 
             //Then a new UserRating object is created
             UserRating newUserRating = new UserRating(graphItemStack, userR, max, min);
-            //and given to the parent activity for saving it
-            mListener.setUserRating(newUserRating);
-            //draw the rating graph
-            populateRatingGraph(newUserRating);
-            //drwa the rating point
-            populateUserRating(newUserRating);
+
+            try {
+                //and given to the parent activity for saving it
+                mListener.setUserRating(newUserRating);
+                //draw the rating graph
+                populateRatingGraph(newUserRating);
+                //drwa the rating point
+                populateUserRating(newUserRating);
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

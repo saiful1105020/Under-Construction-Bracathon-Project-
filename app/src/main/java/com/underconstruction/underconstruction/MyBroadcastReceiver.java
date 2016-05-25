@@ -49,11 +49,14 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
 
             //device is online, so we will initiate a new intent to complete sending all the items in SQLite DB to main database
-            if(!Utility.isAppIsInBackground(context) && n>0) {
+            if(!Utility.isAppIsInBackground(context) && n>0 && !TabbedHome.sendingSavedReports) {
+                TabbedHome.sendingSavedReports = true;
                 Log.d("Broadcast Receiver", "app in foreground, number of saved reports: " + n);
                 Intent newIntent = new Intent(context, ReportAutoUploadActivity.class);
                 newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(newIntent);
+//                ReportAutoUploadActivity.bringDataFromInternalDb(context, new TabbedHome());
+
             }
 
 
@@ -63,6 +66,8 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             //Device offline, nothing to do
         }
     }
+
+
 
 
 
