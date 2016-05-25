@@ -324,14 +324,14 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
             }
             //This post will be saved in the internal database.
             else {
-
+                Toast.makeText(this, "Your report will be automatically uploaded when internet is available", Toast.LENGTH_LONG).show();
                 formatDataForSavingInTheInternalDB();
                 Log.d("Internet Connection", "absent");
 
             }
         }
         else {
-            Toast.makeText(this, "Obtaining location failed. Please try after sometime", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Obtaining location failed. Please try after sometime.", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -645,10 +645,14 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
                     return;
                 }
 
+                Report newReport = new Report(Utility.CategoryList.get(categorySelected), imageByteArray, getCurrentTimestamp());
+
+
                 //start a new intent to show the user a list of similar posts and get his feedback whether to
                 //upload the report or not.
                 Intent intent = new Intent(getApplicationContext(), PostSuggestion.class);
                 intent.putExtra("jsonPostSuggestions", jsonPostSuggestion.toString());
+                intent.putExtra("newReport", newReport);
 
                 //the activity created will return a result. Check in onActivityResult
                 startActivityForResult(intent, REQUEST_POST_SUGGESTION);

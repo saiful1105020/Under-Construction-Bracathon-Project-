@@ -83,6 +83,9 @@ public class PostSuggestion extends AppCompatActivity implements  Utility.Upload
         });
 
 
+        Report newReport = (Report) (getIntent().getSerializableExtra("newReport"));
+        
+
         // a jsonObject to hold all the post suggestions
         JSONObject jsonPostSuggestions;
         //variable to hold number of posts
