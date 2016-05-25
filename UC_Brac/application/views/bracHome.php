@@ -1,29 +1,53 @@
  <html>
 	<body>
-    <h2 style="text-align:center"><b>Search Reported Posts</b></h2>
+    <h2 style="text-align:center"><b>Log Of Recent Activities</b></h2>
 
     <div class="container-fluid">
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <td>Serial No</td>
-                    <td>Log data</td>
+                    <td></td>
+                    <td><b>Serial No</b></td>
+                    <td><b>Message</b></td>
+                    <td><b>Time</b></td>
+                    <td><b>Show Post</b></td>
                 </tr>
             </thead>
             <tbody>
                 
                 <form class="form-control" method="post" action="">
-                    <?php 
-                    foreach($logData as $l){
-                        echo "<tr>
+                 <?php $i=1;
+                 foreach ($logData as $l) {
+                        echo'<tr>
                             <td></td>
-                            <td>".$l['string']."</td>
-                        </tr>
-                    }";
-                        echo'<a href=""><b>Next</b></a>
-                        <a href=""><b>Previous</b></a>
-                    ;'
+                            <td>'.$i.'</td>
+                            <td>'.$l['message'].'</td>
+                            <td>'.$l['time'].'</td>
+                            <td>';
+                                if($l['post_id']!=-1)
+                                 echo'<a href="../showPost/'.$l['post_id'].'">View Post</a>
+                            </td>
+                        </tr>';
+                        $i++;
+                    }
                     ?>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <?php if($index>0) echo'
+                            <a href="../showLog/'.--$index.'"><b>Previous</b></a>';
+                            ?>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        
+                        <td>
+                            <?php echo'
+                            <a href="../showLog/'.++$index.'"><b>Next</b></a>';
+                            ?>
+                        </td>
+                    </tr>
+                    
                 </form>
                 
             </tbody>

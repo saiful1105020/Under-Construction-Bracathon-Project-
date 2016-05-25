@@ -39,11 +39,18 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
     private UserRating userRating = null;
 
     Context context;
+    static Boolean sendingSavedReports;
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("MainActivity", "onResume");
+        Log.d("MainActivity", "onResume, sending saved reports: " + sendingSavedReports);
+
+        if(getIntent() != null) {
+            if(getIntent().getStringExtra("parent") != null)
+                if(getIntent().getStringExtra("parent").equals("ReportAutoUpload"))         //already started uploading saved reports
+                    return;
+        }
 
         context = getApplicationContext();
         DBHelper dbHelper = new DBHelper(context);
@@ -51,11 +58,15 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
 
 
         //device is online, so we will initiate a new intent to complete sending all the items in SQLite DB to main database
-        if(!Utility.isAppIsInBackground(context) && n>0 && Utility.isOnline(context)) {
+        if(!Utility.isAppIsInBackground(context) && n>0 && Utility.isOnline(context) && !sendingSavedReports) {
             Log.d("MainActivity", "internet available, app in foreground, number of saved reports: " + n);
+            sendingSavedReports = true;
             Intent newIntent = new Intent(context, ReportAutoUploadActivity.class);
             newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            newIntent.setFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+//            newIntent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             context.startActivity(newIntent);
+//            ReportAutoUploadActivity.bringDataFromInternalDb(context, new ReportAutoUploadActivity());
         }
     }
 
@@ -64,7 +75,7 @@ public class TabbedHome extends AppCompatActivity implements PostsSectionFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed_home);
 
-
+        sendingSavedReports = false;
         context = getApplicationContext();
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
