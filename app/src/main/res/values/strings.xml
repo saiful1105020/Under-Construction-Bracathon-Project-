@@ -63,5 +63,6 @@
     <string name="time">Time</string>
     <string name="cur_problems">Current Problems</string>
     <string name="posted_by">Posted by</string>
+    <string name="previous_post_title">You posted this previously</string>
 
 </resources>

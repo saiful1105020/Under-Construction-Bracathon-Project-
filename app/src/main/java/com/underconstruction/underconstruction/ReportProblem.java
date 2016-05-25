@@ -101,7 +101,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         //String[] values = new String[]{"Broken Road", "Manhole", "Risky Intersection", "Crime prone area", "Others"};
         ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, Utility.CategoryList.getCategoryList());
         list.setAdapter(adapt);
-        list.setItemChecked(0, true);
+        list.setItemChecked(Utility.CategoryList.getCategoryList().size(), true);
         Log.d("Category Selected", categorySelected + "");
 
         final ArrayList<Integer> getCategoryIds = new ArrayList<Integer>();
