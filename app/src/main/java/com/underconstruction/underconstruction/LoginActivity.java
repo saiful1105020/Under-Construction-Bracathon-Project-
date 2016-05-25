@@ -47,7 +47,7 @@ public class LoginActivity extends Activity {
     Context context;
     DBHelper helper;
     boolean isLoggedIn = false;
-
+    Button btnRegistration, btnGmail;
     public static final int REQUEST_LOCATION_SERVICE_BEFORE_DIRECT_LOGIN = 1;
     public static final int REQUEST_LOCATION_SERVICE_AFTER_NEW_LOGIN = 2;
     SharedPreferences pref;
@@ -81,8 +81,8 @@ public class LoginActivity extends Activity {
         chkSave = (CheckBox) findViewById(R.id.chkLoginRemember);
         layoutWait = (LinearLayout) findViewById(R.id.layoutLoginWait);
         LinearLayout layoutGmail = (LinearLayout) findViewById(R.id.layoutGmail);
-        Button btnRegistration = (Button) findViewById(R.id.btnLoginRegistration);
-        Button btnGmail = (Button) findViewById(R.id.btnGmail);
+        btnRegistration = (Button) findViewById(R.id.btnLoginRegistration);
+        btnGmail = (Button) findViewById(R.id.btnGmail);
 
         //Login using Google plus account
 
@@ -93,7 +93,15 @@ public class LoginActivity extends Activity {
         btnGmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                new UpdateCategoryListTask().execute();
 
+                if (!chkSave.isChecked())
+                {
+                    LoginActivity.this.savedEmailId = savedPassword = "";
+                }
+                busy_session(true);
+                GmailLoginTask loginTask = new GmailLoginTask();
+                loginTask.execute();
             }
         });
 
@@ -240,6 +248,8 @@ public class LoginActivity extends Activity {
         if (flag)
         {
             btnLogin.setEnabled(false);
+            btnRegistration.setEnabled(false);
+            btnGmail.setEnabled(false);
             layoutWait.setVisibility(View.VISIBLE);
         }
         else
@@ -251,9 +261,11 @@ public class LoginActivity extends Activity {
             //((EditText) findViewById(R.id.txtRegistrationPassword)).setText("");
             //((EditText) findViewById(R.id.txtRegistrationConfirmPassword)).setText("");
             //((EditText) findViewById(R.id.txtRegistrationUsername)).setText("");
+            btnRegistration.setEnabled(true);
+            btnGmail.setEnabled(true);
 
             btnLogin.setEnabled(true);
-            layoutWait.setVisibility(View.INVISIBLE);
+            layoutWait.setVisibility(View.GONE);
         }
     }
 
@@ -432,7 +444,8 @@ public class LoginActivity extends Activity {
             JSONParser jParser = new JSONParser();
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
-            params.add(new Pair("gmail",gmail_id));
+            params.add(new Pair("email",gmail_id));
+            params.add(new Pair("userName", gmail_id.replace("@gmail.com", "")));
             // getting JSON string from URL
             jsonSignUp = jParser.makeHttpRequest("/gmailLogin", "GET", params);
 
@@ -460,8 +473,32 @@ public class LoginActivity extends Activity {
                 userName = gmail_id.replace("@gmail.com", ""); //jsonSignUp.getString("userName");
                 //isVerified = jsonSignUp.getString("isVerified");
 
-                //String uid = jsonSignUp.getString("userId");
-                //Utility.CurrentUser.setUserId(uid);
+                DBHelper dbHelper = new DBHelper(getApplicationContext());
+                dbHelper.onCreate(dbHelper.getWritableDatabase());
+                errorText.setText("Logging in...");
+                Utility.CurrentUser.setUserId(userId);
+                //      Log.d("Logging in", "My ID: " + Utility.CurrentUser.getUserId());
+                Utility.CurrentUser.setUsername(userName);
+                if (chkSave.isChecked())
+                {
+                    savedEmailId = email;
+                    savedPassword = password;
+                    savedUserId = userId;
+                    savedUserName = userName;
+                }
+                saveInstance();
+                if(!isLocationEnabled(context)) {
+                    requestGPS(REQUEST_LOCATION_SERVICE_AFTER_NEW_LOGIN);
+                    return;
+                }
+                finish();
+
+                /**
+                 * Bypassing without linking login user id to home page received
+                 *
+                 */
+                Intent intent=new Intent(LoginActivity.this, TabbedHome.class);
+                startActivity(intent);
             }catch(JSONException e){
                 e.printStackTrace();
             }
@@ -470,6 +507,7 @@ public class LoginActivity extends Activity {
 //                errorText.setText("Incorrect password, please try again.");
 //                busy_session(false);
 //                txtEmail.setText(email);
+//                return;
 //                return;
 //            }
 

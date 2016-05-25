@@ -379,7 +379,7 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
         protected void onPreExecute() {
             super.onPreExecute();
             Toast.makeText(context, "Trying to upload previously saved report...", Toast.LENGTH_LONG).show();
-            Toast.makeText(context, "Checking for duplicate reports...", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Checking for duplicate reports...", Toast.LENGTH_SHORT).show();
             if(context == thisContext) {
                 busy_sessions(true);
             }
@@ -434,8 +434,12 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
                 }
 
                 //otherwise, open a post suggestion activity for getting user feedback
+
+                Report newReport = new Report(Utility.CategoryList.get(Integer.parseInt(reportToBeSent.getCategory())), reportToBeSent.getImage(), reportToBeSent.getTime());
+
                 Intent intent = new Intent(context, PostSuggestion.class);
                 intent.putExtra("jsonPostSuggestions", jsonPostSuggestion.toString());
+                intent.putExtra("newReport", reportToBeSent);
                 startActivityForResult(intent, REQUEST_POST_SUGGESTION);
 
 

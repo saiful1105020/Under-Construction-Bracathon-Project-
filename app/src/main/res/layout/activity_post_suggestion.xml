@@ -13,7 +13,9 @@
         android:text="@string/previous_post_title"
         android:id="@+id/textView23"
         android:textSize="20dp"
-        android:textColor="@color/abc_background_cache_hint_selector_material_dark" />
+        android:textColor="@android:color/background_dark"
+        android:textIsSelectable="false"
+        android:visibility="visible" />
 
     <ImageView
         android:layout_width="120dp"

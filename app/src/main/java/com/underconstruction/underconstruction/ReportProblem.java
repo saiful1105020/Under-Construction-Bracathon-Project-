@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,6 +77,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
     //A TAG for debugging
     private String TAG = getClass().getSimpleName().toString();
 
+    TextView lblMore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +98,15 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         btnAddReport = (Button) (findViewById(R.id.addReportNewReportButton));
         list = (ListView) findViewById(R.id.listView);
         txtCateDesc = (TextView) findViewById(R.id.txtCategoryDesc);
-
+        lblMore = (TextView) findViewById(R.id.lblReportMore);
+        lblMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RadioGroup rg = (RadioGroup) findViewById(R.id.layoutReportMore);
+                rg.setVisibility(View.VISIBLE);
+                lblMore.setVisibility(View.GONE);
+            }
+        });
 
         //String[] values = new String[]{"Broken Road", "Manhole", "Risky Intersection", "Crime prone area", "Others"};
         ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, Utility.CategoryList.getCategoryList());
@@ -106,8 +116,8 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
         final ArrayList<Integer> getCategoryIds = new ArrayList<Integer>();
         getCategoryIds.addAll(Utility.CategoryList.getCategoryIds());
-
-        categorySelected = getCategoryIds.get(1);
+        list.setItemChecked(Utility.CategoryList.getCategoryList().size()-1, true);
+        categorySelected = Utility.CategoryList.get("Others");
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -227,6 +237,10 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
     public void onUploadNowButtonClick(View v) {
         //We will fetch lat-long of the current location in a background thread.
         btnAddReport.setEnabled(false);
+
+        //converting the bitmap into byte array for easily saving in sqlite
+        imageByteArray=convertBitmapIntoByteArray(imageBitmap);
+
         new FetchLocation().execute();
 
 
@@ -494,8 +508,6 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         locationAtrributes.add("problemDescription:" + informalDescription);
 
 
-        imageByteArray=convertBitmapIntoByteArray(imageBitmap);
-
 
         //now add the report to the main database
         new AddReportTask().execute();
@@ -523,8 +535,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
         String informalDescription=((EditText)findViewById(R.id.addInformalDescEditText)).getText().toString();
         locationAtrributes.add("problemDescription:" + informalDescription);
 
-        //converting the bitmap into byte array for easily saving in sqlite
-        imageByteArray=convertBitmapIntoByteArray(imageBitmap);
+
 
         //saving the report in the sqlite
         saveTheReportInDatabase(imageByteArray);
