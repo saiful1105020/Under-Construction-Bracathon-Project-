@@ -63,6 +63,7 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
     //Holds the custom list
     ListView lvwPosts;
     Context thisContext;
+    Boolean first = true;
 
 
 
@@ -125,7 +126,10 @@ public class ReportAutoUploadActivity extends AppCompatActivity implements Utili
                 return;                     //can't leave this intent until onActivityResult is called; no parent context
             }
         }
-        goToParentActivity(context);
+        if(first) {                         //sending first report and leaving this activity
+            first = false;
+            goToParentActivity(context);
+        }
     }
 
     /**
