@@ -54,8 +54,11 @@
                     </select>
                
             </div>
-            <div class="col-md-1"></div>
-            <div class="col-md-2">
+            <div class="col-md-2 checkbox" >
+				<h3 style="visibility: hidden">.</h3>
+				<label><input type="checkbox" name="check" value="1">Show Filtered Posts</label>
+			</div>
+            <div class="col-md-1">
                 <h3 style="visibility: hidden">.</h3>
                 <button type="submit" class="btn btn-success"><span>Go</span></button>
             </div>

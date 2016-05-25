@@ -106,9 +106,21 @@ class Admin extends CI_Controller {
 			if(isset($_POST['status_select'])) $search_key['status']=$_POST['status_select'];
 			else $search_key['status']="ANY";
 			
+			if(!empty($_POST['check'])) $filtered_search = FILTERED_SEARCH_OFF;
+			else $filtered_search = FILTERED_SEARCH_ON;
+			
 			//load last 20 posts using the search_key combination
 			$data['is_set']=true;
-			$posts=$this->admin_model->search_post($search_key);
+			
+			if($filtered_search == FILTERED_SEARCH_ON)
+			{
+				$posts=$this->admin_model->search_post($search_key);
+			}
+			else
+			{
+				$posts=$this->admin_model->search_all_post($search_key);
+			}
+			
 			$data['posts']=array();
 			foreach($posts as $p)
 			{

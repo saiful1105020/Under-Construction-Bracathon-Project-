@@ -12,4 +12,7 @@
 	define("LOG_ADD_CATEGORY",6);
 	define("LOG_DELETE_CATEGORY",7);
 	
+	define("FILTERED_SEARCH_ON",1);
+	define("FILTERED_SEARCH_OFF",0);
+	
 ?>
