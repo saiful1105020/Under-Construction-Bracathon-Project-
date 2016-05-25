@@ -168,6 +168,16 @@ class Admin_model extends CI_Model
 			$query = $this->db->query($sql,array($search_key['status'],$search_key['category'],$search_key['duration']))->result_array();
 			return $query;
 		}
+		else
+		{
+			$sql='SELECT * FROM post where `flag` = 0 and status = ?
+				and category = ? and CURRENT_TIMESTAMP < time + INTERVAL ? DAY 
+				and actual_location_id in (SELECT location_id FROM location WHERE neighbourhood = ?)
+				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
+			
+			$query = $this->db->query($sql,array($search_key['status'],$search_key['category'],$search_key['duration'],$search_key['location']))->result_array();
+			return $query;
+		}
 		
 		/**
 		SEARCH CONDITIONS:

@@ -73,13 +73,16 @@ class subAdmin extends CI_Controller {
 			if(isset($_POST['duration_select'])) $search_key['duration']=$_POST['duration_select'];
 			else $search_key['duration']="ANY";
 			
-			if(isset($_POST['status_select'])) $search_key['status']=$_POST['status_select'];
-			else $search_key['status']="ANY";
+			$search_key['status']="ANY";
 			
 			//load last 20 posts using the search_key combination
 			$data['is_set']=true;
 			$posts=$this->subAdminModel->search_post($search_key);
 			$data['posts']=array();
+			
+			//echo '<br><br><br>Test';
+			//print_r($search_key);
+			
 			foreach($posts as $p)
 			{
 				$post=$p;

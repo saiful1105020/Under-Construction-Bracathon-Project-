@@ -24,158 +24,92 @@ class subAdminModel extends CI_Model
 	
 	
 	public function search_post($search_key)
-	{
+	{	
 		/**
-			Show all posts
+			All posts --- tested
 		*/
-		
-		$search_key['status'] = 0;			//PENDING
-		
-		//echo '<br><br><br>Hello';
-		
-		if($search_key['location']==="ANY" && $search_key['category']==="ANY" && $search_key['duration']==="ANY" && $search_key['status']==="ANY")
+		if($search_key['location']==="ANY" && $search_key['category']==="ANY" && $search_key['duration']==="ANY")
 		{
-			$sql='SELECT * FROM post ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
+			$sql='SELECT * FROM post WHERE status = 0 ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
 			$query = $this->db->query($sql)->result_array();
 			return $query;
 		}
 		/**
-			Search by location (Neighbourhood)
+			Search by location (Neighbourhood) -- tested
 		*/
-		else if($search_key['category']==="ANY" && $search_key['duration']==="ANY" && $search_key['status']==="ANY")
+		else if($search_key['category']==="ANY" && $search_key['duration']==="ANY")
 		{
-			$sql='SELECT * FROM post where actual_location_id in (SELECT location_id FROM location WHERE neighbourhood = ?)
+			$sql='SELECT * FROM post where actual_location_id in (SELECT location_id FROM location WHERE neighbourhood = ?) and status = 0 
 				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
 			$query = $this->db->query($sql,array($search_key['location']))->result_array();
 			return $query;
 		}
 		/**
-			Search by category
+			Search by category -- tested
 		*/
-		else if($search_key['location']==="ANY" && $search_key['duration']==="ANY" && $search_key['status']==="ANY")
+		else if($search_key['location']==="ANY" && $search_key['duration']==="ANY")
 		{
-			$sql='SELECT * FROM post where category = ? ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
+			$sql='SELECT * FROM post where category = ? and status = 0 ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
 			$query = $this->db->query($sql,array($search_key['category']))->result_array();
 			return $query;
 		}
 		/**
-			Search by duration
+			Search by duration -- tested
 		*/
-		else if($search_key['location']==="ANY" && $search_key['category']==="ANY" && $search_key['status']==="ANY")
+		else if($search_key['location']==="ANY" && $search_key['category']==="ANY")
 		{
-			$sql='SELECT * FROM post where CURRENT_TIMESTAMP < time + INTERVAL ? DAY 
+			$sql='SELECT * FROM post where CURRENT_TIMESTAMP < time + INTERVAL ? DAY  and status = 0 
 				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
 			$query = $this->db->query($sql,array($search_key['duration']))->result_array();
 			return $query;
 		}
 		/**
-			Search by duration
+			Search by location & category -- tested
 		*/
-		else if($search_key['location']==="ANY" && $search_key['duration']==="ANY" && $search_key['category']==="ANY")
-		{
-			$sql='SELECT * FROM post where status = ? ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
-			$query = $this->db->query($sql,array($search_key['status']))->result_array();
-			return $query;
-		}
-		/**
-			Search by location & category
-		*/
-		else if($search_key['duration']==="ANY" && $search_key['status']==="ANY")
+		else if($search_key['duration']==="ANY")
 		{
 			$sql='SELECT * FROM post where actual_location_id in (SELECT location_id FROM location WHERE neighbourhood = ?) and category = ? 
+				and status = 0 
 				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
 			$query = $this->db->query($sql,array($search_key['location'],$search_key['category']))->result_array();
 			return $query;
 		}
 		/**
-			Search by location & duration
+			Search by location & duration  --- tested
 		*/
-		else if($search_key['category']==="ANY" && $search_key['status']==="ANY")
+		else if($search_key['category']==="ANY")
 		{
 			$sql='SELECT * FROM post where actual_location_id in 
 				(SELECT location_id FROM location WHERE neighbourhood = ?)
-				and CURRENT_TIMESTAMP < time + INTERVAL ? DAY 
+				and CURRENT_TIMESTAMP < time + INTERVAL ? DAY and status = 0 
 				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
 
 			$query = $this->db->query($sql,array($search_key['location'],$search_key['duration']))->result_array();
 			return $query;
 		}
 		/**
-			Search by location & status
+			search by category & duration -- tested
 		*/
-		else if($search_key['category']==="ANY" && $search_key['duration']==="ANY")
-		{
-			$sql='SELECT * FROM post where status = ? 
-				and actual_location_id in (SELECT location_id FROM location WHERE neighbourhood = ?)
-				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
-			$query = $this->db->query($sql,array($search_key['status'],$search_key['location']))->result_array();
-			return $query;
-		}
-		/**
-			search by category & duration
-		*/
-		else if($search_key['location']==="ANY" && $search_key['status']==="ANY")
+		else if($search_key['location']==="ANY")
 		{
 			$sql='SELECT * FROM post where category = ? and CURRENT_TIMESTAMP < time + INTERVAL ? DAY 
+				and status = 0 
 				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
 			
 			$query = $this->db->query($sql,array($search_key['category'],$search_key['duration']))->result_array();
 			return $query;
 		}
 		/**
-			search by category & status
-		*/
-		else if($search_key['location']==="ANY" && $search_key['duration']==="ANY")
-		{
-			$sql='SELECT * FROM post where category = ? and status = ? 
-				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
-			$query = $this->db->query($sql,array($search_key['category'],$search_key['status']))->result_array();
-			return $query;
-		}
-		/**
-			search by duration & status
-		*/
-		else if($search_key['location']==="ANY" && $search_key['category']==="ANY")
-		{
-			$sql='SELECT * FROM post where CURRENT_TIMESTAMP < time + INTERVAL ? DAY and status = ? 
-				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
-			$query = $this->db->query($sql,array($search_key['duration'],$search_key['status']))->result_array();
-			return $query;
-		}
-		/**
 			Search by duration , category & location
 		*/
-		else if($search_key['status']==="ANY")
+		else
 		{
 			$sql='SELECT * FROM post where CURRENT_TIMESTAMP < time + INTERVAL ? DAY
 				and category = ? and actual_location_id in (SELECT location_id FROM location WHERE neighbourhood = ?) 
+				and status = 0 
 				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
 			
 			$query = $this->db->query($sql,array($search_key['duration'],$search_key['category'],$search_key['location']))->result_array();
-			return $query;
-		}
-		/**
-			Search by status , category & location
-		*/
-		else if($search_key['duration']==="ANY")
-		{
-			$sql='SELECT * FROM post where status = ?
-				and category = ? and actual_location_id in (SELECT location_id FROM location WHERE neighbourhood = ?) 
-				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
-			
-			$query = $this->db->query($sql,array($search_key['status'],$search_key['category'],$search_key['location']))->result_array();
-			return $query;
-		}
-		/**
-			Search by duration , category & status
-		*/
-		else if($search_key['location']==="ANY")
-		{
-			$sql='SELECT * FROM post where status = ?
-				and category = ? and CURRENT_TIMESTAMP < time + INTERVAL ? DAY 
-				ORDER BY datediff(CURRENT_TIMESTAMP , time) ASC , COUNT_VOTES(post_id) DESC';
-			
-			$query = $this->db->query($sql,array($search_key['status'],$search_key['category'],$search_key['duration']))->result_array();
 			return $query;
 		}
 		
@@ -188,7 +122,7 @@ class subAdminModel extends CI_Model
 
 			DURATION : CURRENT_TIMESTAMP < time + INTERVAL ? DAY
 
-			STATUS : 	status = ?
+			
 		*/
 	}
 

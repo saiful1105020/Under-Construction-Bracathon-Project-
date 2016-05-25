@@ -1,4 +1,4 @@
- 
+	<br><br><br>
     <h2 style="text-align:center"><b>Selected Post</b></h2>
 
     <div class="container-fluid">
@@ -17,7 +17,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><b>1</b></td>';
+                        <td><b>1</b></td>
                         <?php echo'
                         <td><img src="data:image/jpeg;base64,' . base64_encode($post['image']) . '" width="260" height="80" class="img-responsive" alt="Responsive image"></td>
                         
