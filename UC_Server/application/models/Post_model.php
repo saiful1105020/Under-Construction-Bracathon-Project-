@@ -290,6 +290,21 @@ class Post_model extends CI_Model
 	}
 	
 	/**
+		This function may be used to perfectly calculate distance between two GEO co-ordinates.
+		To do that, we need to implement a mysql function
+	*/
+	public function distance($lat1, $lon1, $lat2, $lon2) {
+
+	  $theta = $lon1 - $lon2;
+	  $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+	  $dist = acos($dist);
+	  $dist = rad2deg($dist);
+	  $miles = $dist * 60 * 1.1515;
+	  
+	  return $miles * 1609.344;
+	}
+	
+	/**
 		Try to match an existing location in database with user's location.
 		If found, return location_id
 		Otherwise, return -1 to indicate no found
