@@ -135,6 +135,8 @@ class Post_model extends CI_Model
 	/**
 		Tried to detect similar posts based on location(lat,long), time of post and category.
 		There is a huge room for improvement here.
+		
+		20 meters distance is set for detecting same location -- need to experiment how it fits
 	*/
 	public function get_suggestions($lat,$lon,$time,$cat)
 	{
@@ -142,7 +144,7 @@ class Post_model extends CI_Model
 				l.street_number as streetNo,l.route as route,l.neighbourhood as neighbourhood,l.sublocality as sublocality,l.locality as locality
 				FROM `user` u,`post` p, `location` l 
 				WHERE u.user_id = p.user_id AND l.location_id = p.actual_location_id AND p.category = ? 
-				AND abs(l.`lat` - ?) <= 0.0004 AND abs(l.`lon` - ?) <=0.0004
+				AND abs(DISTANCE(l.`lat`,?,l.`lon`,?))<=20
 				AND abs(datediff(p.`time`,?)) <=7 AND p.status =0';
 				
 		$result = $this->db->query($sql,array($cat,$lat,$lon,$time))->result_array();
@@ -308,10 +310,12 @@ class Post_model extends CI_Model
 		Try to match an existing location in database with user's location.
 		If found, return location_id
 		Otherwise, return -1 to indicate no found
+		
+		200 meters radius is considered same neighbourhood -- needs to experiment how it fits
 	*/
 	public function get_location_id($lat,$lon)
 	{
-		$sql='SELECT location_id FROM location WHERE abs(`lat` - ?) <= 0.002 AND abs(`lon` - ?) <=0.002';
+		$sql='SELECT location_id FROM location WHERE abs(DISTANCE(`lat`,?,`lon`,?))<=200';
 		$query=$this->db->query($sql,array($lat,$lon));
 		
 		if($query->num_rows() > 0)
@@ -331,7 +335,7 @@ class Post_model extends CI_Model
 	*/
 	public function insert_location($data)
 	{
-		$sql='SELECT location_id FROM location WHERE abs(`lat` - ?) <= 0.002 AND abs(`lon` - ?) <=0.002';
+		$sql='SELECT location_id FROM location WHERE abs(DISTANCE(`lat`,?,`lon`,?))<=200';
 		$query=$this->db->query($sql,array($data['lat'],$data['lon']));
 		
 		$loc = array();
@@ -342,7 +346,7 @@ class Post_model extends CI_Model
 			$q=$this->db->query($s,array($data['lat'],$data['lon'],$data['street_number'],
 			$data['route'],$data['neighbourhood'],$data['sublocality'],$data['locality']));
 			
-			$s='SELECT location_id FROM location WHERE abs(`lat` - ?) <= 0.002 AND abs(`lon` - ?) <=0.002';
+			$s='SELECT location_id FROM location WHERE abs(DISTANCE(`lat`,?,`lon`,?))<=200';
 			$q=$this->db->query($s,array($data['lat'],$data['lon']))->row_array();
 			return $q['location_id'];
 		}
