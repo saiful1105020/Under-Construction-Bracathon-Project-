@@ -43,6 +43,7 @@
           <ul class="nav navbar-nav navbar-right">
             <li><a href="<?php echo site_url('bracAdmin'); ?>" class="glyphicon glyphicon-home"> Home</a></li>
             <li><a href="<?php echo site_url('bracAdmin/changePassword');?>">Edit Profile</a></li>
+            <li><a href="<?php echo site_url('bracAdmin/addAdmin');?>">Add/Remove Admin</a></li>
             <li><a href="<?php echo site_url('bracAdmin/logout'); ?>" class="glyphicon glyphicon-log-out"> LogOut</a></li>
           </ul>
           

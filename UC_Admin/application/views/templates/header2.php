@@ -48,6 +48,7 @@
             <li><a href="<?php echo site_url('admin/addCategory');?>">Add Category</a></li>
             <li><a href="<?php echo site_url('admin/deleteCategory');?>">Delete Category</a></li>
             <li><a href="<?php echo site_url('admin/showMap');?>">Show Map</a></li>
+            <li><a href="<?php echo site_url('admin/addSubAdmin');?>">Add/Remove SubAdmin</a></li>
             <li><a href="<?php echo site_url('admin/changePassword');?>">Edit Profile</a></li>
             <li><a href="<?php echo site_url('admin/logout'); ?>" class="glyphicon glyphicon-log-out"> LogOut</a></li>
           </ul>

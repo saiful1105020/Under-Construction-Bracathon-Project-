@@ -464,6 +464,7 @@ class Admin extends CI_Controller {
 	{
 		$this->load->view('changePassword');
 	}
+<<<<<<< HEAD
 	
 	public function changePassAction()
 	{
@@ -500,5 +501,11 @@ class Admin extends CI_Controller {
 		
 		
 		//echo $oldPassword;
+=======
+
+	public function addSubAdmin()
+	{
+		$this->load->view('addSubAdmin');
+>>>>>>> 8f7c99f519990f3847d1b1fe1409c1956fab90d3
 	}
 }
