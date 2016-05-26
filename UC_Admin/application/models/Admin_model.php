@@ -19,6 +19,26 @@ class Admin_model extends CI_Model
 	}
 	
 	/**
+		Return 1 if password matched
+		else return 0
+	*/
+	public function checkPassword($admin_name,$password)
+	{
+		$sql = 'SELECT password FROM admin WHERE admin_name = ? ';
+		$query = $this->db->query($sql,array($admin_name))->row_array();
+		$pass = $query['password'];
+		
+		if($pass === $password) return 1;
+		else return 0;
+	}
+	
+	public function changePassword($admin_name,$password)
+	{
+		$sql = 'UPDATE admin SET password = ? WHERE admin_name = ?';
+		$query = $this->db->query($sql,array($password,$admin_name));
+	}
+	
+	/**
 		Returns search result . don't show the posts filtered by sub-admin
 	*/
 	public function search_post($search_key)

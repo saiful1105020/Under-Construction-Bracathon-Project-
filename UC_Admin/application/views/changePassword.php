@@ -1,7 +1,7 @@
 <h2 style="text-align:center"><b>Change Password</b></h2>
 <br>
 
-      <form   action="<?php echo site_url('start/ePass');?>" method = "post"> 
+      <form   action="<?php echo site_url('admin/changePassAction');?>" method = "post"> 
        <div class="row placeholders">
             <div class="col-md-2 placeholder"></div>
             <div class="col-md-3 placeholder">
@@ -28,7 +28,7 @@
               <h4>Confirm New Password<h4>
             </div>
             <div class="col-md-3 placeholder">
-              <input type="password" class="form-control" name="confirmPassowrd" placeholder="Confirm New Password" ><br>
+              <input type="password" class="form-control" name="confirmPassword" placeholder="Confirm New Password" ><br>
             </div>
             <div class="col-md-4 placeholder"></div>
         </div>
