@@ -34,7 +34,10 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a id="logo" class="navbar-brand" href="">FixMyStreet</a>
+          <a class="navbar-brand" rel="home" href="#" title="FixMyStreet">
+              <img style="max-width:100px; margin-top: -7px;"
+                   src="<?php echo base_url("images/images.png"); ?>">
+          </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
