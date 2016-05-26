@@ -435,8 +435,8 @@ class Home extends CI_Controller {
 		*/
 		$logData = array();
 		
-		$logData['user_id']=$_POST['userId'];
-		$logData['cat_id']=$_POST['category'];
+		$logData['user_id']=$post['user_id'];
+		$logData['cat_id']=$post['category'];
 		$logData['log_type']=2;
 		$logData['post_id']=$this->post_model->maxPostID();
 		$logData['changed_status']=-1;
@@ -449,6 +449,14 @@ class Home extends CI_Controller {
 		echo json_encode($debug);
 		
 	}
+	
+	/**
+	public function test4()
+	{
+		$debug['post_inserted'] = $this->post_model->get_category_name(3);
+		echo json_encode($debug);
+	}
+	*/
 
 	/**
 		Required for showing dashboard (user profile)

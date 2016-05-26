@@ -382,6 +382,18 @@ class Post_model extends CI_Model
 	}
 	
 	/**
+		Return type: String
+		Params : $id -> category id
+	*/
+	public function get_category_name($id)
+	{
+		$sql = 'SELECT `name` FROM category where `categoryId` = ?';
+		$result = $this->db->query($sql,array($id))->row_array();
+		return $result['name'];
+	}
+	
+	
+	/**
 		Returns the list of category
 	*/
 	public function get_category_list()
