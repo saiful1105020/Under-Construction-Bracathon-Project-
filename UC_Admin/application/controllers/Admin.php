@@ -108,6 +108,15 @@ class Admin extends CI_Controller {
 			//if empty -> no problem
 			$data['catData'] = $this->post_model->get_all_categories();
 			
+			$search_key=array();
+			$search_key['location']="ANY";
+			$search_key['category']="ANY";
+			$search_key['duration']="ANY";
+			$search_key['status']="ANY";
+			$search_key['filter'] = 1;
+			
+			$data['search_key'] = $search_key;
+			
 			$this->load->view('adminhome',$data);
 		}
 		else
@@ -131,6 +140,8 @@ class Admin extends CI_Controller {
 			
 			if(!empty($_POST['check'])) $filtered_search = FILTERED_SEARCH_OFF;
 			else $filtered_search = FILTERED_SEARCH_ON;
+			
+			$search_key['filter'] = $filtered_search;
 			
 			//load last 20 posts using the search_key combination
 			$data['is_set']=true;
@@ -163,6 +174,7 @@ class Admin extends CI_Controller {
 				
 				array_push($data['posts'],$post);
 			}
+			$data['search_key'] = $search_key;
 			$this->load->view('adminhome',$data);
 		}
 	}

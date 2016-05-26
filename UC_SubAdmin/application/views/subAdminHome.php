@@ -1,6 +1,5 @@
  
     <h2 style="text-align:center"><b>Search Reported Posts</b></h2>
-
     <div class="container-fluid">
         
         <div class="row">
@@ -14,7 +13,12 @@
                     <?php
                          foreach($n_loc as $n)
                         {
-                             echo '<option value="'.$n['neighbourhood'].'">'.$n['neighbourhood'].'</option>';
+							
+							if($search_key['location']===$n['neighbourhood'])
+							{
+								echo '<option value="'.$n['neighbourhood'].'" selected>'.$n['neighbourhood'].'</option>';
+							}
+                            else echo '<option value="'.$n['neighbourhood'].'">'.$n['neighbourhood'].'</option>';
                         }
                     ?>
                 </select>
@@ -25,11 +29,15 @@
                 <select class="form-control" name="category_select">
                     <option value="ANY">ANY</option>
                     <?php
-                        foreach($catData as $c)
-                        {
-                            echo '<option value="'.$c['categoryId'].'"> '.$c['name'].' </option>';
-                        }
-                    ?>
+						foreach($catData as $c)
+						{
+							if($search_key['category']===$c['categoryId'])
+							{
+								echo '<option value="'.$c['categoryId'].'" selected> '.$c['name'].' </option>';
+							}
+							else echo '<option value="'.$c['categoryId'].'"> '.$c['name'].' </option>';
+						}
+					?>
 
                 </select>
             </div>
@@ -37,10 +45,36 @@
             <div class="col-md-2">
                 <h3 style="text-align: center"><span class="label label-danger">Duration</span></h3>
                     <select class="form-control" name="duration_select">
-                        <option value="ANY">ANY</option>
-                        <option value="1"> Last Day </option>
-                        <option value="7"> Last Week </option>
-                        <option value="30"> Last Month </option>
+                        <?php
+							if($search_key['duration']==="ANY")
+							{
+								echo '<option value="ANY" selected>ANY</option>
+								<option value="1"> Last Day </option>
+								<option value="7"> Last Week </option>
+								<option value="30"> Last Month </option>';
+							}
+							else if($search_key['duration']==1)
+							{
+								echo '<option value="ANY">ANY</option>
+								<option value="1" selected> Last Day </option>
+								<option value="7"> Last Week </option>
+								<option value="30"> Last Month </option>';
+							}
+							else if($search_key['duration']==7)
+							{
+								echo '<option value="ANY">ANY</option>
+								<option value="1"> Last Day </option>
+								<option value="7" selected> Last Week </option>
+								<option value="30"> Last Month </option>';
+							}
+							else if($search_key['duration']==30)
+							{
+								echo '<option value="ANY">ANY</option>
+								<option value="1"> Last Day </option>
+								<option value="7"> Last Week </option>
+								<option value="30" selected> Last Month </option>';
+							}
+						?>
                     </select>
                 
             </div>

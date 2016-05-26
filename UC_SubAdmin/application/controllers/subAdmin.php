@@ -54,6 +54,12 @@ class subAdmin extends CI_Controller {
 			$data['n_loc']=$this->subAdminModel->get_all_locations();
 			$data['catData'] = $this->post_model->get_all_categories();
 
+			$search_key=array();
+			$search_key['location']="ANY";
+			$search_key['category']="ANY";
+			$search_key['duration']="ANY";
+			
+			$data['search_key'] = $search_key;
 			
 			$this->load->view('subAdminHome',$data);
 		}
@@ -99,6 +105,7 @@ class subAdmin extends CI_Controller {
 				
 				array_push($data['posts'],$post);
 			}
+			$data['search_key'] = $search_key;
 			$this->load->view('subAdminHome',$data);
 			//print_r($data);
 		}
