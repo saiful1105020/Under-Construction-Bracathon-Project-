@@ -155,7 +155,6 @@ class BracAdmin extends CI_Controller {
 		$this->load->view('changePassword');
 	}
 	
-<<<<<<< HEAD
 	public function changePassAction()
 	{
 		echo '<br><br><br>';
@@ -191,12 +190,6 @@ class BracAdmin extends CI_Controller {
 	}
 	
 
-=======
-	public function addAdmin()
-	{
-		$this->load->view('addAdmin');
-	}
->>>>>>> 8f7c99f519990f3847d1b1fe1409c1956fab90d3
 	
 	//--------------------------------------------------------------------------------------//
 	//--------------------------------------------------------------------------------------//
@@ -220,5 +213,10 @@ class BracAdmin extends CI_Controller {
 		*/
 		
 		redirect('/home', 'refresh');
+	}
+	
+	public function addAdmin()
+	{
+		$this->load->view('addAdmin');
 	}
 }
