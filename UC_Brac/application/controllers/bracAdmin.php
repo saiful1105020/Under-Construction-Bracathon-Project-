@@ -149,6 +149,11 @@ class BracAdmin extends CI_Controller {
 	{
 		redirect('bracAdmin/showLog/0','refresh');
 	}
+
+	public function changePassword()
+	{
+		$this->load->view('changePassword');
+	}
 	
 
 	
@@ -167,7 +172,7 @@ class BracAdmin extends CI_Controller {
 		
 		//$this->session->sess_destroy();	//!Stop Session 
 		
-		unset($_SESSION["bracAdmin_id"]);
+		unset($_SESSION["bracAdminName"]);
 		
 		/**
 		*Redirect To Homepage

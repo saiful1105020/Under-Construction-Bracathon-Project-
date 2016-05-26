@@ -356,4 +356,9 @@ class subAdmin extends CI_Controller {
 		
 		$this->load->view('showALocation',$data);
 	}
+
+	public function changePassword()
+	{
+		$this->load->view('changePassword');
+	}
 }

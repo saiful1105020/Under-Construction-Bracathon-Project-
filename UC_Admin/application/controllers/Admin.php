@@ -459,64 +459,9 @@ class Admin extends CI_Controller {
 		$this->load->view('showALocation',$data);
 	}
 	
-	
-	/**
-	public function test()
+
+	public function changePassword()
 	{
-		//$data = array();
-
-
-		$locations = array();	//
-		$lCounts = array();	//
-
-
-		$nbrhood = $this->post_model->get_all_neighborhoods();
-		foreach ($nbrhood as $n) {
-			//echo $n['neighbourhood'];
-			$element = array();
-			$element['name']=$n['neighbourhood'];
-			$element['loc_id']=$this->post_model->get_nbrhd_location_ids($n['neighbourhood']);
-			$element['problem_count'] = $this->post_model->get_problem_count_location($element['loc_id']);
-			//array_push($data,$element);
-
-
-			array_push($locations,$n['neighbourhood']);				//
-			array_push($lCounts, $element['problem_count']);	//
-
-		}
-
-		//$pCounts = $this->post_model->get_problem_count();
-		//$cats = array(array(0,'Occupied Footpath'), array(1,'Open Dustbin'), array(2,'Open Manhole'), array(3,'Cluttered Electric Wires'), array(4,'Waterlogging'), array(5,'Risky Intersection'), array(6,'No Street Light'), array(7,'Crime Prone Area'), array(8,'Damaged Road'), array(9,'Wrong Way Traffic'));
-		$data['lCounts'] = $lCounts;
-		$data['locations'] = $locations;
-		$this->load->view("showBarGraph", $data);
-		//print_r($data);
-	}
-	*/
-	
-	//test -> transfer to bracAdmin module later
-	public function test2($post_id)
-	{
-		$p=$this->post_model->get_post_info($post_id);
-		echo '<br><br><br>';
-		//print_r($p);
-		
-		$post = $p;
-	
-		$temp=$this->post_model->get_vote_count($p['post_id']);
-				
-		$post['up_votes']=$temp['upvotes'];
-		$post['down_votes']=$temp['downvotes'];
-				
-		$post['user_name']=$this->post_model->get_user_name($p['user_id']);
-				
-		$post['user_rating']=$this->post_model->get_current_rating($p['user_id']);
-				
-		$post['cat_name'] = $this->post_model->get_category_name($p['category']);
-				
-		$post['location']=$this->post_model->get_location($p['actual_location_id']);
-		
-		print_r($post);
-		
+		$this->load->view('changePassword');
 	}
 }

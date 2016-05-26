@@ -10,7 +10,7 @@
     <link rel="icon" href="../../favicon.ico">
     <link rel="stylesheet" href="<?php echo base_url("assets/css/home.css"); ?>">
     <link rel="stylesheet" href="<?php echo base_url("assets/css/button.css"); ?>">
-    <title>Fix My Street - Admin</title>
+    <title>Fix My Street - SubAdmin</title>
 
     <!-- Bootstrap core CSS -->
      
@@ -45,6 +45,7 @@
             <li><a href="<?php echo site_url('subAdmin/showBarGraph');?>">Show Bar Graph</a></li>
             
             <li><a href="<?php echo site_url('subAdmin/showMap');?>">Show Map</a></li>
+            <li><a href="<?php echo site_url('subAdmin/changePassword');?>">Edit Profile</a></li>
             
             <li><a href="<?php echo site_url('subAdmin/logout'); ?>" class="glyphicon glyphicon-log-out"> LogOut</a></li>
           </ul>
