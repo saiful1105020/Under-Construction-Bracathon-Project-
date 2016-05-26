@@ -217,6 +217,35 @@ class BracAdmin extends CI_Controller {
 	
 	public function addAdmin()
 	{
-		$this->load->view('addAdmin');
+		//echo '<br><br><br>';
+		$data['adminList'] = $this->bracAdminModel->getAdminList();
+		//print_r($data);
+		
+		//generate list value:id, text: name
+		$this->load->view('addAdmin',$data);
+	}
+	
+	public function addAdminAction()
+	{
+		echo '<br><br><br>';
+		
+		$name = $_POST['name'];
+		$password = md5($_POST['password']);
+		
+		$this->bracAdminModel->addAdmin($name,$password);
+		
+		$data['success']=true;
+		$data['success_message']='Admin added successfully';
+		$this->load->view('status_message',$data);
+	}
+	
+	public function deleteAdminAction($id)
+	{
+		echo '<br><br><br>';
+		
+		$this->bracAdminModel->deleteAdmin($id);
+		$data['success']=true;
+		$data['success_message']='Sub-Admin deleted successfully';
+		$this->load->view('status_message',$data);
 	}
 }

@@ -504,6 +504,30 @@ class Admin extends CI_Controller {
 	
 	public function addSubAdmin()
 	{
-		$this->load->view('addSubAdmin');
+		//echo '<br><br><br>';
+		$data['subAdminList'] = $this->admin_model->getSubAdminList();
+		
+		//generate list value:id, text: name
+		$this->load->view('addSubAdmin',$data);
+	}
+	
+	public function addSubAdminAction()
+	{
+		$name = $_POST['name'];
+		$password = md5($_POST['password']);
+		
+		$this->admin_model->addSubAdmin($name,$password);
+		
+		$data['success']=true;
+		$data['success_message']='Sub-Admin added successfully';
+		$this->load->view('status_message',$data);
+	}
+	
+	public function deleteSubAdminAction($id)
+	{
+		$this->admin_model->deleteSubAdmin($id);
+		$data['success']=true;
+		$data['success_message']='Sub-Admin deleted successfully';
+		$this->load->view('status_message',$data);
 	}
 }

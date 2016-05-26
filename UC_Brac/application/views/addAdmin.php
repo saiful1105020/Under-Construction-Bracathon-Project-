@@ -7,14 +7,14 @@
           
           <h3 style="text-align:center"><font color="green">Create Admin</font></h3>
           <br><br>
-            <form   action="<?php echo site_url('start/ePass');?>" method = "post"> 
+            <form   action="<?php echo site_url('bracAdmin/addAdminAction');?>" method = "post"> 
              <div class="row placeholders">
                   
                   <div class="col-md-4 placeholder">
                     <h4>Name<h4>
                   </div>
                   <div class="col-md-6 placeholder">
-                    <input type="text" class="form-control" name="name" placeholder="Old Password" ><br>
+                    <input type="text" class="form-control" name="name" placeholder="Admin Name" ><br>
                   </div>
                   <div class="col-md-2 placeholder"></div>
               </div>
@@ -24,7 +24,7 @@
                     <h4>Password<h4>
                   </div>
                   <div class="col-md-6 placeholder">
-                    <input type="password" class="form-control" name="password" placeholder="New Password" ><br>
+                    <input type="password" class="form-control" name="password" placeholder="Password" ><br>
                   </div>
                   <div class="col-md-2 placeholder"></div>
               </div>
@@ -49,22 +49,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                      <td>Saiful</td>
-                      <td><button type="submit" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-                    <tr>
-                      <td>Saiful</td>
-                      <td><button type="submit" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-                    <tr>
-                      <td>Saiful</td>
-                      <td><button type="submit" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
-                    <tr>
-                      <td>Saiful</td>
-                      <td><button type="submit" class="btn btn-danger btn-md">Delete</button></td>
-                    </tr>
+                    
+					<?php foreach($adminList as $a){
+					echo'<tr>
+						<form method="POST" action="deleteAdminAction/'.$a['admin_id'].'">
+						  <td>'.$a['admin_name'].'</td>
+						  <td><button type="submit" class="btn btn-danger btn-md">Delete</button></td>
+						</form>
+					</tr>';
+						}
+					?>
+                    
+                    
                 </tbody>
             </table>
         </div>

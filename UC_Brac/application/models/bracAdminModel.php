@@ -42,6 +42,25 @@ class bracAdminModel extends CI_Model
 		$query = $this->db->query($sql,array($password,$admin_name));
 	}
 	
+	public function getAdminList()
+	{
+		$sql = "SELECT `admin_id`, `admin_name` FROM `admin`";
+		$query = $this->db->query($sql)->result_array();
+		return $query;
+	}
+	
+	public function deleteAdmin($id)
+	{
+		$sql = "DELETE FROM `admin` WHERE `admin_id` = ?";
+		$query = $this->db->query($sql,array($id));
+	}
+	
+	public function addAdmin($name,$password)
+	{
+		$sql = "INSERT INTO `admin`(`admin_name`, `password`) VALUES (?,?)";
+		$query = $this->db->query($sql,array($name,$password));
+	}
+	
 }
 
 ?>

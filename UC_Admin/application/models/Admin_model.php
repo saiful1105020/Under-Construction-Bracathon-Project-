@@ -408,6 +408,25 @@ class Admin_model extends CI_Model
 		$query = $this->db->query($sql,array($name))->row_array();
 		return $query['admin_id'];
 	}
+	
+	public function getSubAdminList()
+	{
+		$sql = "SELECT `id`, `name` FROM `subadmin`";
+		$query = $this->db->query($sql)->result_array();
+		return $query;
+	}
+	
+	public function deleteSubAdmin($id)
+	{
+		$sql = "DELETE FROM `subadmin` WHERE `id` = ?";
+		$query = $this->db->query($sql,array($id));
+	}
+	
+	public function addSubAdmin($name,$password)
+	{
+		$sql = "INSERT INTO `subadmin`(`name`, `password`) VALUES (?,?)";
+		$query = $this->db->query($sql,array($name,$password));
+	}
 
 }
 
