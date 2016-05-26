@@ -34,7 +34,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a id="logo" class="navbar-brand" href="">FixMyStreet</a>
+          
+          <a class="navbar-brand" rel="home" href="#" title="FixMyStreet">
+              <img style="max-width:100px; margin-top: -7px;"
+                   src="<?php echo base_url("images/images.png"); ?>">
+          </a>
+          <!--<a id="logo" class="navbar-brand" href="<?php echo base_url("assets/images/images.png"); ?>">FixMyStreet</a>-->
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -43,7 +48,7 @@
             <li><a href="<?php echo site_url('admin/addCategory');?>">Add Category</a></li>
             <li><a href="<?php echo site_url('admin/deleteCategory');?>">Delete Category</a></li>
             <li><a href="<?php echo site_url('admin/showMap');?>">Show Map</a></li>
-            <!--<li><a href="<?php echo site_url('admin/profile');?>">Profile</a></li>-->
+            <li><a href="<?php echo site_url('admin/changePassword');?>">Edit Profile</a></li>
             <li><a href="<?php echo site_url('admin/logout'); ?>" class="glyphicon glyphicon-log-out"> LogOut</a></li>
           </ul>
           
