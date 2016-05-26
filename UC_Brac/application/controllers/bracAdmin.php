@@ -51,18 +51,7 @@ class BracAdmin extends CI_Controller {
 
 			$logArray[$i] = $temp[$idx];
 			$logArray[$i]['message'] =  $this->form_string($temp[$idx]);
-			
-			
-			
-			//$data['message'] = $this->form_string($temp[$idx]);
-			//echo $data['message'].'    -------    '.$temp[$idx]['time'];
-			//print_r($temp[$idx]);
-			//echo '<br>';
-			
-			
 		}
-
-		//print_r($logArray);
 
 		$data['index'] = $index;
 		$data['logData'] =$logArray;
@@ -75,11 +64,11 @@ class BracAdmin extends CI_Controller {
 		
 		if($log['log_type']==2)
 		{
-			$str = "User ".$this->log_model->get_user_name($log['user_id'])." (".$this->log_model->get_user_rating($log['user_id']).") Reported a problem";
+			$str = "User <b>".$this->log_model->get_user_name($log['user_id'])."</b> (<font color='red'>".$this->log_model->get_user_rating($log['user_id'])."</font>) Reported a problem";
 		}
 		else if($log['log_type']==3)
 		{
-			$str = "Admin ".$this->log_model->get_admin_name($log['user_id'])." logged in";
+			$str = "Admin <b>".$this->log_model->get_admin_name($log['user_id'])."</b> logged in";
 		}
 		else if($log['log_type']==4)
 		{
@@ -91,34 +80,34 @@ class BracAdmin extends CI_Controller {
 					3 => SOLVED
 			*/
 			$tempstr = array(0=>"PENDING",1=>"VERIFIED",2=>"REJECTED",3=>"SOLVED");
-			$str = "Admin ".$this->log_model->get_admin_name($log['user_id'])." marked a post as ".$tempstr[$log['changed_status']];
+			$str = "Admin <b>".$this->log_model->get_admin_name($log['user_id'])."</b> marked a post as <font color='blue'>".$tempstr[$log['changed_status']]."</font>";
 			
 			//print_r($tempstr);
 		}
 		else if($log['log_type']==5)
 		{
-			$str = "Admin ".$this->log_model->get_admin_name($log['user_id'])." logged out";
+			$str = "Admin <b>".$this->log_model->get_admin_name($log['user_id'])."</b> logged out";
 		}
 		else if($log['log_type']==6)
 		{
-			$str = "Admin ".$this->log_model->get_admin_name($log['user_id'])." added a new category : <b>".$log['cat_name'].'</b>';
+			$str = "Admin <b>".$this->log_model->get_admin_name($log['user_id'])."</b> added a new category : <font color='blue'>".$log['cat_name'].'</font>';
 		}
 		else if($log['log_type']==7)
 		{
-			$str = "Admin ".$this->log_model->get_admin_name($log['user_id'])." deleted a category : <b>".$log['cat_name'].'</b>';
+			$str = "Admin <b>".$this->log_model->get_admin_name($log['user_id'])."</b> deleted a category : <font color='blue'>".$log['cat_name'].'</font>';
 		}
 		else if($log['log_type']==8)
 		{
-			$str = "Sub-Admin ".$this->log_model->get_subAdmin_name($log['user_id'])." logged in";
+			$str = "Sub-Admin <b>".$this->log_model->get_subAdmin_name($log['user_id'])."</b> logged in";
 		}
 		else if($log['log_type']==9)
 		{
-			$str = "Sub-Admin ".$this->log_model->get_subAdmin_name($log['user_id'])." logged out";
+			$str = "Sub-Admin <b>".$this->log_model->get_subAdmin_name($log['user_id'])."</b> logged out";
 		}
 		else if($log['log_type']==10)
 		{
-			$tempstr = array(0=>"UNFLAGGED",1=>"FLAGGED");
-			$str = "Sub-Admin ".$this->log_model->get_subAdmin_name($log['user_id'])." marked a post as ".$tempstr[$log['changed_status']];
+			$tempstr = array(0=>"<b><font color='green'>UNFLAGGED</font></b>",1=>"<font color='red'>FLAGGED</font>");
+			$str = "Sub-Admin <b>".$this->log_model->get_subAdmin_name($log['user_id'])."</b> marked a post as ".$tempstr[$log['changed_status']];
 		}
 		return $str;
 	}
