@@ -464,4 +464,9 @@ class Admin extends CI_Controller {
 	{
 		$this->load->view('changePassword');
 	}
+
+	public function addSubAdmin()
+	{
+		$this->load->view('addSubAdmin');
+	}
 }

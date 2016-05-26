@@ -155,7 +155,10 @@ class BracAdmin extends CI_Controller {
 		$this->load->view('changePassword');
 	}
 	
-
+	public function addAdmin()
+	{
+		$this->load->view('addAdmin');
+	}
 	
 	//--------------------------------------------------------------------------------------//
 	//--------------------------------------------------------------------------------------//
