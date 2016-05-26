@@ -10,7 +10,7 @@
     <link rel="icon" href="../../favicon.ico">
     <link rel="stylesheet" href="<?php echo base_url("assets/css/home.css"); ?>">
     <link rel="stylesheet" href="<?php echo base_url("assets/css/button.css"); ?>">
-    <title>UnderConstruction - Admin</title>
+    <title>FixMyStreet - Admin</title>
 
     <!-- Bootstrap core CSS -->
      
@@ -34,7 +34,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a id="logo" class="navbar-brand" href="">UnderConstruction</a>
+          <a id="logo" class="navbar-brand" href="">FixMyStreet</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">

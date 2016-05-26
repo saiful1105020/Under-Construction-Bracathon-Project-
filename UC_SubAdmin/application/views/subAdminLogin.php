@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Under Construction</title>
+    <title>Fix My Street</title>
 	
 	<link rel="stylesheet" href="<?php echo base_url("assets/css/bootstrap.min.css"); ?>" />
 	<link rel="stylesheet" href="<?php echo base_url("assets/css/bootstrap-theme.min.css"); ?>" />
@@ -236,7 +236,7 @@ body{
             <div class="form-login" >
             
 			<div class="header">	
-			<div>Under<span>Construction</span></div>
+			<div>Fix <span>My Street</span></div>
 			</div>
 			
 			<div class="header1">Sub-Admin</div>
