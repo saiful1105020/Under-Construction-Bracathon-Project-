@@ -22,6 +22,26 @@ class bracAdminModel extends CI_Model
 		return $query;
 	}
 	
+	/**
+		Return 1 if password matched
+		else return 0
+	*/
+	public function checkPassword($admin_name,$password)
+	{
+		$sql = 'SELECT password FROM bracadmin WHERE `name` = ? ';
+		$query = $this->db->query($sql,array($admin_name))->row_array();
+		$pass = $query['password'];
+		
+		if($pass === $password) return 1;
+		else return 0;
+	}
+	
+	public function changePassword($admin_name,$password)
+	{
+		$sql = 'UPDATE bracadmin SET password = ? WHERE `name` = ?';
+		$query = $this->db->query($sql,array($password,$admin_name));
+	}
+	
 }
 
 ?>

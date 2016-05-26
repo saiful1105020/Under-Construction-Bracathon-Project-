@@ -356,9 +356,46 @@ class subAdmin extends CI_Controller {
 		
 		$this->load->view('showALocation',$data);
 	}
-
+	
 	public function changePassword()
 	{
 		$this->load->view('changePassword');
+	}
+	
+	public function changePassAction()
+	{
+		$oldPassword = md5($_POST['oldPassword']);
+		$newPassword = md5($_POST['newPassword']);
+		$confirmPassword = md5($_POST['confirmPassword']);
+		
+		//check password match
+		if($this->subAdminModel->checkPassword($_SESSION['subAdminName'],$oldPassword)==1)
+		{
+			//check new and confirm
+			if($newPassword === $confirmPassword)
+			{
+				//change password
+				$this->subAdminModel->changePassword($_SESSION['subAdminName'],$newPassword);
+				$data['success']=true;
+				$data['success_message']='Password changed successfully';
+				$this->load->view('status_message',$data);
+			}
+			else
+			{
+				$data['success']=false;
+				$data['fail_message']='Password and Confirm Password not matched. Please Try Again.';
+				$this->load->view('status_message',$data);
+			}
+		}
+		else
+		{
+			$data['success']=false;
+			$data['fail_message']='Wrong Password. Please Try Again Later.';
+			$this->load->view('status_message',$data);
+		}
+		
+		
+		
+		//echo $oldPassword;
 	}
 }
