@@ -596,6 +596,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
         //inserting the report in sqlite database
         help.insertRecord(locationAtrributes, imageByteArray);
+        help.close();
 
         Log.d("after new insertion : ", help.getAllRecords().toString());
 

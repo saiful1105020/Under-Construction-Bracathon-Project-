@@ -302,6 +302,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
         ListView list=(ListView)getView().findViewById(R.id.lvwPosts);
         list.setAdapter(adapter);
+        list.invalidateViews();
         adapter.notifyDataSetChanged();
     }
 
@@ -674,6 +675,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
             //Then populate the arraylist again with latest posts
             try {
                 populatePostList(jsonPosts);
+                populatePostListView();
             } catch (Exception e) {
                 e.printStackTrace();
             }
