@@ -250,6 +250,10 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
             int curIndex=0, N=postsJSONArray.length();
 
+            if(N==0) {
+                Toast.makeText(getActivity(), "No recent reports from this area", Toast.LENGTH_LONG).show();
+            }
+
             while(curIndex<N) {
                 JSONObject curObj = postsJSONArray.getJSONObject(curIndex++);
                 Log.d("jsonReturned", curObj.toString());

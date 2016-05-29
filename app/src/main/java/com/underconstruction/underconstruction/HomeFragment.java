@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.underconstruction.underconstruction.LineGraphPackage.Line;
 import com.underconstruction.underconstruction.LineGraphPackage.LineGraph;
@@ -263,6 +264,8 @@ public class HomeFragment extends Fragment {
             if (jsonRating == null) {
 //                Utility.CurrentUser.showConnectionError(getActivity());
                 Log.d("Connection Error", "Probably couldn't connect to the internet");
+                Toast.makeText(getActivity(), "Please connect to the internet to see your rating graph", Toast.LENGTH_LONG).show();
+
                 return;
             }
 
@@ -272,8 +275,6 @@ public class HomeFragment extends Fragment {
             } catch(Exception e){
                 e.printStackTrace();
             }
-
-            formatRatingFields(jsonRating);
         }
 
         /**
@@ -310,6 +311,10 @@ public class HomeFragment extends Fragment {
             graphItemStack.push(new RatingGraphItem(currentRating, ""));
 
             Log.d("HomeFragment", "json array len " + N);
+
+            if(N==1) {
+                Toast.makeText(getActivity(), "Report a problem to see your rating graph!", Toast.LENGTH_LONG).show();
+            }
 
             //This loop processes the items one by one and pushes them into a stack
             while (curIndex < N) {
@@ -398,7 +403,7 @@ public class HomeFragment extends Fragment {
         //and restore the stack
         userRating.setAllRatingGraphItems(savedCopy);
 
-        l.setColor(Color.parseColor("#FFBB33"));
+        l.setColor(Color.parseColor("#FFA100"));
 
         //then build the fraph
         LineGraph li = (LineGraph)getView().findViewById(R.id.graph);

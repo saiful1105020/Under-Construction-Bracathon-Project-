@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -185,6 +186,10 @@ public class DashboardFragment extends Fragment {
 
             //sets up variables to traverse through the entire JSON Array
             int curIndex=0, N=dashboardListJSONArray.length();
+
+            if(N==0) {
+                Toast.makeText(getActivity(), "You have not reported any problem yet!", Toast.LENGTH_LONG).show();
+            }
 
             while(curIndex<N) {
                 //get the json object at that index

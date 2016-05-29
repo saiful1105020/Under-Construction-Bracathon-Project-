@@ -14,7 +14,7 @@
     <string name="user_name">User Name</string>
     <string name="password">Password</string>
     <string name="Login">Login</string>
-    <string name="Registration">Don\'t have an account? SignUp! It\'s free!</string>
+    <string name="Registration">Register with email</string>
     <string name="Forget">Forgot Password?</string>
     <string name="Remember">Remember Me</string>
 

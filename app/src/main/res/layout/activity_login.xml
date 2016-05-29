@@ -10,26 +10,27 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="1"
-        android:gravity="center_vertical|center_horizontal">
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_weight="1">
 
         <ImageView
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="70dp"
             android:id="@+id/imageView"
             android:scaleType="fitCenter"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@drawable/brac_logo" />
     </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:layout_margin="15dp">
+        android:layout_margin="15dp"
+        android:id="@+id/layoutUserPass"
+        android:visibility="gone">
 
         <EditText
             android:layout_width="match_parent"
@@ -72,31 +73,23 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical|fill_horizontal">
 
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/Login"
-            android:id="@+id/btnLoginLogin" />
+            android:id="@+id/btnLoginLogin"
+            android:visibility="gone" />
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/layoutGmail"
-            android:visibility="visible">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Or"
-                android:id="@+id/textView21"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="5dp" />
+            android:visibility="visible"
+            android:layout_weight="1">
 
             <Button
                 android:layout_width="fill_parent"
@@ -109,8 +102,27 @@
                 android:clickable="false"
                 android:paddingLeft="10dp"
                 android:paddingRight="40dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Or"
+                android:id="@+id/textView21"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="5dp"
+                android:paddingTop="10dp" />
+
         </LinearLayout>
 
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/Login"
+            android:id="@+id/btnSeeLogin"
+            android:visibility="visible"
+            android:layout_weight="1" />
 
         <TextView
             android:layout_width="fill_parent"
@@ -118,7 +130,9 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/lblLoginError"
             android:gravity="center_horizontal"
-            android:textColor="#ffcc0000" />
+            android:textColor="#97005E"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp" />
 
     </LinearLayout>
 
