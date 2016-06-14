@@ -505,47 +505,51 @@ class Home extends CI_Controller {
 		
 		
 		$jsonData['posts'] = array();
+		$post = array();
 		
-		foreach($result as $r)
+		if($cat != -1)				//Category 'others' by default; Users shouldn't get post suggestions every time;
 		{
-			$post['userName']=$r['user_name'];
-			$post['userId']=$r['user_id'];
-			
-			$post['postId']=$r['post_id'];
-			$post['category']=$r['category'];
-			$post['timeOfPost']=$r['time'];
-			$post['informalLocation']=$r['informal_location'];
-			$post['problemDescription']=$r['text'];
-			$post['image']=base64_encode($r['image']);
-			
-			//$temp=$this->post_model->get_location($r['actual_location_id']);
-			$post['formalLocation']=$r['neighbourhood'];
-			
-			///$post['status']=$r['status'];
-			///$post['rating_change']=$r['rating_change'];
-			
-			$post['userName']=$r['user_name'];
-			$post['userRating']=$r['user_rating'];
-			$post['userId']=$r['user_id'];
-			
-			/**
-				Find upvote and downvote counts
-			*/
-			$temp = $this->post_model->get_vote_count($post['postId']);
-			$post['voteCount']=$temp['upvotes']-$temp['downvotes'];
-			//$post['downCount']=$temp['downvotes'];
-			
-			/**
-				Find user ids' who already have voted for the post
-			*/
-			/*
-			$tmp = $this->post_model->get_voters($post['postId']);
-			$post['upVoters']=$tmp['up_voters'];
-			$post['downVoters']=$tmp['down_voters'];
-			*/
-			array_push($jsonData['posts'],$post);
+			foreach($result as $r)
+			{
+
+				$post['userName']=$r['user_name'];
+				$post['userId']=$r['user_id'];
+				
+				$post['postId']=$r['post_id'];
+				$post['category']=$r['category'];
+				$post['timeOfPost']=$r['time'];
+				$post['informalLocation']=$r['informal_location'];
+				$post['problemDescription']=$r['text'];
+				$post['image']=base64_encode($r['image']);
+				
+				//$temp=$this->post_model->get_location($r['actual_location_id']);
+				$post['formalLocation']=$r['neighbourhood'];
+				
+				///$post['status']=$r['status'];
+				///$post['rating_change']=$r['rating_change'];
+				
+				$post['userName']=$r['user_name'];
+				$post['userRating']=$r['user_rating'];
+				$post['userId']=$r['user_id'];
+				
+				/**
+					Find upvote and downvote counts
+				*/
+				$temp = $this->post_model->get_vote_count($post['postId']);
+				$post['voteCount']=$temp['upvotes']-$temp['downvotes'];
+				//$post['downCount']=$temp['downvotes'];
+				
+				/**
+					Find user ids' who already have voted for the post
+				*/
+				/*
+				$tmp = $this->post_model->get_voters($post['postId']);
+				$post['upVoters']=$tmp['up_voters'];
+				$post['downVoters']=$tmp['down_voters'];
+				*/
+				array_push($jsonData['posts'],$post);
+			}
 		}
-		
 		
 		
 		

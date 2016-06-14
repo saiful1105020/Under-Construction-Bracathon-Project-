@@ -116,7 +116,8 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
         final ArrayList<Integer> getCategoryIds = new ArrayList<Integer>();
         getCategoryIds.addAll(Utility.CategoryList.getCategoryIds());
-        list.setItemChecked(Utility.CategoryList.getCategoryList().size()-1, true);
+        list.setItemChecked(Utility.CategoryList.getCategoryList().size() - 1, true);
+        list.smoothScrollToPosition(Utility.CategoryList.getCategoryList().size() - 1);
         categorySelected = Utility.CategoryList.get("Others");
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -595,6 +596,7 @@ public class ReportProblem extends AppCompatActivity implements Utility.UploadDe
 
         //inserting the report in sqlite database
         help.insertRecord(locationAtrributes, imageByteArray);
+        help.close();
 
         Log.d("after new insertion : ", help.getAllRecords().toString());
 

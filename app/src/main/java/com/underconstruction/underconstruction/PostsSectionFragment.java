@@ -250,6 +250,10 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
             int curIndex=0, N=postsJSONArray.length();
 
+            if(N==0) {
+                Toast.makeText(getActivity(), "No recent reports from this area", Toast.LENGTH_LONG).show();
+            }
+
             while(curIndex<N) {
                 JSONObject curObj = postsJSONArray.getJSONObject(curIndex++);
                 Log.d("jsonReturned", curObj.toString());
@@ -298,6 +302,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
 
         ListView list=(ListView)getView().findViewById(R.id.lvwPosts);
         list.setAdapter(adapter);
+        list.invalidateViews();
         adapter.notifyDataSetChanged();
     }
 
@@ -670,6 +675,7 @@ public class PostsSectionFragment extends Fragment implements GoogleApiClient.Co
             //Then populate the arraylist again with latest posts
             try {
                 populatePostList(jsonPosts);
+                populatePostListView();
             } catch (Exception e) {
                 e.printStackTrace();
             }

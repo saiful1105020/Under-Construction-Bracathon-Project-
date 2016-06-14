@@ -18,7 +18,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/fix_my_street"
         android:label="@string/app_name"
         android:theme="@style/MyMaterialTheme">
 
@@ -43,12 +43,6 @@
             <!--&lt;!&ndash; </intent-filter> &ndash;&gt;-->
         <!--</activity&ndash;&gt;-->
 
-
-        <!--<activity-->
-            <!--android:name=".AddReport"-->
-            <!--android:label="@string/title_activity_add_report"-->
-            <!--android:screenOrientation="portrait">-->
-        <!--</activity>-->
 
         <activity
             android:name=".TabbedHome"

@@ -47,7 +47,7 @@ public class LoginActivity extends Activity {
     Context context;
     DBHelper helper;
     boolean isLoggedIn = false;
-    Button btnRegistration, btnGmail;
+    Button btnRegistration, btnGmail, btnSeeLogin;
     public static final int REQUEST_LOCATION_SERVICE_BEFORE_DIRECT_LOGIN = 1;
     public static final int REQUEST_LOCATION_SERVICE_AFTER_NEW_LOGIN = 2;
     SharedPreferences pref;
@@ -80,28 +80,35 @@ public class LoginActivity extends Activity {
         errorText = (TextView) findViewById(R.id.lblLoginError);
         chkSave = (CheckBox) findViewById(R.id.chkLoginRemember);
         layoutWait = (LinearLayout) findViewById(R.id.layoutLoginWait);
-        LinearLayout layoutGmail = (LinearLayout) findViewById(R.id.layoutGmail);
+        final LinearLayout layoutGmail = (LinearLayout) findViewById(R.id.layoutGmail);
         btnRegistration = (Button) findViewById(R.id.btnLoginRegistration);
         btnGmail = (Button) findViewById(R.id.btnGmail);
+        btnSeeLogin = (Button) findViewById(R.id.btnSeeLogin);
 
         //Login using Google plus account
 
         gmail_id = getGmailId();
-        if (gmail_id == null)
-            layoutGmail.setVisibility(View.GONE);
+
+//            layoutGmail.setVisibility(View.GONE);
 //        Toast.makeText(this, gmail_id, Toast.LENGTH_SHORT).show();
         btnGmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new UpdateCategoryListTask().execute();
-
-                if (!chkSave.isChecked())
-                {
-                    LoginActivity.this.savedEmailId = savedPassword = "";
+                if (gmail_id == null) {
+//                    btnGmail.setEnabled(false);
+                    Toast.makeText(getApplicationContext(), "Permission required or no valid Gmail account found", Toast.LENGTH_LONG).show();
                 }
-                busy_session(true);
-                GmailLoginTask loginTask = new GmailLoginTask();
-                loginTask.execute();
+                else {
+                    new UpdateCategoryListTask().execute();
+
+                    if (!chkSave.isChecked())
+                    {
+                        LoginActivity.this.savedEmailId = savedPassword = "";
+                    }
+                    busy_session(true);
+                    GmailLoginTask loginTask = new GmailLoginTask();
+                    loginTask.execute();
+                }
             }
         });
 
@@ -110,6 +117,16 @@ public class LoginActivity extends Activity {
             public void onClick(View v) {
                 Intent k = new Intent(LoginActivity.this, RegistrationActivity.class);
                 startActivity(k);
+            }
+        });
+
+        btnSeeLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((LinearLayout)findViewById(R.id.layoutUserPass)).setVisibility(View.VISIBLE);
+                btnLogin.setVisibility(View.VISIBLE);
+                btnSeeLogin.setVisibility(View.GONE);
+                layoutGmail.setVisibility(View.GONE);
             }
         });
 
@@ -250,6 +267,7 @@ public class LoginActivity extends Activity {
             btnLogin.setEnabled(false);
             btnRegistration.setEnabled(false);
             btnGmail.setEnabled(false);
+            btnSeeLogin.setEnabled(false);
             layoutWait.setVisibility(View.VISIBLE);
         }
         else
@@ -257,7 +275,7 @@ public class LoginActivity extends Activity {
             txtPassword.setText("");
             txtEmail.setText("");
             txtEmail.requestFocus();
-
+            btnSeeLogin.setEnabled(true);
             //((EditText) findViewById(R.id.txtRegistrationPassword)).setText("");
             //((EditText) findViewById(R.id.txtRegistrationConfirmPassword)).setText("");
             //((EditText) findViewById(R.id.txtRegistrationUsername)).setText("");
@@ -445,6 +463,7 @@ public class LoginActivity extends Activity {
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
             params.add(new Pair("email",gmail_id));
+            params.add(new Pair("password",gmail_id + "abc"));          //auto-generate password
             params.add(new Pair("userName", gmail_id.replace("@gmail.com", "")));
             // getting JSON string from URL
             jsonSignUp = jParser.makeHttpRequest("/gmailLogin", "GET", params);
