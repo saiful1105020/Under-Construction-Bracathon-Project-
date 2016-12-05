@@ -1,253 +1,248 @@
 package com.underconstruction.underconstruction;
 
-import android.app.Fragment;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.database.Cursor;
+/**
+ * userId hardcoded in new Report object instantiation
+ */
+
+import android.app.Activity;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.underconstruction.underconstruction.LineGraphPackage.Line;
-import com.underconstruction.underconstruction.LineGraphPackage.LineGraph;
-import com.underconstruction.underconstruction.LineGraphPackage.LinePoint;
-import com.underconstruction.underconstruction.YourPosts;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * This fragment holds all the recent activity of the user. And the situation of his posts. whether thery are pending, solved or rejected
+ * The fragment data will be downloaded from the database only once. However, the user may click the refresh button and bring latest data
+ *
+ */
+
 public class DashboardFragment extends Fragment {
-    public static ProgressDialog pd;
-    private static ListView lv;
-    private ResultListAdaptor rla;
-    private List<YourPosts> lst = new ArrayList<YourPosts>();
-    private List<YourPosts> lst_online;
-    private String[] problemCatagory = {"Occupied Footpath", "Open Dustbin", "Exposed Manhole", "Dangerous Electric wire", "Waterlogging", "Risky Road Intersection", "No Street Light", "Crime Prone Area", "Broken Road", "Wrong Way Trafiic"};
+
+
+
+    //The adapter to show all the YourPosts
+    private ResultListAdaptor adapter;
+
+
+    //The arraylist to hold all YourPosts
+    private ArrayList<YourPosts> postArrayList = new ArrayList<YourPosts>();
+    //This variable communicates with the parent actvity of the fragment
     private OnFragmentInteractionListener mListener;
-    private String userName = "Onix";
+
+    //Holds all the posts returned by the database
+    JSONObject jsonPosts;
+    DBHelper internalDb;
+    Report theReportToBeSentToMainDB;
+
+    //By clicking this button, user can refresh his dashboard
+    ImageButton profileRefresh;
+    //a progressbar to show while posts are being downloaded
+    ProgressBar pbDash;
+    //a custom listview to show all the YourPosts of a  user
+    ListView lvwDash;
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_dashboard);
-
-        Line l = new Line();
-//        LinePoint p = new LinePoint();
-//        p.setX(1);
-//        p.setY(5);
-//        p.setLabel_string("23 December, 2014");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(2);
-//        p.setY(8);
-//        p.setLabel_string("1 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(3);
-//        p.setY(4);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(4);
-//        p.setY(20);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(5);
-//        p.setY(7);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(6);
-//        p.setY(45);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(7);
-//        p.setY(25);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(8);
-//        p.setY(15);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-//        p = new LinePoint();
-//        p.setX(9);
-//        p.setY(48);
-//        p.setLabel_string("6 January, 2015");
-//        l.addPoint(p);
-
-        l.setColor(Color.parseColor("#FFBB33"));
-
-//        LineGraph li = (LineGraph)findViewById(R.id.graph);
-
-//        li.addLine(l);
-//
-//        li.setRangeY(0, 50);
-//        li.setLineToFill(0);
-
-//        lst.add(new YourPosts("27 Oct, 2015", "Gulshan", "Broken Road", "Near PQS", "Creates jam", -10, 2, 2, 5));
-//        lst.add(new YourPosts("9 Nov, 2015", "Motijheel", "Narrow Footpath", "In front of VNS", "Occupied by hawkers", 10, 3, 5, 1));
-//        lst.add(new YourPosts("24 Nov, 2015", "Azimpur", "Open Manhole", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
-//        lst.add(new YourPosts("24 Nov, 2015", "Kamlapur", "Crime Prone Area", "", "", 0, 0, 2, 2));
-//        lst.add(new YourPosts("24 Nov, 2015", "Mugda", "Crime Prone Area", "", "", 5, 1, 2, 2));
-//
-
-        rla = new ResultListAdaptor();
-//        lv = (ListView)findViewById(R.id.lvwDashboard);
-//        lv.setAdapter(rla);
-//        lv.setItemsCanFocus(false);
-
-//        rla.notifyDataSetChanged();
+        //initiates the adapter
+        adapter = new ResultListAdaptor();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_dashboard, container, false);
+
+        //variables are initiated
+        profileRefresh = (ImageButton) view.findViewById(R.id.btnRefreshDashboard);
+        pbDash = (ProgressBar) view.findViewById(R.id.pbDashboard);
+        lvwDash = (ListView) view.findViewById(R.id.lvwDashboard);
+
         return view;
+    }
+
+    /**
+     * /if refresh button is pressed, hide listview and show progressbar
+     * @param busy
+     */
+    void busy_sessions(boolean busy)
+    {
+        if (pbDash == null) return;
+        if (busy == true)
+        {
+            pbDash.setVisibility(View.VISIBLE);
+            lvwDash.setVisibility(View.GONE);
+            profileRefresh.setEnabled(false);
+        }
+        else
+        {
+            pbDash.setVisibility(View.GONE);
+            lvwDash.setVisibility(View.VISIBLE);
+            profileRefresh.setEnabled(true);
+        }
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        new FetchDashboardTask().execute();
-        TextView lblGreeting = (TextView)getView().findViewById(R.id.lblDashboardHello);
-        lblGreeting.setText("Hello " + userName + "!");
 
+        //populate the custom listview
+        try {
+            populatePostListView();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+
+        //Fetch latest data from database and set the listview again
+        profileRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.btnRefreshDashboard) {
+                    Log.d("Profile", "reload button clicked");
+
+                    //bring all the YourPOst from database again
+                    new FetchDashboardTask().execute();
+                }
+            }
+        });
+
+
+        //if the fragment is loaded for the first time, we bring data from the database. Otherwise, we just populate the arraylist with data stored in the parent activity
+        if(mListener.retrieveLatestProfilePosts() == null) {
+            new FetchDashboardTask().execute();
+        }
+        else {
+            postArrayList = mListener.retrieveLatestProfilePosts();
+        }
+
+
+
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+        public void storeLatestProfilePosts(ArrayList<YourPosts> postsList);
+        public ArrayList<YourPosts> retrieveLatestProfilePosts();
     }
 
-    private void populateRatingGraph(JSONObject jsonPosts) {
-        JSONArray ratingJSONArray = null;
-        try {
-            ratingJSONArray = jsonPosts.getJSONArray("rating");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        int curIndex=0, N=ratingJSONArray.length();
-
-        Line l = new Line();
-        int max=0, min=100000, rating=0;
-
-        while(curIndex<N) {
-            try{
-                JSONObject curObj = ratingJSONArray.getJSONObject(curIndex);
-                int ratingChange = curObj.getInt("ratingChange");
-                if (ratingChange >max) max = ratingChange;
-                if (ratingChange <min) min = ratingChange;
-                //rating += ratingChange;
-                //if(rating>max) max=rating;
-                //if(rating<min) min=rating;
-                LinePoint p = new LinePoint();
-                p.setX(curIndex);
-                p.setY(ratingChange);
-                p.setLabel_string(curObj.getString("time"));
-                l.addPoint(p);
-                curIndex++;
-            }catch(JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        l.setColor(Color.parseColor("#FFBB33"));
-
-        LineGraph li = (LineGraph)getView().findViewById(R.id.graph);
-
-        li.addLine(l);
-
-        li.setRangeY(min-2, max+2);
-        li.setLineToFill(0);
-    }
-
-    private void populateUserRating(JSONObject jsonPosts) {
-        try {
-            //JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("userRating");
-            int userR = jsonPosts.getInt("userRating");
-            TextView lblUsrt = (TextView)getView().findViewById(R.id.lblDashboardCurrentRating);
-            lblUsrt.setText("Your current rating is " + userR);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+    /**
+     * Clears the existing Arraylist and relaods it with the latest posts
+     * @param jsonPosts All the YourPosts in one json object
+     */
     private void populatePostList(JSONObject jsonPosts) {
 
         try {
+            //create a new JSONArray of posts
             JSONArray dashboardListJSONArray = jsonPosts.getJSONArray("posts");
-            lst.clear();
 
+            //clear the Arraylist
+            postArrayList.clear();
+
+            //sets up variables to traverse through the entire JSON Array
             int curIndex=0, N=dashboardListJSONArray.length();
 
+            if(N==0) {
+                Toast.makeText(getActivity(), "You have not reported any problem yet!", Toast.LENGTH_LONG).show();
+            }
+
             while(curIndex<N) {
+                //get the json object at that index
                 JSONObject curObj = dashboardListJSONArray.getJSONObject(curIndex++);
+
+                //convert it into a YouPosts item
                 YourPosts curPost = YourPosts.createPost(curObj);
 //                int upCount = curPost.getUpVote();
 //                int downCount = curPost.getDownVote();
 //                Log.d("curPost", curPost.toString());
-                lst.add(curPost);
+
+                postArrayList.add(curPost);
             }
+
+            //reload the listView
+            adapter.notifyDataSetChanged();
+            //set the latest ArrayList in the parent Activity
+            mListener.storeLatestProfilePosts(postArrayList);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        lst_online = new ArrayList<YourPosts>(lst);
-        Log.d("List", "Construction passed");
-        ArrayList<Report> ar = new ArrayList<Report>(getUserRecords(userName));
-        Log.d("List", getUserRecords("Onix").toString());
-        for (int i = 0; i<ar.size(); i++)
-        {
-            lst.add(new YourPosts(ar.get(i)));
-        }
-        Log.d("List", "report converted to list");
-        lst.add(new YourPosts("24 Nov, 2015", "Azimpur", "7", "At Palashi point", "Very Dangerous", 0, -1, 0, 0));
-        //(new ArrayList<YourPosts>());
+
     }
+
+    /**
+     * Populates the post listview with the latest ArrayList
+     */
 
     private void populatePostListView(){
 //        ArrayAdapter<YourPosts> adapter = new ResultListAdaptor();
 
         ListView list=(ListView)getView().findViewById(R.id.lvwDashboard);
-        list.setAdapter(rla);
-        pd.hide();
+        list.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        //pd.hide();
 //        lv.setItemsCanFocus(false);
     }
+
+    /**
+     * An adapter for holding and managing the listview
+     */
 
     class ResultListAdaptor extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return lst.size();
+            return postArrayList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return lst.get(position) ;
+            return postArrayList.get(position) ;
         }
 
         @Override
@@ -264,11 +259,12 @@ public class DashboardFragment extends Fragment {
                 convertView=getActivity().getLayoutInflater().inflate(R.layout.activity_dashboard_list_item,parent,false);
             }
 
+            //getting reference of all the variables
+
             TextView txtTimeStamp = (TextView)convertView.findViewById(R.id.lblDashboardTimestamp);
             TextView txtCatAtLoc = (TextView)convertView.findViewById(R.id.lblDashboardCatAtLoc);
             TextView txtLocation_desc = (TextView)convertView.findViewById(R.id.lblDashboardInformalLocation);
             TextView txtUserComment = (TextView)convertView.findViewById(R.id.lblDashboardComment);
-
             TextView txtRatingChange = (TextView)convertView.findViewById(R.id.lblDashboardRatingchange);
             TextView txtUpVote = (TextView)convertView.findViewById(R.id.lblDashboardRatingUp);
             TextView txtDownVote = (TextView)convertView.findViewById(R.id.lblDashboardRatingDown);
@@ -277,6 +273,8 @@ public class DashboardFragment extends Fragment {
             Button btnDelete = (Button)convertView.findViewById(R.id.btnDashboardDelete);
             LinearLayout ratingLayout = (LinearLayout)convertView.findViewById(R.id.layoutRating);
             ImageView imgStatus = (ImageView) convertView.findViewById(R.id.imgStatus);
+
+            //not functional
             btnDelete.setOnClickListener(new View.OnClickListener(){
 
                 @Override
@@ -284,22 +282,37 @@ public class DashboardFragment extends Fragment {
 
                 }
             });
-            btnUpdate.setOnClickListener(new View.OnClickListener(){
+
+            //not functional
+            btnUpdate.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
 
                 }
             });
-            YourPosts post_item = lst.get(position);
 
-            txtTimeStamp.setText(post_item.getTimeStamp());
-            txtCatAtLoc.setText(problemCatagory[Integer.valueOf(post_item.getCategory())] + " at " + post_item.getExactLocation());
+
+            //retrieve the post at this position
+            YourPosts post_item = postArrayList.get(position);
+            Log.d("Timestamp", post_item.getTimeStamp());
+
+            txtTimeStamp.setText(Utility.CurrentUser.parsePostTime(post_item.getTimeStamp()));
+
+            int categoryId = Integer.valueOf(post_item.getCategory());
+            if(categoryId == -1)
+                txtCatAtLoc.setText("Uncategorized Problem" + " at " + post_item.getExactLocation());
+            else
+                txtCatAtLoc.setText(Utility.CategoryList.get(categoryId) + " at " + post_item.getExactLocation());
+
+
+            //sets up the location of the post
             if (!post_item.getLocationDescription().isEmpty() && !post_item.getLocationDescription().equals("null"))
                 txtLocation_desc.setText("(" + post_item.getLocationDescription() + ")");
             else
                 txtLocation_desc.setText("");
 
+            //sets up the change in rating
             txtUserComment.setText(post_item.getProblemDescription());
             if (post_item.getRatingChanged()>0)
             {
@@ -317,9 +330,11 @@ public class DashboardFragment extends Fragment {
                 txtRatingChange.setText("");
             }
 
+            //setting up upvote downvote
             txtUpVote.setText(String.valueOf(post_item.getUpVote()));
             txtDownVote.setText(String.valueOf(post_item.getDownVote()));
 
+            //sets up appropriate image depending on the state of the post(pending, verified etc)
             if (post_item.getState() == -1)
             {
                 btnUpdate.setVisibility(View.VISIBLE);
@@ -383,7 +398,7 @@ public class DashboardFragment extends Fragment {
 
         public YourPosts getResultItem(int pos)
         {
-            return lst.get(pos);
+            return postArrayList.get(pos);
         }
     }
 
@@ -404,16 +419,18 @@ public class DashboardFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+
+    /**
+     * Brings New data from server and reloads the content of the ArrayList
+     */
     class FetchDashboardTask extends AsyncTask<String, Void, String> {
 
-        private JSONObject jsonPosts;
+
 
         @Override
         protected void onPreExecute()
         {
-//            progressLayout.setVisibility(View.VISIBLE);
-//            customDiscussionListView.setVisibility(View.GONE);
-
+            busy_sessions(true);
             super.onPreExecute();
         }
 
@@ -424,7 +441,7 @@ public class DashboardFragment extends Fragment {
             // Building Parameters
             List<Pair> params = new ArrayList<Pair>();
 
-            params.add(new Pair("userName", "Onix"));
+            params.add(new Pair("userId", Utility.CurrentUser.getUserId()));
 
             // getting JSON string from URL
             jsonPosts = jParser.makeHttpRequest("/getuserposts", "GET", params);
@@ -433,61 +450,33 @@ public class DashboardFragment extends Fragment {
         }
 
 
-        /**
-         * After completing background task Dismiss the progress dialog
-         **/
+
         protected void onPostExecute (String a){
 //            progressLayout.setVisibility(View.GONE);
 //            customDiscussionListView.setVisibility(View.VISIBLE);
 
+            profileRefresh.setEnabled(true);
             if(jsonPosts == null) {
 //                Utility.CurrentUser.showConnectionError(getActivity());
                 Log.d("Connection Error", "Probably couldn't connect to the internet");
+                busy_sessions(false);
                 return;
             }
-            pd = new ProgressDialog(getActivity());
-            pd.setMessage("Please wait, loading data...");
-            pd.setCancelable(false);
-            pd.setInverseBackgroundForced(false);
-            pd.show();
-            //jsonUpdatesField=jsonPosts;
-            populateRatingGraph(jsonPosts);
-            populatePostList(jsonPosts);
-            populateUserRating(jsonPosts);
+            Log.d("FetchProfilePostsTask", "profile reloaded");
+
+            try {
+                //reloads the ArrayLIst with new item
+                populatePostList(jsonPosts);
+                //redraws the Custom listview
+                populatePostListView();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
 
-            populatePostListView();
+            busy_sessions(false);
+
+            Log.d("Profile", "End of Async");
         }
-    }
-    public ArrayList<Report> getUserRecords(String name){
-
-        DBHelper help=new DBHelper(getActivity());
-        Log.d("List", String.valueOf(help.numberOfRows()));
-        Cursor allRowsForName=help.getData(name);
-        ArrayList<Report> reportsToBeSent=new ArrayList<Report>();
-        allRowsForName.moveToFirst();
-        while(allRowsForName.isAfterLast() == false){
-            int tREPORT_COLUMN_ID = allRowsForName.getInt(allRowsForName.getColumnIndex(help.REPORT_COLUMN_ID));
-            String tREPORT_COLUMN_NAME = allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_NAME));
-            String tREPORT_COLUMN_CATEGORY = allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_CATEGORY));
-            byte[] tREPORT_COLUMN_IMAGE = allRowsForName.getBlob(allRowsForName.getColumnIndex(help.REPORT_COLUMN_IMAGE));
-            String tREPORT_COLUMN_TIME = allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_TIME));
-            String tREPORT_COLUMN_INFORMALLOCATION=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_INFORMALLOCATION));
-            String tREPORT_COLUMN_PROBDESCR=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_PROBDESCR));
-            String tREPORT_COLUMN_STREETNO=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_STREETNO));
-            String tREPORT_COLUMN_ROUTE=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_ROUTE));
-            String tREPORT_COLUMN_NEIGHBORHOOD=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_NEIGHBORHOOD));
-            String tREPORT_COLUMN_SUBLOCALITY=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_SUBLOCALITY));
-            String tREPORT_COLUMN_LOCALITY=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_LOCALITY));
-            String tREPORT_COLUMN_LATITUDE=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_LATITUDE));
-            String tREPORT_COLUMN_LONGITUDE=allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_LONGITUDE));
-            //Log.d("userentries:",allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_NAME))+" "+allRowsForName.getString(allRowsForName.getColumnIndex(help.REPORT_COLUMN_TIME)));
-            Report objectToBeSent=new Report(tREPORT_COLUMN_ID,tREPORT_COLUMN_NAME,tREPORT_COLUMN_CATEGORY,tREPORT_COLUMN_IMAGE,tREPORT_COLUMN_TIME,tREPORT_COLUMN_INFORMALLOCATION,tREPORT_COLUMN_PROBDESCR,tREPORT_COLUMN_STREETNO,tREPORT_COLUMN_ROUTE,tREPORT_COLUMN_NEIGHBORHOOD,tREPORT_COLUMN_SUBLOCALITY,tREPORT_COLUMN_LOCALITY,tREPORT_COLUMN_LATITUDE,tREPORT_COLUMN_LONGITUDE);
-            reportsToBeSent.add(objectToBeSent);
-            Log.d("userentries:",objectToBeSent.toString());
-
-            allRowsForName.moveToNext();
-        }
-        return reportsToBeSent;
     }
 }

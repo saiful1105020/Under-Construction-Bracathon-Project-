@@ -1,8 +1,9 @@
 package com.underconstruction.underconstruction;
 
 /**
- * Created by wasif on 12/4/15.
+ * Some of the constants that will be used in theproject
  */
+
 public final class Constants {
     public static final int SUCCESS_RESULT = 0;
     public static final int FAILURE_RESULT = 1;

@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.underconstruction.underconstruction" >
+    package="com.underconstruction.underconstruction">
 
-    <uses-feature android:name="android.hardware.camera"
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/fix_my_street"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/MyMaterialTheme">
 
         <!-- <activity -->
         <!-- android:name=".Post" -->
@@ -26,9 +31,27 @@
 
         <!-- </intent-filter> -->
         <!-- </activity> -->
+        <!--&lt;!&ndash;activity-->
+            <!--android:name=".Home"-->
+            <!--android:label="@string/title_activity_home"&ndash;&gt;-->
+
+            <!--&lt;!&ndash; <intent-filter> &ndash;&gt;-->
+            <!--&lt;!&ndash; <action android:name="android.intent.action.MAIN" /> >-->
+
+
+            <!--&lt;!&ndash; &lt;!&ndash;<category android:name="android.intent.category.LAUNCHER" />&ndash;&gt; &ndash;&gt;-->
+            <!--&lt;!&ndash; </intent-filter> &ndash;&gt;-->
+        <!--</activity&ndash;&gt;-->
+
+
         <activity
-            android:name=".Home"
-            android:label="@string/title_activity_home" >
+            android:name=".TabbedHome"
+            android:label="@string/title_activity_tabbed_home"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,20 +59,67 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.underconstruction.underconstruction.AddReport"
-            android:label="@string/title_activity_add_report" >
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            android:name=".RegistrationActivity"
+            android:label="@string/title_activity_registration"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".VerificationActivity"
+            android:label="@string/title_activity_verification"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".ForgetActivity"
+            android:label="@string/title_activity_forget"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".PostSuggestion"
+            android:label="@string/title_activity_post_suggestion"
+            android:screenOrientation="portrait">
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
         </activity>
 
         <service
-            android:name="com.underconstruction.underconstruction.FetchAddressIntentService"
-            android:exported="false"
-            android:enabled="true">
-        </service>
+            android:name=".FetchAddressIntentService"
+            android:enabled="true"
+            android:exported="false"></service>
+
+        <receiver android:name=".MyBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"></action>
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".ReportProblem"
+            android:label="@string/title_activity_report_problem"
+
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"></activity>
+        <activity android:name=".SettingsActivity"
+
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
+            android:noHistory="false">
+        </activity>
+
+        <!--
+            Because android:exported is set to "false",
+            the service is only available to this app.
+        -->
+        <activity
+            android:name=".ReportAutoUploadActivity"
+            android:label="@string/title_activity_post_suggestion"
+            android:screenOrientation="portrait"
+            android:exported="false">
+
+        </activity>
+
+
     </application>
 
 </manifest>

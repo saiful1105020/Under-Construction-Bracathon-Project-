@@ -1,0 +1,212 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.underconstruction.underconstruction.HomeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lblHello"
+        android:padding="10dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_weight="1"
+                    android:layout_gravity="center_vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="@string/hello"
+                         />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text=" User!"
+                        android:id="@+id/lblDashboardHello" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/btnRefreshHome"
+                    android:src="@android:drawable/stat_notify_sync"
+                    android:layout_gravity="right"
+                    android:tint="#ffcc0000"
+                    android:background="@null"
+                    android:onClick="onProfileRefreshButtonClick"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/btnSettings"
+                    android:src="@drawable/ic_setting_light"
+                    android:layout_gravity="right"
+                    android:background="@null"
+                    android:onClick="onProfileRefreshButtonClick" />
+
+                <ImageButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/btnLogout"
+                    android:src="@android:drawable/ic_menu_directions"
+                    android:layout_gravity="right"
+                    android:background="@null"
+                    android:onClick="onProfileRefreshButtonClick" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/rating_string"
+                    android:layout_below="@+id/lblDashboardHello"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text=" 500"
+                    android:id="@+id/lblDashboardCurrentRating"
+                    android:layout_below="@+id/lblDashboardHello"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginBottom="5dp" />
+            </LinearLayout>
+
+            <!--<CheckBox-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Show my voteCount"-->
+            <!--android:id="@+id/checkBox2"-->
+            <!--android:layout_gravity="right"-->
+            <!--android:checked="false" />-->
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lblHello"
+        android:id="@+id/lblGraph"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/rating_progress"
+                android:id="@+id/textView2"
+                android:layout_below="@+id/lblDashboardCurrentRating"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:paddingBottom="5dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/rating"
+                    android:id="@+id/textView3"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/textView2"
+                    android:layout_above="@+id/textView4"
+                    android:gravity="center_vertical" />
+
+                <com.underconstruction.underconstruction.LineGraphPackage.LineGraph
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:padding="5dp"
+                    android:paddingRight="5dp"
+                    android:id="@+id/graph"
+                    android:layout_below="@+id/textView2"
+                    android:layout_toRightOf="@+id/textView3" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/time"
+                android:id="@+id/textView4"
+                android:layout_below="@+id/graph"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:gravity="center_horizontal" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:padding="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#DDEEDD" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/report_problem"
+            android:textStyle="bold"/>
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/reportButton"
+            android:src="@drawable/takephoto"
+            android:onClick="onReportButtonClick"
+            android:background="@null"
+            android:scaleType="centerInside"
+            android:layout_margin="20dp"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

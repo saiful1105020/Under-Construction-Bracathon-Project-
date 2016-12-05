@@ -1,0 +1,51 @@
+/*
+
+[mail function]
+; XAMPP: Comment out this if you want to work with an SMTP Server like Mercury
+; SMTP = localhost
+; smtp_port = 25
+
+; For Win32 only.
+; http://php.net/sendmail-from
+;sendmail_from = postmaster@localhost
+
+; XAMPP IMPORTANT NOTE (1): If XAMPP is installed in a base directory with spaces (e.g. c:\program filesD:
+
+\xampp) fakemail and mailtodisk do not work correctly.
+; XAMPP IMPORTANT NOTE (2): In this case please copy the sendmail or mailtodisk folder in your root folder (e.g. 
+
+C:\sendmail) and use this for sendmail_path.  
+; XAMPP: Comment out this if you want to work with fakemail for forwarding to your mailbox (sendmail.exe in the 
+
+sendmail folder)
+;sendmail_path = "\"D:\xampp\sendmail\sendmail.exe\" -t"
+
+; XAMPP: Comment out this if you want to work with mailToDisk, It writes all mails in the D:\xampp\mailoutput 
+
+folder
+sendmail_path="D:\xampp\mailtodisk\mailtodisk.exe"
+
+; Force the addition of the specified parameters to be passed as extra parameters
+; to the sendmail binary. These parameters will always replace the value of
+; the 5th parameter to mail(), even in safe mode.
+;mail.force_extra_parameters =
+
+; Add X-PHP-Originating-Script: that will include uid of the script followed by the filename
+mail.add_x_header=Off
+
+; Log all mail() calls including the full path of the script, line #, to address and headers
+;mail.log = "D:\xampp\php\logs\php_mail.log"
+
+*/
+
+/**
+; For Win32 only.
+; SMTP = smtp.gmail.com
+; smtp_port = 25
+
+; For Win32 only.
+; sendmail_from = <saiful.11722>@gmail.com
+
+; For Unix only. You may supply arguments as well (default: "sendmail -t -i").
+sendmail_path = "C:\xampp\sendmail\sendmail.exe -t"
+*/

@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * A placeholder fragment containing a simple view.
+ * A placeholder fragment containing a simple view. Deprecated, not used in this App.
  */
 public class PostFragment extends Fragment {
 
