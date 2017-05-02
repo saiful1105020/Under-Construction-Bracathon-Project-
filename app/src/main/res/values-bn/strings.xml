@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">Fix My Street</string>
+
+    <string name="hello_world">হ্যালো দুনিয়া?</string>
+
+    <string name="user_name">আপনার নাম</string>
+    <string name="password">পাসওয়ার্ড</string>
+    <string name="Login">লগিন করুন</string>
+    <string name="Registration">অ্যাকাউন্ট নেই? এখনই বিনা খরচে বানিয়ে নিন!</string>
+    <string name="Forget">পাসওয়ার্ড  ভুলে গেছি</string>
+    <string name="Remember">মনে রেখো আমাকে</string>
+    <string name="registration_heading">তথ্য দিন</string>
+    <string name="email">ইমেইল</string>
+    <string name="confirm_password">আবার পাসওয়ার্ড   দিন</string>
+    <string name="signup">সাইন আপ করুন</string>
+    <string name="registration_warning">আপনার ইমেইলে একটা ভেরিফিকেশন কোড পাঠানো হবে</string>
+    <string name="verification_title">আপনার ইমেইলে একটি ভেরিফিকেশন কোড পাঠানো হয়েছে। সেটি নিচে লিখুন।</string>
+    <string name="enter_verification_code">ভেরিফিকেশন কোড লিখুন</string>
+    <string name="verify">ভেরিফাই করুন</string>
+    <string name="ForgetTitle">আপনার ইমেইল আইডি লিখুনঃ</string>
+    <string name="ForgetEmail">আপনার ইমেইল অ্যাড্রেস</string>
+    <string name="ForgetReset">নতুন পাসওয়ার্ড তৈরী করুন</string>
+    <string name="action_settings">্সেটিংস</string>
+    <string name="ForgetInstruction">আপনার ইমেইলে একটি নতুন পাসওয়ার্ড পাঠানো হবে</string>
+    <string name="VerificationDidntGetit">আমি কোন ভেরিফিকেশন কোড পাইনি। <u>আবার কোড পাঠান</u> </string>
+    <string name="post_suggestion_title">আপনার সমস্যাটি কী নিচের সমস্যাগুলোর মধ্যে কোনোটি?</string>
+    <string name="post_suggestion_subtitle">হয়ে থাকলে অনুগ্রহ করে ক্যানসেল চাপুন</string>
+    <string name="post_suggestion_button">না, আমার পোস্ট আপলোড করুন</string>
+    <string name="cancel_button">ক্যানসেল</string>
+    <string name="key1">সেটিংস</string>
+    <string name="own_posts">আপনার পোস্টসমূহ</string>
+    <string name="own_post">আপনার পোস্টসমূহ</string>
+    <string name="activityDashUpBtn">আপলোড</string>
+    <string name="activity_dash_dl_btn">ডিলিট</string>
+    <string name="home_btn">নীড়</string>
+    <string name="help_btn">সাহায্য</string>
+    <string name="profile_btn">প্রফাইল</string>
+    <string name="report_problem_btn">সমস্যা  জানান</string>
+    <string name="no_image_box">ছবি ছাড়া</string>
+    <string name="category_select">একটি ক্যাটাগরি নির্বাচন করুন</string>
+    <string name="address">ঠিকানা (ঐচ্ছিক)</string>
+    <string name="problem_desc">সমস্যার বিবরণ (ঐচ্ছিক)</string>
+    <string name="upload_now_btn">আপলোড করুন</string>
+    <string name="settings">সেটিংস</string>
+    <string name="language">ভাষা</string>
+    <string name="hello">হ্যালো </string>
+    <string name="rating_string">আপনার বর্তমান রেটিং: </string>
+    <string name="rating_progress">গত কয়েকদিনে রেটিং পরিবর্তন:</string>
+    <string name="report_problem">সমস্যা  জানান</string>
+    <string name="rating">রেটিং</string>
+    <string name="time">সময়</string>
+    <string name="cur_problems">বর্তমান সমস্যাসমূহ</string>
+    <string name="posted_by">জানিয়েছেন</string>
+    <string name="previous_post_title">আপনি এটি আগে পোস্ট করেছিলেন</string>
+
+</resources>
