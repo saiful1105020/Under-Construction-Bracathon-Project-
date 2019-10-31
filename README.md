@@ -1,16 +1,23 @@
-Requirements: Location service, Internet (for maximum usage)
+<b>Requirements:</b> Location service, Internet (for maximum usage)
 
-Module 1:
+<b>Module 1:</b>
+<br>
  Login – In order to gain access, you need to share some credentials. You can provide it in two simple ways: Google Login: ‘Continue with Gmail’ uses the current Gmail ID being used in your smartphone and takes you into the app without any hassle. Login with Email: You may also login with any email ID of your choice but first you have to register that email ID. Registration is quick, simple and just a one-time thing!
+<br>
  Remember Me – Check ‘Remember Me’ to avoid the login page and land directly on your home page next time you use the app.
 
-Module 2:
+<br>
+<b>Module 2:</b>
+<br>
 Report Problem – To report a problem, tap on the ‘camera’ icon on your home page and take a clear picture of the problem you want to report.
-Optional: To provide additional information about the problem, tap on ‘See More’.
-Tap ‘Upload’ to report the problem.
+<br>
+Optional: To provide additional information about the problem, tap on ‘See More’. Tap ‘Upload’ to report the problem.
+<br>
  Report without internet: You can report a problem even if internet connection is not available. In that case, the problem will be uploaded once the app is run with a working internet connection.
+<br>
  Duplicate reports: If similar reports have been uploaded from the same location, they will be shown to you while your new report is being uploaded. This allows you to help us in avoiding generation of duplicate reports and make the task of the authorities easier. Just cancel your upload if another user has already reported the same problem.
 
+<br>
 Module 3:
 News Feed – The Feed shows all unverified problems near your current location reported by FixMyStreet users.
  Vote problems – You can upvote or downvote these problems based on your knowledge of their authenticity.
