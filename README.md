@@ -1,4 +1,9 @@
+<h3>Fix My Street</h3>
+<br>
+An android application developed for Dhaka City Corporation.  The citizens can re-port road and transportation related issues to authority using this app.  This projectwas initially developed for BRACathon 2015, a software development contest.  Afterbeing the champion, this project was funded by BRAC.
+<br>
 <b>Requirements:</b> Location service, Internet (for maximum usage)
+<br>
 
 <b>Module 1:</b>
 <br>
